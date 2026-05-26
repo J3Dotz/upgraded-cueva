@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Experiences · La Cueva de Miravet</title>
+<meta name="description" content="What you do here. A small set of unhurried experiences at La Cueva de Miravet — cave, valley, mountain and table." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:        #FDFCF8;
+    --cream-deep:   #F5F1E8;
+    --stone-dark:   #2C2A24;
+    --stone-mid:    #6B6860;
+    --stone-light:  #E8E5DE;
+    --terra:        #C4622D;
+    --olive:        #4A5E45;
+    --forest:       #2D4A3E;
+    --forest-deep:  #243A30;
+    --white:        #FFFFFF;
+
+    --font-serif:   'Cormorant Garamond', Georgia, serif;
+    --font-sans:    'Inter', system-ui, sans-serif;
+
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--stone-dark);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 300; color: var(--stone-dark); }
+  h1 { font-size: 108px; font-weight: 300; letter-spacing: -0.02em; line-height: 0.95; }
+  h2 { font-size: 56px; font-weight: 300; letter-spacing: -0.01em; line-height: 1.05; }
+  h3 { font-size: 28px; font-weight: 400; line-height: 1.2; }
+  .italic { font-style: italic; }
+
+  .label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--stone-mid);
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px 40px;
+    background: transparent;
+    transition: background 0.4s ease, padding 0.4s ease;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav.scrolled { background: var(--forest); padding: 16px 40px; }
+  .nav__logo { font-family: var(--font-serif); font-size: 17px; color: var(--white); }
+  .nav__center { display: flex; align-items: center; gap: 36px; }
+  .nav__link {
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.85); transition: color 0.2s ease;
+  }
+  .nav__link:hover { color: var(--white); }
+  .nav__link.active { color: var(--white); position: relative; }
+  .nav__link.active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -6px;
+    height: 1px; background: var(--terra);
+  }
+  .nav__right { display: flex; align-items: center; gap: 20px; }
+  .nav__book {
+    background: var(--terra); color: var(--white);
+    border-radius: 100px; padding: 10px 22px;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .nav__book:hover { background: #b1561f; transform: translateY(-1px); }
+  .nav__lang { font-family: var(--font-sans); font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; }
+  .nav__lang .divider { margin: 0 6px; color: rgba(255,255,255,0.3); }
+  .nav__lang button { color: inherit; font-size: 11px; transition: color 0.2s; }
+  .nav__lang button.active, .nav__lang button:hover { color: var(--white); }
+  .nav__burger { display: none; }
+  .mobile-menu {
+    position: fixed; inset: 0; background: var(--forest);
+    z-index: 99; display: none;
+    flex-direction: column; justify-content: center; align-items: center; gap: 28px;
+    transform: translateX(100%); transition: transform 0.4s ease;
+  }
+  .mobile-menu.open { transform: translateX(0); }
+
+  /* ===== Hero ===== */
+  .hero {
+    position: relative;
+    height: 50vh;
+    min-height: 460px;
+    background-color: var(--forest);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 70% 30%, rgba(74, 94, 69, 0.55) 0%, transparent 70%),
+      radial-gradient(ellipse 90% 70% at 20% 80%, rgba(36, 58, 48, 0.6) 0%, transparent 65%),
+      var(--grain);
+    background-blend-mode: normal, normal, multiply;
+    color: var(--white);
+    display: flex;
+    align-items: flex-end;
+    padding: 0 40px 88px;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 4px;
+    background: var(--terra);
+    z-index: 4;
+  }
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .hero__label {
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .hero__label .rule {
+    width: 36px; height: 1px;
+    background: rgba(255,255,255,0.4);
+    display: inline-block;
+  }
+  .hero h1 {
+    color: var(--white);
+    font-style: italic;
+    max-width: 980px;
+  }
+  .hero h1 .roman {
+    font-style: normal;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ===== Featured experience ===== */
+  .featured {
+    background: var(--cream);
+    padding: 0;
+  }
+  .featured__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 60% 40%;
+    align-items: end;
+    gap: 0;
+    padding: 120px 40px 0;
+  }
+  .featured__img-wrap {
+    overflow: hidden;
+    border-radius: 220px 220px 0 0;
+    height: 78vh;
+    min-height: 640px;
+    max-height: 880px;
+    position: relative;
+    background-color: #5C4838;
+  }
+  .featured__img {
+    width: 100%; height: 100%;
+    background-image:
+      radial-gradient(ellipse at 50% 30%, rgba(180, 150, 120, 0.25) 0%, transparent 60%),
+      radial-gradient(ellipse at 30% 80%, rgba(0,0,0,0.5) 0%, transparent 65%),
+      linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.3) 100%),
+      var(--grain);
+    background-blend-mode: normal, normal, normal, multiply;
+    background-color: #5C4838;
+  }
+  .featured__body {
+    padding: 0 0 80px 80px;
+    align-self: flex-end;
+  }
+  .featured__label {
+    color: var(--stone-mid);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .featured__label .rule {
+    width: 28px; height: 1px;
+    background: var(--terra);
+    display: inline-block;
+  }
+  .featured__body h2 {
+    margin-bottom: 24px;
+  }
+  .featured__body h2 .italic {
+    display: block;
+    color: var(--stone-mid);
+  }
+  .featured__body .desc {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--stone-dark);
+    margin-bottom: 28px;
+    text-wrap: pretty;
+    max-width: 420px;
+  }
+  .featured__meta {
+    list-style: none;
+    margin: 0 0 32px;
+    padding: 22px 0;
+    border-top: 1px solid var(--stone-light);
+    border-bottom: 1px solid var(--stone-light);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    max-width: 420px;
+  }
+  .featured__meta li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .featured__meta .k {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--stone-mid);
+  }
+  .featured__meta .v {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--stone-dark);
+    line-height: 1;
+  }
+  .terra-link {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--terra);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: gap 0.25s ease;
+  }
+  .terra-link::after {
+    content: "→";
+    display: inline-block;
+    transition: transform 0.25s ease;
+  }
+  .terra-link:hover { gap: 14px; }
+  .terra-link:hover::after { transform: translateX(3px); }
+
+  /* ===== Experience grid ===== */
+  .exp-grid-wrap {
+    background: var(--cream);
+    padding: 140px 40px 120px;
+  }
+  .exp-grid-header {
+    max-width: 1280px;
+    margin: 0 auto 64px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .exp-grid-header .left { max-width: 560px; }
+  .exp-grid-header .label { margin-bottom: 16px; display: block; }
+  .exp-grid-header h2 { font-size: 44px; }
+  .exp-grid-header h2 .italic { display: block; color: var(--stone-mid); }
+  .exp-grid-header .right {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--stone-mid);
+    max-width: 320px;
+    line-height: 1.5;
+    padding-bottom: 6px;
+  }
+
+  .exp-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px 56px;
+  }
+  .exp {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .exp__num {
+    display: none;
+  }
+  .exp__img-wrap {
+    overflow: hidden;
+    aspect-ratio: 5 / 3;
+    position: relative;
+    background-color: var(--stone-light);
+  }
+  .exp__img {
+    width: 100%; height: 100%;
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .exp__img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(0,0,0,0.2) 100%);
+  }
+  .exp__tag {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    background: rgba(253,252,248,0.92);
+    backdrop-filter: blur(8px);
+    color: var(--stone-dark);
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    padding: 6px 12px;
+    border-radius: 100px;
+    z-index: 2;
+  }
+  .exp__body {
+    padding: 24px 0 0;
+  }
+  .exp__name {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    font-weight: 400;
+    color: var(--stone-dark);
+    line-height: 1.15;
+    margin-bottom: 10px;
+    transition: color 0.2s ease;
+  }
+  .exp__name .italic {
+    color: var(--stone-mid);
+    font-size: 22px;
+    margin-left: 6px;
+  }
+  .exp:hover .exp__name { color: var(--terra); }
+  .exp__desc {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--stone-mid);
+    line-height: 1.7;
+    max-width: 460px;
+    text-wrap: pretty;
+    margin-bottom: 18px;
+  }
+  .exp__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--stone-light);
+  }
+  .exp__details {
+    display: flex;
+    gap: 22px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--stone-mid);
+  }
+  .exp__details strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 15px;
+    color: var(--stone-dark);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-right: 6px;
+  }
+  .exp__arrow {
+    color: var(--terra);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ===== Bespoke strip ===== */
+  .bespoke {
+    background: var(--stone-dark);
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    color: var(--white);
+    padding: 140px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bespoke::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(196, 98, 45, 0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 15% 85%, rgba(74, 94, 69, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .bespoke__inner {
+    position: relative;
+    z-index: 2;
+    max-width: 980px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .bespoke__label {
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .bespoke__label .rule {
+    width: 28px; height: 1px;
+    background: var(--terra);
+    display: inline-block;
+  }
+  .bespoke__quote {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    margin-bottom: 36px;
+    text-wrap: balance;
+  }
+  .bespoke__quote .roman {
+    font-style: normal;
+    color: rgba(255,255,255,0.6);
+  }
+  .bespoke__sub {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    max-width: 520px;
+    margin: 0 auto 44px;
+    line-height: 1.7;
+  }
+  .bespoke__cta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .btn-terra {
+    background: var(--terra);
+    color: var(--white);
+    border-radius: 100px;
+    padding: 16px 36px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transition: background 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+  .btn-terra:hover { background: #b1561f; transform: translateY(-1px); }
+  .bespoke__or {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 16px;
+    color: rgba(255,255,255,0.45);
+  }
+  .bespoke__email {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 2px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .bespoke__email:hover { color: var(--white); border-color: var(--terra); }
+
+  /* ===== Footer ===== */
+  footer {
+    background: var(--stone-dark);
+    color: rgba(255,255,255,0.65);
+    padding: 80px 40px 40px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .footer__grid {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px;
+  }
+  .footer__logo {
+    font-family: var(--font-serif); font-size: 20px;
+    color: var(--white); margin-bottom: 12px;
+  }
+  .footer__tagline {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 14px; color: rgba(255,255,255,0.5); max-width: 320px;
+  }
+  .footer__col .label { color: rgba(255,255,255,0.35); margin-bottom: 20px; display: block; }
+  .footer__links { display: flex; flex-direction: column; gap: 10px; }
+  .footer__links a { font-size: 14px; color: rgba(255,255,255,0.65); transition: color 0.2s ease; }
+  .footer__links a.active { color: var(--white); }
+  .footer__links a:hover { color: var(--white); }
+  .footer__contact { display: flex; flex-direction: column; gap: 8px; }
+  .footer__contact .email { font-size: 13px; color: rgba(255,255,255,0.65); }
+  .footer__contact .addr { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer__sep { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+  .footer__guarantee { font-size: 12px; color: rgba(255,255,255,0.4); font-style: italic; }
+  .footer__bottom {
+    max-width: 1280px; margin: 60px auto 0;
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; font-size: 11px;
+  }
+  .footer__bottom .left { color: rgba(255,255,255,0.3); }
+  .footer__bottom .right { color: rgba(255,255,255,0.25); }
+
+  [data-animate] {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  [data-animate].visible { opacity: 1; transform: none; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1100px) {
+    h1 { font-size: 72px; }
+    h2 { font-size: 40px; }
+    .hero { padding: 0 32px 64px; min-height: 420px; }
+    .featured__inner { grid-template-columns: 1fr; gap: 48px; padding: 80px 32px 0; }
+    .featured__img-wrap { height: 60vh; min-height: 480px; }
+    .featured__body { padding: 0 0 80px 0; }
+    .featured__meta { max-width: none; }
+    .exp-grid-wrap { padding: 100px 32px 80px; }
+    .exp-grid-header { flex-direction: column; align-items: flex-start; }
+    .exp-grid { grid-template-columns: 1fr; gap: 56px; }
+    .bespoke { padding: 100px 32px; }
+    .bespoke__quote { font-size: 40px; }
+    .footer__grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .nav { padding: 18px 24px; }
+    .nav.scrolled { padding: 14px 24px; }
+    .nav__center, .nav__right .nav__lang, .nav__right .nav__book { display: none; }
+    .nav__burger { display: inline-flex; flex-direction: column; gap: 5px; padding: 4px; }
+    .nav__burger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
+    .mobile-menu { display: flex; }
+    .mobile-menu a { font-family: var(--font-serif); font-size: 28px; color: var(--white); font-weight: 300; }
+    .mobile-menu .nav__book { font-family: var(--font-sans); font-size: 12px; margin-top: 20px; }
+
+    h1 { font-size: 52px; }
+    h2 { font-size: 32px; }
+    .hero { padding: 0 24px 48px; height: auto; min-height: 380px; padding-top: 140px; }
+
+    .featured__inner { padding: 64px 24px 0; }
+    .featured__img-wrap { border-radius: 140px 140px 0 0; height: 56vh; min-height: 400px; }
+    .featured__body { padding-bottom: 64px; }
+    .featured__meta { grid-template-columns: 1fr 1fr; }
+
+    .exp-grid-wrap { padding: 80px 24px 64px; }
+    .exp-grid-header { margin-bottom: 40px; }
+    .bespoke { padding: 80px 24px; }
+    .bespoke__quote { font-size: 30px; }
+
+    footer { padding: 60px 24px 32px; }
+    .footer__grid { grid-template-columns: 1fr; gap: 40px; }
+    .footer__bottom { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav" id="nav">
+  <a href="La Cueva de Miravet.html" class="nav__logo">La Cueva de Miravet</a>
+  <div class="nav__center">
+    <a href="Stay.html" class="nav__link">Stay</a>
+    <a href="Experiences.html" class="nav__link active">Experiences</a>
+    <a href="Find Us.html" class="nav__link">Location</a>
+    <a href="#" class="nav__link">Journal</a>
+  </div>
+  <div class="nav__right">
+    <a href="Book Now.html" class="nav__book">Book Direct</a>
+    <div class="nav__lang">
+      <button class="active">EN</button><span class="divider">|</span><button>ES</button>
+    </div>
+    <button class="nav__burger" id="burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="Stay.html">Stay</a>
+  <a href="Experiences.html">Experiences</a>
+  <a href="Find Us.html">Location</a>
+  <a href="#">Journal</a>
+  <a href="Book Now.html" class="nav__book" style="background: var(--terra); padding: 12px 28px;">Book Direct</a>
+</div>
+
+<main>
+
+<!-- ===== Hero ===== -->
+<section class="hero" data-screen-label="01 Hero">
+  <div class="hero__inner">
+    <div data-animate>
+      <div class="label hero__label">
+        <span class="rule"></span>
+        <span>Experiences</span>
+      </div>
+      <h1>
+        <span class="italic">What you do</span> <span class="roman italic">here.</span>
+      </h1>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Featured experience ===== -->
+<section class="featured">
+  <div class="featured__inner">
+    <div class="featured__img-wrap" data-animate>
+      <div class="featured__img" role="img" aria-label="The natural cave on the property grounds"></div>
+    </div>
+
+    <div class="featured__body" data-animate>
+      <div class="label featured__label">
+        <span class="rule"></span>
+        <span>The signature experience</span>
+      </div>
+      <h2>
+        Cave Exploration<span class="italic">— the original one.</span>
+      </h2>
+      <p class="desc">Guided access into the natural cave on the property grounds. It sits a short walk through the back garden, in its own pocket of the mountain. We go in small groups, by lantern, at the hour the light is kindest.</p>
+
+      <ul class="featured__meta">
+        <li><span class="k">Duration</span><span class="v">90 min</span></li>
+        <li><span class="k">Group</span><span class="v">Up to 6</span></li>
+        <li><span class="k">From</span><span class="v">€45 pp</span></li>
+      </ul>
+
+      <a href="#" class="terra-link">Enquire or book</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Experience grid ===== -->
+<section class="exp-grid-wrap">
+  <div class="exp-grid-header" data-animate>
+    <div class="left">
+      <span class="label">More to explore</span>
+      <h2>In and around<span class="italic">the valley.</span></h2>
+    </div>
+    <p class="right">A few we run ourselves, a few we recommend, and a few we'll arrange on request. Nothing on this page is mandatory.</p>
+  </div>
+
+  <div class="exp-grid" data-animate>
+
+    <article class="exp">
+      <div class="exp__img-wrap">
+        <span class="exp__tag">Tasting</span>
+        <div class="exp__img" style="background-color:#7C5A3C;" role="img" aria-label="Wine and olive tasting"></div>
+      </div>
+      <div class="exp__body">
+        <h3 class="exp__name">Wine &amp; Olive Tasting<span class="italic">/ Cata</span></h3>
+        <p class="exp__desc">Local producers from the valleys below Cabanes. Five wines, three oils, a long table, and the kind of conversation that makes the afternoon disappear.</p>
+        <div class="exp__meta">
+          <div class="exp__details">
+            <span><strong>2 hrs</strong>Duration</span>
+            <span><strong>€55</strong>Per guest</span>
+          </div>
+          <span class="exp__arrow">Book →</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="exp">
+      <div class="exp__img-wrap">
+        <span class="exp__tag">Outdoors</span>
+        <div class="exp__img" style="background-color:#4A5E45;" role="img" aria-label="Hiking the Desert de les Palmes"></div>
+      </div>
+      <div class="exp__body">
+        <h3 class="exp__name">Hiking Desert de les Palmes<span class="italic">/ Parque Natural</span></h3>
+        <p class="exp__desc">A guided walk into the natural park at our doorstep. Cork oaks, the old monastery ruins, and a route that ends at a viewpoint over the coast.</p>
+        <div class="exp__meta">
+          <div class="exp__details">
+            <span><strong>3 hrs</strong>Duration</span>
+            <span><strong>€35</strong>Per guest</span>
+          </div>
+          <span class="exp__arrow">Book →</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="exp">
+      <div class="exp__img-wrap">
+        <span class="exp__tag">Movement</span>
+        <div class="exp__img" style="background-color:#8E7860;" role="img" aria-label="Sunrise yoga on the terrace"></div>
+      </div>
+      <div class="exp__body">
+        <h3 class="exp__name">Sunrise Yoga<span class="italic">/ Al amanecer</span></h3>
+        <p class="exp__desc">A slow practice on the upper terrace as the sun comes up behind the mountains. Open to all levels. Coffee and almond cake afterwards, no rush.</p>
+        <div class="exp__meta">
+          <div class="exp__details">
+            <span><strong>60 min</strong>Duration</span>
+            <span><strong>€25</strong>Per guest</span>
+          </div>
+          <span class="exp__arrow">Book →</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="exp">
+      <div class="exp__img-wrap">
+        <span class="exp__tag">Table</span>
+        <div class="exp__img" style="background-color:#6B5544;" role="img" aria-label="Private dining on the terrace"></div>
+      </div>
+      <div class="exp__body">
+        <h3 class="exp__name">Private Dining on the Terrace<span class="italic">/ A solas</span></h3>
+        <p class="exp__desc">A table set for you alone on the south terrace, candles low, four courses from our kitchen. Booked the day before, sourced the morning of.</p>
+        <div class="exp__meta">
+          <div class="exp__details">
+            <span><strong>4 courses</strong>Menu</span>
+            <span><strong>€95</strong>Per guest</span>
+          </div>
+          <span class="exp__arrow">Book →</span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===== Bespoke strip ===== -->
+<section class="bespoke">
+  <div class="bespoke__inner" data-animate>
+    <div class="label bespoke__label">
+      <span class="rule"></span>
+      <span>Bespoke</span>
+      <span class="rule"></span>
+    </div>
+    <p class="bespoke__quote">
+      <span class="italic">"If you'd like something we haven't thought of,</span>
+      <span class="roman italic">— tell us. We'll see what the valley can do."</span>
+    </p>
+    <p class="bespoke__sub">Anniversaries, quiet retreats, a particular meal you remember from somewhere else, an introduction to a maker in the valley. Write to us a week before you come.</p>
+    <div class="bespoke__cta-row">
+      <a href="/cdn-cgi/l/email-protection#413324322433372032012d20223424372025242c2833203724356f222e2c7e3234232b2422357c032432312e2a24647371243931243328242f2224" class="btn-terra">Tell us what you need</a>
+      <span class="bespoke__or">or</span>
+      <a href="/cdn-cgi/l/email-protection#cebcabbdabbcb8afbd8ea2afadbbabb8afaaaba3a7bcafb8abbae0ada1a3" class="bespoke__email"><span class="__cf_email__" data-cfemail="1f6d7a6c7a6d697e6c5f737e7c6a7a697e7b7a72766d7e697a6b317c7072">[email&#160;protected]</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="footer__grid">
+    <div class="footer__col">
+      <div class="footer__logo">La Cueva de Miravet</div>
+      <div class="footer__tagline">"Where the mountain meets the Mediterranean."</div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Explore</span>
+      <div class="footer__links">
+        <a href="Stay.html">Stay</a>
+        <a href="Experiences.html" class="active">Experiences</a>
+        <a href="Find Us.html">Location</a>
+        <a href="#">Journal</a>
+        <a href="Book Now.html">Book Now</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Contact</span>
+      <div class="footer__contact">
+        <a href="/cdn-cgi/l/email-protection#8cfee9ffe9fefaedffcce0edeff9e9faede8e9e1e5feedfae9f8a2efe3e1" class="email"><span class="__cf_email__" data-cfemail="88faedfbedfafee9fbc8e4e9ebfdedfee9ecede5e1fae9feedfca6ebe7e5">[email&#160;protected]</span></a>
+        <div class="addr">Cabanes, Castellón, Spain</div>
+      </div>
+      <div class="footer__sep"></div>
+      <div class="footer__guarantee">Best rate guaranteed — book direct.</div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="left">© 2026 La Cueva de Miravet · Privacy · Terms</div>
+    <div class="right">A Nomada project</div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  }
+
+  document.querySelectorAll('.nav__lang button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav__lang button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('[data-animate]').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

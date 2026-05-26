@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Journal · La Cueva de Miravet</title>
+<meta name="description" content="Notes from the mountain. Stories, seasonal updates, area guides and owner's notes from La Cueva de Miravet." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:        #FDFCF8;
+    --cream-deep:   #F5F1E8;
+    --stone-dark:   #2C2A24;
+    --stone-mid:    #6B6860;
+    --stone-light:  #E8E5DE;
+    --terra:        #C4622D;
+    --olive:        #4A5E45;
+    --forest:       #2D4A3E;
+    --white:        #FFFFFF;
+
+    --font-serif:   'Cormorant Garamond', Georgia, serif;
+    --font-sans:    'Inter', system-ui, sans-serif;
+
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--stone-dark);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 300; color: var(--stone-dark); }
+  h1 { font-size: 144px; font-weight: 300; letter-spacing: -0.03em; line-height: 0.92; }
+  h2 { font-size: 56px; font-weight: 300; letter-spacing: -0.01em; line-height: 1.05; }
+  h3 { font-size: 22px; font-weight: 400; line-height: 1.25; }
+  .italic { font-style: italic; }
+
+  .label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--stone-mid);
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px 40px;
+    background: transparent;
+    transition: background 0.4s ease, padding 0.4s ease, border-color 0.4s ease;
+    display: flex; align-items: center; justify-content: space-between;
+    /* On a cream hero we need readable nav text from the start */
+    border-bottom: 1px solid transparent;
+  }
+  .nav.on-cream .nav__logo,
+  .nav.on-cream .nav__link { color: var(--stone-dark); }
+  .nav.on-cream .nav__lang { color: var(--stone-mid); }
+  .nav.on-cream .nav__lang button.active { color: var(--stone-dark); }
+  .nav.on-cream .nav__burger span { background: var(--stone-dark); }
+
+  .nav.scrolled {
+    background: var(--forest);
+    padding: 16px 40px;
+    border-bottom-color: rgba(255,255,255,0.05);
+  }
+  .nav.scrolled .nav__logo,
+  .nav.scrolled .nav__link { color: var(--white); }
+  .nav.scrolled .nav__lang { color: rgba(255,255,255,0.5); }
+  .nav.scrolled .nav__lang button.active { color: var(--white); }
+  .nav.scrolled .nav__burger span { background: var(--white); }
+
+  .nav__logo { font-family: var(--font-serif); font-size: 17px; color: var(--white); transition: color 0.3s ease; }
+  .nav__center { display: flex; align-items: center; gap: 36px; }
+  .nav__link {
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.85); transition: color 0.3s ease;
+  }
+  .nav__link:hover { color: var(--terra); }
+  .nav__link.active { position: relative; }
+  .nav__link.active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -6px;
+    height: 1px; background: var(--terra);
+  }
+  .nav__right { display: flex; align-items: center; gap: 20px; }
+  .nav__book {
+    background: var(--terra); color: var(--white) !important;
+    border-radius: 100px; padding: 10px 22px;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .nav__book:hover { background: #b1561f; transform: translateY(-1px); }
+  .nav__lang { font-family: var(--font-sans); font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; transition: color 0.3s ease; }
+  .nav__lang .divider { margin: 0 6px; opacity: 0.5; }
+  .nav__lang button { color: inherit; font-size: 11px; transition: color 0.2s; }
+  .nav__lang button.active, .nav__lang button:hover { color: var(--terra); }
+  .nav__burger { display: none; }
+  .mobile-menu {
+    position: fixed; inset: 0; background: var(--forest);
+    z-index: 99; display: none;
+    flex-direction: column; justify-content: center; align-items: center; gap: 28px;
+    transform: translateX(100%); transition: transform 0.4s ease;
+  }
+  .mobile-menu.open { transform: translateX(0); }
+
+  /* ===== Hero ===== */
+  .hero {
+    position: relative;
+    height: 40vh;
+    min-height: 380px;
+    background: var(--cream);
+    color: var(--stone-dark);
+    display: flex;
+    align-items: flex-end;
+    padding: 0 40px 64px;
+    overflow: hidden;
+  }
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hero__crumb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--stone-mid);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 36px;
+  }
+  .hero__crumb .dot {
+    width: 4px; height: 4px;
+    background: var(--terra);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .hero h1 { margin-bottom: 14px; }
+  .hero__sub {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 26px;
+    color: var(--stone-mid);
+    line-height: 1.3;
+  }
+
+  /* faint topo lines as quiet decoration on right */
+  .hero__topo {
+    position: absolute;
+    top: 0; right: 0;
+    width: 50%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .hero__topo svg { width: 100%; height: 100%; }
+
+  /* ===== Featured article ===== */
+  .featured {
+    background: var(--stone-dark);
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .featured::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 60% at 80% 30%, rgba(196,98,45,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 10% 90%, rgba(74,94,69,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .featured__inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+  .featured__img {
+    aspect-ratio: 4 / 5;
+    min-height: 560px;
+    background-color: #6B5544;
+    background-image:
+      radial-gradient(ellipse at 40% 30%, rgba(196, 162, 122, 0.35) 0%, transparent 60%),
+      radial-gradient(ellipse at 60% 80%, rgba(0,0,0,0.45) 0%, transparent 65%),
+      var(--grain);
+    background-blend-mode: normal, normal, multiply;
+    background-size: cover;
+    position: relative;
+  }
+  .featured__img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.25) 100%);
+  }
+  .featured__body {
+    padding: 100px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 680px;
+  }
+  .featured__tag {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--terra);
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  .featured__tag .rule {
+    width: 28px; height: 1px;
+    background: var(--terra);
+    display: inline-block;
+  }
+  .featured__title {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-size: 52px;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    margin-bottom: 28px;
+    text-wrap: balance;
+  }
+  .featured__title .italic { font-style: italic; color: rgba(255,255,255,0.78); }
+  .featured__excerpt {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 36px;
+    max-width: 520px;
+    text-wrap: pretty;
+  }
+  .featured__byline {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+    color: rgba(255,255,255,0.55);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .featured__byline .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 35%, #8a7359 0%, #5a4a3b 70%),
+      var(--grain);
+    background-blend-mode: normal, multiply;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .featured__byline .who { color: var(--white); font-style: italic; font-family: var(--font-serif); font-size: 16px; }
+  .featured__byline .when { color: rgba(255,255,255,0.45); }
+  .featured__byline .sep { color: rgba(255,255,255,0.25); }
+  .terra-link {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--terra);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: gap 0.25s ease;
+  }
+  .terra-link::after {
+    content: "→";
+    display: inline-block;
+    transition: transform 0.25s ease;
+  }
+  .terra-link:hover { gap: 14px; }
+  .terra-link:hover::after { transform: translateX(3px); }
+
+  /* ===== Filter + Grid ===== */
+  .archive {
+    background: var(--cream);
+    padding: 120px 40px 140px;
+  }
+  .archive__header {
+    max-width: 1280px;
+    margin: 0 auto 56px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .archive__title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 32px;
+    color: var(--stone-dark);
+    line-height: 1.1;
+    max-width: 480px;
+  }
+  .archive__title .roman { font-style: normal; }
+  .archive__count {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--stone-mid);
+    padding-bottom: 6px;
+  }
+  .archive__count strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--stone-dark);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-right: 6px;
+  }
+
+  .filter {
+    max-width: 1280px;
+    margin: 0 auto 56px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--stone-light);
+  }
+  .filter__label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--stone-mid);
+    margin-right: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .filter__label .rule {
+    width: 20px; height: 1px;
+    background: var(--stone-mid);
+    display: inline-block;
+  }
+  .filter__list {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter__item {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--stone-mid);
+    padding: 6px 18px;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+  .filter__item:hover { color: var(--stone-dark); }
+  .filter__item.active { color: var(--terra); }
+  .filter__item.active::after {
+    content: "";
+    position: absolute;
+    left: 18px; right: 18px;
+    bottom: -23px;
+    height: 1px;
+    background: var(--terra);
+  }
+  .filter__item + .filter__item::before {
+    content: "·";
+    position: absolute;
+    left: -3px;
+    color: var(--stone-light);
+  }
+
+  /* Grid */
+  .grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 64px 40px;
+  }
+  .article {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .article__img-wrap {
+    overflow: hidden;
+    aspect-ratio: 3 / 2;
+    background-color: var(--stone-light);
+    position: relative;
+  }
+  .article__img {
+    width: 100%; height: 100%;
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.4s ease;
+    position: relative;
+  }
+  .article__img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 70%, rgba(0,0,0,0.16) 100%);
+  }
+  .article:hover .article__img { opacity: 0.92; }
+  .article__body {
+    padding: 22px 0 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .article__cat {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--terra);
+    margin-bottom: 14px;
+  }
+  .article__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.22;
+    color: var(--stone-dark);
+    margin-bottom: 10px;
+    text-wrap: pretty;
+    transition: color 0.2s ease;
+  }
+  .article:hover .article__title { color: var(--terra); }
+  .article__excerpt {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--stone-mid);
+    margin-bottom: 18px;
+    text-wrap: pretty;
+  }
+  .article__meta {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--stone-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--stone-mid);
+    letter-spacing: 0.04em;
+  }
+  .article__meta .date { font-style: italic; font-family: var(--font-serif); font-size: 14px; color: var(--stone-dark); }
+  .article__meta .read { text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; }
+
+  .archive__more {
+    max-width: 1280px;
+    margin: 88px auto 0;
+    text-align: center;
+    padding-top: 44px;
+    border-top: 1px solid var(--stone-light);
+  }
+  .pill-btn {
+    display: inline-block;
+    border: 1px solid var(--terra);
+    color: var(--terra);
+    background: transparent;
+    border-radius: 100px;
+    padding: 14px 36px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .pill-btn:hover { background: var(--terra); color: var(--white); }
+
+  /* ===== Footer ===== */
+  footer {
+    background: var(--stone-dark);
+    color: rgba(255,255,255,0.65);
+    padding: 80px 40px 40px;
+  }
+  .footer__grid {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px;
+  }
+  .footer__logo {
+    font-family: var(--font-serif); font-size: 20px;
+    color: var(--white); margin-bottom: 12px;
+  }
+  .footer__tagline {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 14px; color: rgba(255,255,255,0.5); max-width: 320px;
+  }
+  .footer__col .label { color: rgba(255,255,255,0.35); margin-bottom: 20px; display: block; }
+  .footer__links { display: flex; flex-direction: column; gap: 10px; }
+  .footer__links a { font-size: 14px; color: rgba(255,255,255,0.65); transition: color 0.2s ease; }
+  .footer__links a.active { color: var(--white); }
+  .footer__links a:hover { color: var(--white); }
+  .footer__contact { display: flex; flex-direction: column; gap: 8px; }
+  .footer__contact .email { font-size: 13px; color: rgba(255,255,255,0.65); }
+  .footer__contact .addr { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer__sep { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+  .footer__guarantee { font-size: 12px; color: rgba(255,255,255,0.4); font-style: italic; }
+  .footer__bottom {
+    max-width: 1280px; margin: 60px auto 0;
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; font-size: 11px;
+  }
+  .footer__bottom .left { color: rgba(255,255,255,0.3); }
+  .footer__bottom .right { color: rgba(255,255,255,0.25); }
+
+  [data-animate] {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  [data-animate].visible { opacity: 1; transform: none; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1100px) {
+    h1 { font-size: 96px; }
+    h2 { font-size: 40px; }
+    .featured__inner { grid-template-columns: 1fr; }
+    .featured__img { aspect-ratio: 16 / 11; min-height: 0; }
+    .featured__body { padding: 72px 40px; max-width: none; }
+    .featured__title { font-size: 40px; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 56px 32px; }
+    .archive__header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .footer__grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .nav { padding: 18px 24px; }
+    .nav.scrolled { padding: 14px 24px; }
+    .nav__center, .nav__right .nav__lang, .nav__right .nav__book { display: none; }
+    .nav__burger { display: inline-flex; flex-direction: column; gap: 5px; padding: 4px; }
+    .nav__burger span { display: block; width: 22px; height: 1.5px; background: var(--white); transition: background 0.3s ease; }
+    .mobile-menu { display: flex; }
+    .mobile-menu a { font-family: var(--font-serif); font-size: 28px; color: var(--white); font-weight: 300; }
+    .mobile-menu .nav__book { font-family: var(--font-sans); font-size: 12px; margin-top: 20px; }
+
+    h1 { font-size: 64px; }
+    h2 { font-size: 32px; }
+    .hero { padding: 130px 24px 48px; height: auto; min-height: 0; }
+    .hero__sub { font-size: 20px; }
+    .hero__topo { display: none; }
+
+    .featured__body { padding: 56px 24px; }
+    .featured__title { font-size: 32px; }
+    .featured__excerpt { font-size: 14px; }
+
+    .archive { padding: 80px 24px 100px; }
+    .filter { gap: 8px 0; }
+    .filter__label { width: 100%; margin-bottom: 8px; margin-right: 0; }
+    .grid { grid-template-columns: 1fr; gap: 56px; max-width: 420px; margin: 0 auto; }
+    .archive__more { margin-top: 64px; }
+
+    footer { padding: 60px 24px 32px; }
+    .footer__grid { grid-template-columns: 1fr; gap: 40px; }
+    .footer__bottom { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav on-cream" id="nav">
+  <a href="La Cueva de Miravet.html" class="nav__logo">La Cueva de Miravet</a>
+  <div class="nav__center">
+    <a href="Stay.html" class="nav__link">Stay</a>
+    <a href="Experiences.html" class="nav__link">Experiences</a>
+    <a href="Find Us.html" class="nav__link">Location</a>
+    <a href="Journal.html" class="nav__link active">Journal</a>
+  </div>
+  <div class="nav__right">
+    <a href="Book Now.html" class="nav__book">Book Direct</a>
+    <div class="nav__lang">
+      <button class="active">EN</button><span class="divider">|</span><button>ES</button>
+    </div>
+    <button class="nav__burger" id="burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="Stay.html">Stay</a>
+  <a href="Experiences.html">Experiences</a>
+  <a href="Find Us.html">Location</a>
+  <a href="Journal.html">Journal</a>
+  <a href="Book Now.html" class="nav__book" style="background: var(--terra); padding: 12px 28px;">Book Direct</a>
+</div>
+
+<main>
+
+<!-- ===== Hero ===== -->
+<section class="hero" data-screen-label="01 Hero">
+  <!-- Quiet topo lines on the right -->
+  <div class="hero__topo" aria-hidden="true">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#C4622D" stroke-width="0.8">
+      <path d="M-20 460 Q 200 420 420 450 T 820 430"/>
+      <path d="M-20 420 Q 220 380 440 410 T 820 390"/>
+      <path d="M-20 380 Q 240 340 460 370 T 820 350"/>
+      <path d="M-20 340 Q 260 300 480 330 T 820 310"/>
+      <path d="M-20 300 Q 280 260 500 290 T 820 270"/>
+      <path d="M-20 260 Q 300 220 520 250 T 820 230"/>
+      <path d="M-20 220 Q 320 180 540 210 T 820 190"/>
+    </svg>
+  </div>
+
+  <div class="hero__inner">
+    <div class="hero__crumb" data-animate>
+      <span class="dot"></span>
+      <span>The Journal</span>
+    </div>
+    <h1 data-animate>Journal</h1>
+    <p class="hero__sub" data-animate>Notes from the mountain.</p>
+  </div>
+</section>
+
+<!-- ===== Featured article ===== -->
+<section class="featured" data-screen-label="02 Featured">
+  <div class="featured__inner">
+    <div class="featured__img" role="img" aria-label="The mountain at first light" data-animate></div>
+
+    <div class="featured__body" data-animate>
+      <div class="featured__tag">
+        <span class="rule"></span>
+        <span>Property · Featured</span>
+      </div>
+      <h2 class="featured__title">
+        La Cueva at dawn:
+        <span class="italic">what the mountain looks like before anyone else is awake.</span>
+      </h2>
+      <p class="featured__excerpt">There is a particular hour, twenty minutes before the sun comes over the ridge, when the valley below the masia turns the colour of unbaked bread and the air is so still you can hear the goats two kilometres away.</p>
+      <div class="featured__byline">
+        <span class="avatar" aria-hidden="true"></span>
+        <span class="who">By JP Urrego</span>
+        <span class="sep">·</span>
+        <span class="when">May 2026</span>
+        <span class="sep">·</span>
+        <span class="when">8 min read</span>
+      </div>
+      <a href="#" class="terra-link">Read article</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Archive ===== -->
+<section class="archive">
+
+  <div class="archive__header" data-animate>
+    <p class="archive__title">
+      <span class="roman">From the archive.</span> <span>Stories, seasons, and the things worth writing down.</span>
+    </p>
+    <span class="archive__count"><strong>24</strong> entries · since 2022</span>
+  </div>
+
+  <!-- ===== Category filter ===== -->
+  <nav class="filter" aria-label="Filter by category" data-animate>
+    <span class="filter__label"><span class="rule"></span>Filter</span>
+    <div class="filter__list">
+      <a href="#" class="filter__item active">All</a>
+      <a href="#" class="filter__item">Property</a>
+      <a href="#" class="filter__item">Local Area</a>
+      <a href="#" class="filter__item">Seasonal</a>
+      <a href="#" class="filter__item">Behind the Scenes</a>
+    </div>
+  </nav>
+
+  <div class="grid" data-animate>
+
+    <article class="article">
+      <div class="article__img-wrap">
+        <div class="article__img" style="background-color:#7C5E3F;" role="img" aria-label="The mountain at first light"></div>
+      </div>
+      <div class="article__body">
+        <span class="article__cat">Property</span>
+        <h3 class="article__title">La Cueva at dawn: what the mountain looks like before anyone else is awake</h3>
+        <p class="article__excerpt">The hour before the sun comes over the ridge, when the valley turns the colour of unbaked bread.</p>
+        <div class="article__meta">
+          <span class="date">May 2026</span>
+          <span class="read">8 min read</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__img-wrap">
+        <div class="article__img" style="background-color:#4A5E45;" role="img" aria-label="Solar panels at the masia"></div>
+      </div>
+      <div class="article__body">
+        <span class="article__cat">Behind the Scenes</span>
+        <h3 class="article__title">Why we chose solar: four years of off-grid decisions</h3>
+        <p class="article__excerpt">An honest accounting of what works, what doesn't, and what we'd do differently.</p>
+        <div class="article__meta">
+          <span class="date">April 2026</span>
+          <span class="read">12 min read</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__img-wrap">
+        <div class="article__img" style="background-color:#8B9A7A;" role="img" aria-label="A walking trail in the Desert de les Palmes"></div>
+      </div>
+      <div class="article__body">
+        <span class="article__cat">Local Area</span>
+        <h3 class="article__title">Desert de les Palmes: a walking guide from the property boundary</h3>
+        <p class="article__excerpt">Three routes, all starting from the back gate. Cork oak, monastery ruins, a view at the end.</p>
+        <div class="article__meta">
+          <span class="date">March 2026</span>
+          <span class="read">10 min read</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__img-wrap">
+        <div class="article__img" style="background-color:#A88766;" role="img" aria-label="A long table in the Costa Azahar"></div>
+      </div>
+      <div class="article__body">
+        <span class="article__cat">Local Area</span>
+        <h3 class="article__title">Where to eat well in the Costa Azahar</h3>
+        <p class="article__excerpt">Seven places we send guests, two we don't talk about, and one you should book before you arrive.</p>
+        <div class="article__meta">
+          <span class="date">February 2026</span>
+          <span class="read">9 min read</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__img-wrap">
+        <div class="article__img" style="background-color:#5C4838;" role="img" aria-label="The original beams during restoration"></div>
+      </div>
+      <div class="article__body">
+        <span class="article__cat">Property</span>
+        <h3 class="article__title">The restoration: what we kept, what we rebuilt, and why</h3>
+        <p class="article__excerpt">Two years of slow work, one beam at a time. Notes on what the old house wanted us to do.</p>
+        <div class="article__meta">
+          <span class="date">January 2026</span>
+          <span class="read">15 min read</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="article">
+      <div class="article__img-wrap">
+        <div class="article__img" style="background-color:#B8855B;" role="img" aria-label="Autumn light over the valley"></div>
+      </div>
+      <div class="article__body">
+        <span class="article__cat">Seasonal</span>
+        <h3 class="article__title">Arriving in autumn: the best time most guests overlook</h3>
+        <p class="article__excerpt">The light is longer, the crowds are gone, the kitchen has more to work with. A small case for October.</p>
+        <div class="article__meta">
+          <span class="date">November 2025</span>
+          <span class="read">6 min read</span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="archive__more" data-animate>
+    <a href="#" class="pill-btn">Load older entries</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="footer__grid">
+    <div class="footer__col">
+      <div class="footer__logo">La Cueva de Miravet</div>
+      <div class="footer__tagline">"Where the mountain meets the Mediterranean."</div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Explore</span>
+      <div class="footer__links">
+        <a href="Stay.html">Stay</a>
+        <a href="Experiences.html">Experiences</a>
+        <a href="Find Us.html">Location</a>
+        <a href="Journal.html" class="active">Journal</a>
+        <a href="Book Now.html">Book Now</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Contact</span>
+      <div class="footer__contact">
+        <a href="/cdn-cgi/l/email-protection#a7d5c2d4c2d5d1c6d4e7cbc6c4d2c2d1c6c3c2caced5c6d1c2d389c4c8ca" class="email"><span class="__cf_email__" data-cfemail="a0d2c5d3c5d2d6c1d3e0ccc1c3d5c5d6c1c4c5cdc9d2c1d6c5d48ec3cfcd">[email&#160;protected]</span></a>
+        <div class="addr">Cabanes, Castellón, Spain</div>
+      </div>
+      <div class="footer__sep"></div>
+      <div class="footer__guarantee">Best rate guaranteed — book direct.</div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="left">© 2026 La Cueva de Miravet · Privacy · Terms</div>
+    <div class="right">A Nomada project</div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Nav: cream while at top, forest on scroll
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 80) {
+      nav.classList.add('scrolled');
+      nav.classList.remove('on-cream');
+    } else {
+      nav.classList.remove('scrolled');
+      nav.classList.add('on-cream');
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  }
+
+  // Lang switch
+  document.querySelectorAll('.nav__lang button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav__lang button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Filter active state (static, no real filtering)
+  document.querySelectorAll('.filter__item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.filter__item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Scroll-in
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('[data-animate]').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
