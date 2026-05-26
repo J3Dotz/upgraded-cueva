@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arriving in autumn: the best time most guests overlook · Journal · La Cueva de Miravet</title>
+<meta name="description" content="The light is longer, the crowds are gone, the kitchen has more to work with. A small case for October at La Cueva de Miravet, by Adrian." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:        #FDFCF8;
+    --cream-deep:   #F5F1E8;
+    --stone-dark:   #2C2A24;
+    --stone-mid:    #6B6860;
+    --stone-light:  #E8E5DE;
+    --terra:        #C4622D;
+    --olive:        #4A5E45;
+    --forest:       #2D4A3E;
+    --white:        #FFFFFF;
+
+    --font-serif:   'Cormorant Garamond', Georgia, serif;
+    --font-sans:    'Inter', system-ui, sans-serif;
+
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--stone-dark);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 300; color: var(--stone-dark); }
+  h2 { font-size: 36px; font-weight: 300; letter-spacing: -0.01em; line-height: 1.1; }
+  h3 { font-size: 22px; font-weight: 400; line-height: 1.25; }
+  .italic { font-style: italic; }
+
+  .label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--stone-mid);
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px 40px;
+    background: transparent;
+    transition: background 0.4s ease, padding 0.4s ease;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav.scrolled { background: var(--forest); padding: 16px 40px; }
+  .nav__logo { font-family: var(--font-serif); font-size: 17px; color: var(--white); }
+  .nav__center { display: flex; align-items: center; gap: 36px; }
+  .nav__link {
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.85); transition: color 0.2s ease;
+  }
+  .nav__link:hover { color: var(--white); }
+  .nav__link.active { color: var(--white); position: relative; }
+  .nav__link.active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -6px;
+    height: 1px; background: var(--terra);
+  }
+  .nav__right { display: flex; align-items: center; gap: 20px; }
+  .nav__book {
+    background: var(--terra); color: var(--white);
+    border-radius: 100px; padding: 10px 22px;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .nav__book:hover { background: #b1561f; transform: translateY(-1px); }
+  .nav__lang { font-family: var(--font-sans); font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; }
+  .nav__lang .divider { margin: 0 6px; color: rgba(255,255,255,0.3); }
+  .nav__lang button { color: inherit; font-size: 11px; transition: color 0.2s; }
+  .nav__lang button.active, .nav__lang button:hover { color: var(--white); }
+  .nav__burger { display: none; }
+  .mobile-menu {
+    position: fixed; inset: 0; background: var(--forest);
+    z-index: 99; display: none;
+    flex-direction: column; justify-content: center; align-items: center; gap: 28px;
+    transform: translateX(100%); transition: transform 0.4s ease;
+  }
+  .mobile-menu.open { transform: translateX(0); }
+
+  /* ===== Breadcrumb ===== */
+  .breadcrumb {
+    position: absolute;
+    top: 100px;
+    left: 40px;
+    z-index: 5;
+    display: flex; align-items: center; gap: 12px;
+    color: rgba(255,255,255,0.6);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .breadcrumb a { transition: color 0.2s ease; }
+  .breadcrumb a:hover { color: var(--white); }
+  .breadcrumb .sep { color: rgba(255,255,255,0.3); }
+  .breadcrumb .current { color: var(--white); }
+
+  /* ===== Article hero ===== */
+  .hero {
+    position: relative;
+    height: 55vh;
+    min-height: 540px;
+    background-color: var(--stone-dark);
+    background-image:
+      radial-gradient(ellipse at 70% 40%, rgba(214, 162, 94, 0.45) 0%, transparent 60%),
+      radial-gradient(ellipse at 25% 80%, rgba(64, 38, 22, 0.55) 0%, transparent 65%),
+      linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.75) 100%),
+      var(--grain);
+    background-blend-mode: normal, normal, normal, multiply;
+    background-color: #A06E3E;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    color: var(--white);
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 4px;
+    background: var(--terra);
+    z-index: 4;
+  }
+  .hero__inner {
+    position: absolute;
+    bottom: 64px;
+    left: 0; right: 0;
+    z-index: 3;
+    padding: 0 40px;
+  }
+  .hero__inner-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .hero__cat {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--terra);
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .hero__cat .rule {
+    width: 28px; height: 1px;
+    background: var(--terra);
+    display: inline-block;
+  }
+  .hero__title {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-size: 64px;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--white);
+    max-width: 980px;
+    margin-bottom: 24px;
+    text-wrap: balance;
+  }
+  .hero__title .italic { font-style: italic; color: rgba(255,255,255,0.78); }
+  .hero__byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    color: rgba(255,255,255,0.55);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .hero__byline .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 35%, #a08465 0%, #5a4a3b 80%),
+      var(--grain);
+    background-blend-mode: normal, multiply;
+    border: 1px solid rgba(255,255,255,0.12);
+    flex-shrink: 0;
+  }
+  .hero__byline .who { color: var(--white); font-style: italic; font-family: var(--font-serif); font-size: 16px; }
+  .hero__byline .when { color: rgba(255,255,255,0.55); }
+  .hero__byline .sep { color: rgba(255,255,255,0.22); }
+
+  /* ===== Article body ===== */
+  .article-intro {
+    background: var(--cream);
+    padding: 120px 40px 56px;
+  }
+  .article-intro__inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .article-intro .lede {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 28px;
+    line-height: 1.4;
+    color: var(--stone-dark);
+    margin-bottom: 36px;
+    text-wrap: balance;
+  }
+  .article-intro .first-p {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--stone-dark);
+    text-wrap: pretty;
+  }
+  .article-intro .first-p::first-letter {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 64px;
+    line-height: 0.85;
+    float: left;
+    padding: 6px 14px 0 0;
+    color: var(--terra);
+  }
+
+  .body {
+    background: var(--cream);
+    padding: 0 40px 80px;
+  }
+  .body__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    color: var(--stone-dark);
+  }
+  .body__inner h2 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.2;
+    color: var(--stone-dark);
+    margin-top: 64px;
+    margin-bottom: 28px;
+    text-wrap: balance;
+  }
+  .body__inner h2:first-child { margin-top: 0; }
+  .body__inner p {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--stone-dark);
+    margin-bottom: 22px;
+    text-wrap: pretty;
+  }
+  .body__inner em { font-family: var(--font-serif); font-style: italic; }
+
+  /* Pull quote */
+  .pull-quote {
+    max-width: 720px;
+    margin: 72px auto;
+    padding: 16px 36px;
+    border-left: 3px solid var(--terra);
+  }
+  .pull-quote p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.3;
+    color: var(--forest);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pull-quote cite {
+    display: block;
+    margin-top: 16px;
+    font-family: var(--font-sans);
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--stone-mid);
+  }
+
+  /* Inline figure */
+  .figure {
+    max-width: 860px;
+    margin: 72px auto;
+  }
+  .figure__img {
+    aspect-ratio: 16 / 9;
+    background-color: #B07A3E;
+    background-image:
+      radial-gradient(ellipse at 30% 30%, rgba(220, 168, 96, 0.45) 0%, transparent 65%),
+      radial-gradient(ellipse at 70% 80%, rgba(0,0,0,0.4) 0%, transparent 60%),
+      var(--grain);
+    background-blend-mode: normal, normal, multiply;
+    background-size: cover;
+    background-position: center;
+  }
+  .figure__caption {
+    margin-top: 16px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--stone-mid);
+    line-height: 1.5;
+    max-width: 540px;
+    padding: 0 4px;
+  }
+  .figure__caption .number {
+    font-family: var(--font-sans);
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--terra);
+    margin-right: 12px;
+  }
+
+  /* ===== Article footer (author block + tags) ===== */
+  .article-footer {
+    background: var(--cream);
+    padding: 0 40px 120px;
+  }
+  .article-footer__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    padding-top: 48px;
+    border-top: 1px solid var(--stone-light);
+  }
+  .author-note {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+  .author-note__avatar {
+    width: 80px;
+    height: 100px;
+    border-radius: 60px 60px 0 0;
+    background:
+      radial-gradient(ellipse at 50% 35%, #a08465 0%, #5a4a3b 80%),
+      var(--grain);
+    background-blend-mode: normal, multiply;
+    background-color: #5a4a3b;
+    flex-shrink: 0;
+  }
+  .author-note__body { padding-top: 6px; }
+  .author-note__label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--stone-mid);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .author-note__name {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 24px;
+    color: var(--stone-dark);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  .author-note__name .italic { font-style: italic; color: var(--stone-mid); font-size: 18px; margin-left: 6px; }
+  .author-note__bio {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--stone-mid);
+    max-width: 380px;
+  }
+
+  .tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .tags__label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--stone-mid);
+    margin-right: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tags__label .rule {
+    width: 18px; height: 1px;
+    background: var(--stone-mid);
+    display: inline-block;
+  }
+  .tag {
+    background: var(--stone-light);
+    color: var(--stone-dark);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .tag:hover { background: var(--terra); color: var(--white); }
+
+  /* ===== Related ===== */
+  .related {
+    background: var(--cream);
+    padding: 100px 40px 140px;
+    border-top: 1px solid var(--stone-light);
+  }
+  .related__header {
+    max-width: 1280px;
+    margin: 0 auto 56px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .related__header h2 {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-size: 42px;
+    color: var(--stone-dark);
+    line-height: 1.05;
+  }
+  .related__header h2 .italic { font-style: italic; color: var(--stone-mid); display: block; }
+  .related__header a {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--terra);
+    padding-bottom: 6px;
+  }
+  .related__grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 56px 40px;
+  }
+  .article-card { display: flex; flex-direction: column; cursor: pointer; }
+  .article-card__img-wrap {
+    overflow: hidden;
+    aspect-ratio: 3 / 2;
+    background-color: var(--stone-light);
+    position: relative;
+  }
+  .article-card__img {
+    width: 100%; height: 100%;
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.4s ease;
+    position: relative;
+  }
+  .article-card:hover .article-card__img { opacity: 0.92; }
+  .article-card__body { padding: 22px 0 0; display: flex; flex-direction: column; }
+  .article-card__cat {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--terra);
+    margin-bottom: 12px;
+  }
+  .article-card__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.22;
+    color: var(--stone-dark);
+    margin-bottom: 10px;
+    text-wrap: pretty;
+    transition: color 0.2s ease;
+  }
+  .article-card:hover .article-card__title { color: var(--terra); }
+  .article-card__excerpt {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--stone-mid);
+    margin-bottom: 18px;
+    text-wrap: pretty;
+  }
+  .article-card__meta {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--stone-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--stone-mid);
+  }
+  .article-card__meta .date { font-style: italic; font-family: var(--font-serif); font-size: 14px; color: var(--stone-dark); }
+  .article-card__meta .read { text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; }
+
+  /* ===== Booking prompt ===== */
+  .prompt {
+    background: var(--forest);
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    color: var(--white);
+    padding: 96px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .prompt::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(196,98,45,0.1) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 15% 90%, rgba(36,58,48,0.5) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .prompt__inner {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .prompt__label {
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .prompt__label .rule {
+    width: 22px; height: 1px;
+    background: var(--terra);
+    display: inline-block;
+  }
+  .prompt__title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 52px;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+  .prompt__sub {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 36px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+  .btn-terra {
+    background: var(--terra);
+    color: var(--white);
+    border-radius: 100px;
+    padding: 16px 36px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transition: background 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+  .btn-terra:hover { background: #b1561f; transform: translateY(-1px); }
+
+  /* ===== Footer ===== */
+  footer {
+    background: var(--stone-dark);
+    color: rgba(255,255,255,0.65);
+    padding: 80px 40px 40px;
+  }
+  .footer__grid {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px;
+  }
+  .footer__logo {
+    font-family: var(--font-serif); font-size: 20px;
+    color: var(--white); margin-bottom: 12px;
+  }
+  .footer__tagline {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 14px; color: rgba(255,255,255,0.5); max-width: 320px;
+  }
+  .footer__col .label { color: rgba(255,255,255,0.35); margin-bottom: 20px; display: block; }
+  .footer__links { display: flex; flex-direction: column; gap: 10px; }
+  .footer__links a { font-size: 14px; color: rgba(255,255,255,0.65); transition: color 0.2s ease; }
+  .footer__links a.active { color: var(--white); }
+  .footer__links a:hover { color: var(--white); }
+  .footer__contact { display: flex; flex-direction: column; gap: 8px; }
+  .footer__contact .email { font-size: 13px; color: rgba(255,255,255,0.65); }
+  .footer__contact .addr { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer__sep { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+  .footer__guarantee { font-size: 12px; color: rgba(255,255,255,0.4); font-style: italic; }
+  .footer__bottom {
+    max-width: 1280px; margin: 60px auto 0;
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; font-size: 11px;
+  }
+  .footer__bottom .left { color: rgba(255,255,255,0.3); }
+  .footer__bottom .right { color: rgba(255,255,255,0.25); }
+
+  [data-animate] {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  [data-animate].visible { opacity: 1; transform: none; }
+
+  /* Reading progress */
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0%;
+    background: var(--terra);
+    z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1024px) {
+    .hero__title { font-size: 44px; }
+    .article-intro .lede { font-size: 24px; }
+    .body__inner h2 { font-size: 28px; }
+    .pull-quote p { font-size: 26px; }
+    .related__grid { grid-template-columns: 1fr 1fr; }
+    .related__grid .article-card:last-child { display: none; }
+    .prompt__title { font-size: 40px; }
+    .footer__grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+  @media (max-width: 640px) {
+    .nav { padding: 18px 24px; }
+    .nav.scrolled { padding: 14px 24px; }
+    .nav__center, .nav__right .nav__lang, .nav__right .nav__book { display: none; }
+    .nav__burger { display: inline-flex; flex-direction: column; gap: 5px; padding: 4px; }
+    .nav__burger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
+    .mobile-menu { display: flex; }
+    .mobile-menu a { font-family: var(--font-serif); font-size: 28px; color: var(--white); font-weight: 300; }
+    .mobile-menu .nav__book { font-family: var(--font-sans); font-size: 12px; margin-top: 20px; }
+
+    .hero { min-height: 480px; }
+    .hero__inner { padding: 0 24px; bottom: 48px; }
+    .hero__title { font-size: 32px; }
+    .breadcrumb { left: 24px; top: 88px; }
+
+    .article-intro { padding: 80px 24px 40px; }
+    .article-intro .lede { font-size: 21px; }
+    .article-intro .first-p::first-letter { font-size: 52px; }
+    .body { padding: 0 24px 60px; }
+    .body__inner h2 { font-size: 26px; margin-top: 48px; }
+    .pull-quote { margin: 56px auto; padding: 12px 24px; }
+    .pull-quote p { font-size: 22px; }
+    .figure { margin: 56px auto; }
+    .article-footer { padding: 0 24px 80px; }
+    .author-note { flex-direction: column; gap: 16px; }
+    .author-note__avatar { width: 72px; height: 88px; }
+    .related { padding: 80px 24px 100px; }
+    .related__header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .related__grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; gap: 56px; }
+    .related__grid .article-card:nth-child(n+3) { display: none; }
+    .prompt { padding: 72px 24px; }
+    .prompt__title { font-size: 32px; }
+
+    footer { padding: 60px 24px 32px; }
+    .footer__grid { grid-template-columns: 1fr; gap: 40px; }
+    .footer__bottom { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav__logo">La Cueva de Miravet</a>
+  <div class="nav__center">
+    <a href="Stay.html" class="nav__link">Stay</a>
+    <a href="Experiences.html" class="nav__link">Experiences</a>
+    <a href="Location.html" class="nav__link">Location</a>
+    <a href="Journal.html" class="nav__link active">Journal</a>
+  </div>
+  <div class="nav__right">
+    <a href="Book Now.html" class="nav__book">Book Direct</a>
+    <div class="nav__lang">
+      <button class="active">EN</button><span class="divider">|</span><button>ES</button>
+    </div>
+    <button class="nav__burger" id="burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="Stay.html">Stay</a>
+  <a href="Experiences.html">Experiences</a>
+  <a href="Location.html">Location</a>
+  <a href="Journal.html">Journal</a>
+  <a href="Book Now.html" class="nav__book" style="background: var(--terra); padding: 12px 28px;">Book Direct</a>
+</div>
+
+<main>
+
+<!-- ===== Article hero ===== -->
+<article>
+
+<header class="hero">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span class="sep">/</span>
+    <a href="Journal.html">Journal</a>
+    <span class="sep">/</span>
+    <span class="current">Arriving in autumn</span>
+  </nav>
+
+  <div class="hero__inner">
+    <div class="hero__inner-wrap">
+      <div class="hero__cat">
+        <span class="rule"></span>
+        <span>Seasonal</span>
+      </div>
+      <h1 class="hero__title">
+        Arriving in autumn:
+        <span class="italic">the best time most guests overlook.</span>
+      </h1>
+      <div class="hero__byline">
+        <span class="avatar" aria-hidden="true"></span>
+        <span class="who">By Adrian</span>
+        <span class="sep">·</span>
+        <span class="when">November 2025</span>
+        <span class="sep">·</span>
+        <span class="when">6 min read</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Intro ===== -->
+<section class="article-intro">
+  <div class="article-intro__inner">
+    <p class="lede">Most of our guests arrive in July and August, and most of them, by the end of their stay, ask the same question: <em>when should we come back?</em> The honest answer is: not in summer.</p>
+    <p class="first-p">October is when the property settles into its best self. The light gets longer in the afternoon and stays low for hours instead of minutes. The valley empties out. The kitchen, which spends July chasing tomatoes and basil, finally has time to slow down and cook the things we actually want to feed people. None of this is a secret. It is just that most guests stop looking past the calendar of school holidays, and so they miss it.</p>
+  </div>
+</section>
+
+<!-- ===== Body ===== -->
+<section class="body">
+  <div class="body__inner">
+
+    <h2>The light, and what it does to the day.</h2>
+    <p>By the second week of October the sun no longer sits directly above the masia at lunchtime. It comes in at an angle, low across the valley, and the cream walls of the south terrace turn a soft amber for the last two hours of the afternoon. We do most of our long lunches outside in October, often into early November. The air is warm, the light is on your side, and it is the kind of weather that makes guests cancel whatever they had planned for the rest of the day.</p>
+    <p>The walking is also better. Desert de les Palmes, fifteen minutes from the property, becomes properly usable again — in July the cork oaks are baking and the routes are too exposed for most people. In October you can leave after breakfast and be back for a swim by lunch.</p>
+
+    <!-- Pull quote -->
+    <blockquote class="pull-quote">
+      <p>"July is when the coast is loud. October is when the inland actually lets you in."</p>
+      <cite>— something we tell guests, often</cite>
+    </blockquote>
+
+    <h2>What the kitchen does once it stops sweating.</h2>
+    <p>Summer at the lodge is, frankly, a kitchen full of tomatoes. We are not complaining. But by mid-September the produce list at the market in Cabanes changes character: pumpkin, the first wild mushrooms from the Sierra, late figs, fresh almonds, and — by the end of October — the first oranges from the valley behind us. Our cook stops cooking <em>quick</em> and starts cooking <em>long</em>: slow lamb, rice with bone broth, escalivada that has actually been allowed to rest.</p>
+    <p>It is also when we run our wine and olive tastings most often. The local producers are pressing in October and November and they tend to be in a generous mood. If you have ever wanted to taste an oil within a fortnight of the olives leaving the tree, this is the only month of the year you can do it without booking a flight a year in advance.</p>
+
+    <!-- Inline figure -->
+    <figure class="figure">
+      <div class="figure__img" role="img" aria-label="Late afternoon light across the valley in October"></div>
+      <figcaption class="figure__caption">
+        <span class="number">Fig. 01</span>
+        The lower terrace at half past four in late October. The light is doing most of the work here — we just put a table in the right place and stayed out of its way.
+      </figcaption>
+    </figure>
+
+    <h2>Where the coast goes when the crowds leave.</h2>
+    <p>The Costa Azahar in August is a wonderful, busy, slightly exhausting strip of coastline. In October it becomes one of the quietest beach drives in Spain. The water is still warm enough to swim into the first week of November in a good year. Peñíscola, forty-five minutes north of us, is genuinely walkable again. Benicàssim has its beach to itself by 4pm. We send guests down for an afternoon and they come back wondering where the rest of the country went.</p>
+    <p>If you are thinking about it: aim for the second half of October, give yourself four nights rather than two, and let us know if you want the kitchen to lean into something specific — a mushroom dinner, a pressing visit, a long table on the lower terrace. We will arrange it. October is the month for the small extra things.</p>
+    <p>The summer guests have a wonderful time. The October guests have a slightly different one. We have a soft preference, which we are not really supposed to admit.</p>
+  </div>
+</section>
+
+<!-- ===== Article footer ===== -->
+<footer class="article-footer">
+  <div class="article-footer__inner">
+    <div class="author-note">
+      <div class="author-note__avatar" aria-hidden="true"></div>
+      <div class="author-note__body">
+        <span class="author-note__label">Written by</span>
+        <h3 class="author-note__name">Javier / Owner</h3>
+        <p class="author-note__bio">Javier writes here about the surrounding area, local experiences and all the decisions that make the property a paradise in the less explored Coastal Spain.</p>
+      </div>
+    </div>
+
+    <div class="tags">
+      <span class="tags__label"><span class="rule"></span>Tagged</span>
+      <a href="#" class="tag">Seasonal</a>
+      <a href="#" class="tag">Autumn</a>
+      <a href="#" class="tag">Local Area</a>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+<!-- ===== Related articles ===== -->
+<section class="related">
+  <div class="related__header">
+    <h2>More from the journal.<span class="italic">Stories we've been meaning to write down.</span></h2>
+    <a href="Journal.html">View all entries →</a>
+  </div>
+  <div class="related__grid">
+
+    <a href="Journal Article.html" class="article-card">
+      <div class="article-card__img-wrap">
+        <div class="article-card__img" style="background-color:#A88766;" role="img" aria-label="A long table on the Costa Azahar"></div>
+      </div>
+      <div class="article-card__body">
+        <span class="article-card__cat">Local Area</span>
+        <h3 class="article-card__title">Where to eat well in the Costa Azahar</h3>
+        <p class="article-card__excerpt">Seven places we send guests, two we don't talk about, and one you should book before you arrive.</p>
+        <div class="article-card__meta">
+          <span class="date">February 2026</span>
+          <span class="read">9 min read</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="Journal Article.html" class="article-card">
+      <div class="article-card__img-wrap">
+        <div class="article-card__img" style="background-color:#8B9A7A;" role="img" aria-label="A walking trail in the Desert de les Palmes"></div>
+      </div>
+      <div class="article-card__body">
+        <span class="article-card__cat">Local Area</span>
+        <h3 class="article-card__title">Desert de les Palmes: a walking guide from the property boundary</h3>
+        <p class="article-card__excerpt">Three routes, all starting from the back gate. Cork oak, monastery ruins, a view at the end.</p>
+        <div class="article-card__meta">
+          <span class="date">March 2026</span>
+          <span class="read">10 min read</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="Journal Article.html" class="article-card">
+      <div class="article-card__img-wrap">
+        <div class="article-card__img" style="background-color:#7C5E3F;" role="img" aria-label="The mountain at first light"></div>
+      </div>
+      <div class="article-card__body">
+        <span class="article-card__cat">Property</span>
+        <h3 class="article-card__title">La Cueva at dawn: what the mountain looks like before anyone else is awake</h3>
+        <p class="article-card__excerpt">The hour before the sun comes over the ridge, when the valley turns the colour of unbaked bread.</p>
+        <div class="article-card__meta">
+          <span class="date">May 2026</span>
+          <span class="read">8 min read</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ===== Booking prompt ===== -->
+<section class="prompt">
+  <div class="prompt__inner">
+    <div class="prompt__label">
+      <span class="rule"></span>
+      <span>The Masia</span>
+      <span class="rule"></span>
+    </div>
+    <h2 class="prompt__title">Come and see it for yourself.</h2>
+    <p class="prompt__sub">October is open. The kitchen is in a good mood. The light is doing the rest.</p>
+    <a href="Book Now.html" class="btn-terra">Request to Book</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="footer__grid">
+    <div class="footer__col">
+      <div class="footer__logo">La Cueva de Miravet</div>
+      <div class="footer__tagline">"Where the mountain meets the Mediterranean."</div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Explore</span>
+      <div class="footer__links">
+        <a href="Stay.html">Stay</a>
+        <a href="Experiences.html">Experiences</a>
+        <a href="Location.html">Location</a>
+        <a href="Journal.html" class="active">Journal</a>
+        <a href="Book Now.html">Book Now</a>
+        <a href="Contact.html">Contact</a>
+      </div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Contact</span>
+      <div class="footer__contact">
+        <a href="mailto:hola@lacuevademiravet.com" class="email">hola@lacuevademiravet.com</a>
+        <div class="addr">Cabanes, Castellón, Spain</div>
+      </div>
+      <div class="footer__sep"></div>
+      <div class="footer__guarantee">Best rate guaranteed — book direct.</div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="left">© 2026 La Cueva de Miravet · Privacy · Terms</div>
+    <div class="right">A Nomada project</div>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  const progress = document.getElementById('progress');
+  const onScroll = () => {
+    if (window.scrollY > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+
+    // Reading progress
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - window.innerHeight;
+    const pct = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
+    progress.style.width = pct + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  }
+
+  // Lang switch
+  document.querySelectorAll('.nav__lang button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav__lang button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Scroll-in
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('[data-animate]').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
