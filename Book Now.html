@@ -137,38 +137,39 @@ h3 { font-size: 22px; font-weight: 400; line-height: 1.25; }
 }
 .mobile-menu.open { transform: translateX(0); }
 
-/* ===== Page hero ===== */
-.page-hero {
+/* ===== Form section (hero merged into left column) ===== */
+.form-section {
   position: relative;
   background: var(--cream);
-  padding: 200px 40px 120px;
-  text-align: center;
+  padding: 128px 40px 120px;
   overflow: hidden;
 }
-.page-hero__inner {
+.form-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(360px, 420px) 1fr;
+  gap: 88px;
+  align-items: start;
   position: relative;
   z-index: 2;
-  max-width: 760px;
-  margin: 0 auto;
 }
-.page-hero__label { margin-bottom: 32px; }
-.page-hero h1 { margin-bottom: 28px; }
-.page-hero__sub {
+.form-aside { position: sticky; top: 110px; }
+.form-aside .label { margin-bottom: 20px; display: block; }
+.form-aside h1 {
+  font-size: 76px;
+  line-height: 0.98;
+  margin-bottom: 20px;
+}
+.form-aside__sub {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 300;
-  font-size: 22px;
+  font-size: 21px;
   color: var(--stone-mid);
-  max-width: 520px;
-  margin: 0 auto;
-  line-height: 1.5;
-}
-
-/* Page hero arches: decorative side images */
-.page-hero__arches {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+  line-height: 1.45;
+  margin-bottom: 36px;
+  max-width: 360px;
 }
 .arch-img {
   background-image: var(--grain);
@@ -184,33 +185,18 @@ h3 { font-size: 22px; font-weight: 400; line-height: 1.25; }
   border-radius: inherit;
   background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.18) 100%);
 }
-.page-hero__arch {
+.form-section__arch {
   position: absolute;
   bottom: 0;
-  width: 180px;
-  height: 240px;
+  left: -60px;
+  width: 140px;
+  height: 180px;
   border-radius: 200px 200px 0 0;
-  opacity: 0.85;
+  background-color: #B8A89A;
+  opacity: 0.5;
+  z-index: 1;
+  pointer-events: none;
 }
-.page-hero__arch--left { left: 6%; transform: translateY(40px); }
-.page-hero__arch--right { right: 6%; height: 200px; transform: translateY(60px); }
-
-/* ===== Form section ===== */
-.form-section {
-  background: var(--cream);
-  padding: 80px 40px 140px;
-}
-.form-wrap {
-  max-width: 1080px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 96px;
-  align-items: start;
-}
-.form-aside { position: sticky; top: 120px; }
-.form-aside .label { margin-bottom: 18px; display: block; }
-.form-aside h2 { margin-bottom: 24px; }
 .form-aside__note {
   color: var(--stone-mid);
   font-size: 15px;
@@ -585,12 +571,13 @@ footer {
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
-  h1 { font-size: 68px; }
+  h1 { font-size: 64px; }
   h2 { font-size: 36px; }
-  .form-wrap { grid-template-columns: 1fr; gap: 56px; }
+  .form-aside h1 { font-size: 60px; }
+  .form-wrap { grid-template-columns: 1fr; gap: 48px; }
   .form-aside { position: static; }
-  .page-hero__arch { width: 120px; height: 160px; opacity: 0.6; }
-  .page-hero__arch--right { height: 140px; }
+  .form-section { padding-top: 108px; }
+  .form-section__arch { display: none; }
   .next__steps { grid-template-columns: 1fr; gap: 40px; }
   .next__sep { display: none; }
   .guarantee__inner { grid-template-columns: 1fr; gap: 40px; }
@@ -622,11 +609,11 @@ footer {
   }
   .mobile-menu .nav__book { font-family: var(--font-sans); font-size: 12px; margin-top: 20px; }
 
-  h1 { font-size: 52px; }
+  h1 { font-size: 48px; }
   h2 { font-size: 30px; }
-  .page-hero { padding: 140px 24px 80px; }
-  .page-hero__arches { display: none; }
-  .form-section { padding: 60px 24px 100px; }
+  .form-aside h1 { font-size: 48px; }
+  .form-aside__sub { font-size: 18px; margin-bottom: 28px; }
+  .form-section { padding: 96px 24px 80px; }
   .form-grid { grid-template-columns: 1fr; gap: 28px; }
   .form-success { padding: 60px 28px 40px; border-radius: 120px 120px 8px 8px; }
   .next { padding: 80px 24px; }
@@ -671,34 +658,23 @@ footer {
 
 <main>
 
-<!-- ===== Hero ===== -->
-<section class="page-hero" data-screen-label="01 Page Hero">
-  <div class="page-hero__inner" data-animate>
-    <div class="label page-hero__label">Direct booking · No third parties</div>
-    <h1>
-      Request
-      <span class="italic">to book.</span>
-    </h1>
-    <p class="page-hero__sub">We'll confirm availability within a few hours.</p>
-  </div>
-  <div class="page-hero__arches" aria-hidden="true">
-    <div class="arch-img page-hero__arch page-hero__arch--left" style="background-color:#B8A89A;"></div>
-    <div class="arch-img page-hero__arch page-hero__arch--right" style="background-color:#9BAA8D;"></div>
-  </div>
-</section>
-
-<!-- ===== Form ===== -->
-<section class="form-section" id="form">
+<!-- ===== Form (hero merged into left column) ===== -->
+<section class="form-section" id="form" data-screen-label="01 Request to Book">
+  <div class="arch-img form-section__arch" aria-hidden="true"></div>
   <div class="form-wrap" data-animate>
     <div class="form-aside">
-      <div class="label">Step one of two</div>
-      <h2>Tell us<br/>about your stay.</h2>
-      <p class="form-aside__note">Each request is read by a person — usually Marta or Pau — and answered the same day. Nothing is charged until we confirm.</p>
+      <div class="label">Direct booking · No third parties</div>
+      <h1>
+        Request
+        <span class="italic">to book.</span>
+      </h1>
+      <p class="form-aside__sub">We'll confirm availability within a few hours.</p>
+      <p class="form-aside__note">Each request is handled personally by our Manager Javier, and answered the same day. Nothing is charged until we confirm.</p>
       <div class="form-aside__rule"></div>
       <div class="form-aside__contact">
         <div class="label">Or write to us</div>
-        <a href="/cdn-cgi/l/email-protection#a6d4c3d5c3d4d0c7d5e6cac7c5d3c3d0c7c2c3cbcfd4c7d0c3d288c5c9cb" class="form-aside__email"><span class="__cf_email__" data-cfemail="3f4d5a4c5a4d495e4c7f535e5c4a5a495e5b5a52564d5e495a4b115c5052">[email&#160;protected]</span></a>
-        <div class="form-aside__phone">+34 964 00 00 00</div>
+        <a href="/cdn-cgi/l/email-protection#d9abbcaabcabafb8aa99b5b8baacbcafb8bdbcb4b0abb8afbcadf7bab6b4" class="form-aside__email"><span class="__cf_email__" data-cfemail="43202c2d37222037032f22203626352227262e2a31223526376d202c2e">[email&#160;protected]</span></a>
+        <div class="form-aside__phone">+34 641 33 09 42</div>
       </div>
     </div>
 
@@ -778,7 +754,7 @@ footer {
     <div class="form-success__inner">
       <div class="label">Received</div>
       <h3>Thank you. We'll be in touch within a few hours.</h3>
-      <p>A confirmation has been sent to your email. Look out for a reply from <em><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a687f697f686c7b695a767b796f7f6c7b7e7f7773687b6c7f6e34797577">[email&#160;protected]</a></em>.</p>
+      <p>A confirmation has been sent to your email. Look out for a reply from <em><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f08295839582869183b09c91938595869194959d998291869584de939f9d">[email&#160;protected]</a></em>.</p>
     </div>
   </div>
 </section>
@@ -851,7 +827,7 @@ footer {
     <div class="footer__col">
       <span class="label">Contact</span>
       <div class="footer__contact">
-        <a href="/cdn-cgi/l/email-protection#c6b4a3b5a3b4b0a7b586aaa7a5b3a3b0a7a2a3abafb4a7b0a3b2e8a5a9ab" class="email"><span class="__cf_email__" data-cfemail="2d5f485e485f5b4c5e6d414c4e58485b4c494840445f4c5b4859034e4240">[email&#160;protected]</span></a>
+        <a href="/cdn-cgi/l/email-protection#512334223423273022113d30322434273035343c3823302734257f323e3c" class="email"><span class="__cf_email__" data-cfemail="067463756374706775466a67657363706762636b6f74677063722865696b">[email&#160;protected]</span></a>
         <div class="addr">Cabanes, Castellón, Spain</div>
       </div>
       <div class="footer__sep"></div>

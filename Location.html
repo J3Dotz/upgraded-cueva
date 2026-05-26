@@ -926,12 +926,12 @@
 
 <!-- ===== Navigation ===== -->
 <nav class="nav" id="nav">
-  <a href="La Cueva de Miravet.html" class="nav__logo">La Cueva de Miravet</a>
+  <a href="index.html" class="nav__logo">La Cueva de Miravet</a>
   <div class="nav__center">
     <a href="Stay.html" class="nav__link">Stay</a>
-    <a href="La Cueva de Miravet.html#activities" class="nav__link">Experiences</a>
-    <a href="Find Us.html" class="nav__link active">Location</a>
-    <a href="#" class="nav__link">Journal</a>
+    <a href="Experiences.html" class="nav__link">Experiences</a>
+    <a href="Location.html" class="nav__link active">Location</a>
+    <a href="Journal.html" class="nav__link">Journal</a>
   </div>
   <div class="nav__right">
     <a href="Book Now.html" class="nav__book">Book Direct</a>
@@ -944,10 +944,18 @@
   </div>
 </nav>
 
+<div class="mobile-menu" id="mobileMenu">
+  <a href="Stay.html">Stay</a>
+  <a href="Experiences.html">Experiences</a>
+  <a href="Location.html">Location</a>
+  <a href="Journal.html">Journal</a>
+  <a href="Book Now.html" class="nav__book" style="background: var(--terra); padding: 12px 28px;">Book Direct</a>
+</div>
+
 <main>
 
 <!-- ===== Hero ===== -->
-<section class="hero" data-screen-label="01 Hero">
+<section class="hero">
   <!-- topographic background lines -->
   <div class="hero__topo" aria-hidden="true">
     <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" fill="none" stroke="rgba(196,98,45,0.18)" stroke-width="1">
@@ -1183,7 +1191,7 @@
 </section>
 
 <!-- ===== How to arrive ===== -->
-<section class="arrive" data-screen-label="03 Arrive">
+<section class="arrive">
   <div class="arrive__header" data-animate>
     <div>
       <span class="label">How to arrive</span>
@@ -1363,17 +1371,17 @@
       <span class="label">Explore</span>
       <div class="footer__links">
         <a href="Stay.html">Stay</a>
-        <a href="La Cueva de Miravet.html#activities">Experiences</a>
-        <a href="Find Us.html" class="active">Location</a>
-        <a href="#">Journal</a>
+        <a href="Experiences.html">Experiences</a>
+        <a href="Location.html" class="active">Location</a>
+        <a href="Journal.html">Journal</a>
         <a href="Book Now.html">Book Now</a>
-        <a href="#">Contact</a>
+        <a href="Contact.html">Contact</a>
       </div>
     </div>
     <div class="footer__col">
       <span class="label">Contact</span>
       <div class="footer__contact">
-        <a href="/cdn-cgi/l/email-protection#fe8c9b8d9b8c889f8dbe929f9d8b9b889f9a9b93978c9f889b8ad09d9193" class="email"><span class="__cf_email__" data-cfemail="deacbbadbbaca8bfad9eb2bfbdabbba8bfbabbb3b7acbfa8bbaaf0bdb1b3">[email&#160;protected]</span></a>
+        <a href="mailto:hola@lacuevademiravet.com" class="email">hola@lacuevademiravet.com</a>
         <div class="addr">La Ferradura, Cabanes, Castellón 12595</div>
       </div>
       <div class="footer__sep"></div>
@@ -1386,7 +1394,7 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   // Nav scroll
   const nav = document.getElementById('nav');
   const onScroll = () => {
