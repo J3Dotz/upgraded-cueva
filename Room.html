@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Almendro · La Cueva de Miravet</title>
+<meta name="description" content="Almendro — a king bed under original beams, a private balcony, and southern light. One of seven rooms at La Cueva de Miravet." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:        #FDFCF8;
+    --cream-deep:   #F5F1E8;
+    --stone-dark:   #2C2A24;
+    --stone-mid:    #6B6860;
+    --stone-light:  #E8E5DE;
+    --terra:        #C4622D;
+    --olive:        #4A5E45;
+    --forest:       #2D4A3E;
+    --white:        #FFFFFF;
+
+    --font-serif:   'Cormorant Garamond', Georgia, serif;
+    --font-sans:    'Inter', system-ui, sans-serif;
+
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--stone-dark);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 300; color: var(--stone-dark); }
+  h1 { font-size: 96px; font-weight: 300; letter-spacing: -0.02em; line-height: 0.98; }
+  h2 { font-size: 44px; font-weight: 300; letter-spacing: -0.01em; line-height: 1.1; }
+  h3 { font-size: 24px; font-weight: 400; line-height: 1.25; }
+
+  .italic { font-style: italic; }
+  .label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--stone-mid);
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px 40px;
+    background: transparent;
+    transition: background 0.4s ease, padding 0.4s ease;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav.scrolled { background: var(--forest); padding: 16px 40px; }
+  .nav__logo { font-family: var(--font-serif); font-size: 17px; color: var(--white); }
+  .nav__center { display: flex; align-items: center; gap: 36px; }
+  .nav__link {
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.85); transition: color 0.2s ease;
+  }
+  .nav__link:hover { color: var(--white); }
+  .nav__link.active { color: var(--white); position: relative; }
+  .nav__link.active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -6px;
+    height: 1px; background: var(--terra);
+  }
+  .nav__right { display: flex; align-items: center; gap: 20px; }
+  .nav__book {
+    background: var(--terra); color: var(--white);
+    border-radius: 100px; padding: 10px 22px;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .nav__book:hover { background: #b1561f; transform: translateY(-1px); }
+  .nav__lang { font-family: var(--font-sans); font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; }
+  .nav__lang .divider { margin: 0 6px; color: rgba(255,255,255,0.3); }
+  .nav__lang button { color: inherit; font-size: 11px; transition: color 0.2s; }
+  .nav__lang button.active, .nav__lang button:hover { color: var(--white); }
+  .nav__burger { display: none; }
+  .mobile-menu {
+    position: fixed; inset: 0; background: var(--forest);
+    z-index: 99; display: none;
+    flex-direction: column; justify-content: center; align-items: center; gap: 28px;
+    transform: translateX(100%); transition: transform 0.4s ease;
+  }
+  .mobile-menu.open { transform: translateX(0); }
+
+  /* ===== Breadcrumb ===== */
+  .breadcrumb {
+    position: absolute;
+    top: 100px;
+    left: 40px;
+    z-index: 5;
+    display: flex; align-items: center; gap: 12px;
+    color: rgba(255,255,255,0.7);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .breadcrumb a { transition: color 0.2s ease; }
+  .breadcrumb a:hover { color: var(--white); }
+  .breadcrumb .sep { color: rgba(255,255,255,0.35); }
+  .breadcrumb .current { color: var(--white); }
+
+  /* ===== Image Hero ===== */
+  .img-hero {
+    position: relative;
+    height: 70vh;
+    min-height: 600px;
+    /* Soft blush-amber stand-in for the almond grove at first light */
+    background-color: #8E7860;
+    background-image:
+      radial-gradient(ellipse at 70% 30%, rgba(232, 206, 178, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 30% 80%, rgba(74, 94, 69, 0.2) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 35%, rgba(0,0,0,0.65) 100%),
+      var(--grain);
+    background-blend-mode: normal, normal, normal, multiply;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+  }
+  .img-hero::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 6px;
+    background: var(--terra);
+    z-index: 4;
+  }
+  .img-hero__inner {
+    position: absolute;
+    bottom: 56px;
+    left: 40px;
+    right: 40px;
+    color: var(--white);
+    z-index: 3;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .img-hero__title-block { max-width: 760px; }
+  .img-hero__label {
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 18px;
+    display: block;
+  }
+  .img-hero h1 {
+    color: var(--white);
+    margin-bottom: 14px;
+  }
+  .img-hero h1 .italic-tag {
+    font-style: italic;
+    font-size: 36px;
+    color: rgba(255,255,255,0.7);
+    margin-left: 18px;
+    vertical-align: 18px;
+    font-weight: 300;
+  }
+  .img-hero__sub {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.88);
+    max-width: 540px;
+    line-height: 1.4;
+  }
+  .img-hero__meta {
+    display: flex;
+    gap: 36px;
+    align-items: flex-end;
+    flex-shrink: 0;
+    padding-bottom: 6px;
+  }
+  .img-hero__meta-item { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .img-hero__meta-label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.55);
+  }
+  .img-hero__meta-value {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--white);
+    font-weight: 300;
+  }
+
+  /* ===== Intro (two-column) ===== */
+  .intro {
+    background: var(--cream);
+    padding: 120px 40px;
+  }
+  .intro__grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 120px;
+    align-items: start;
+  }
+  .intro__left h2 {
+    margin-bottom: 36px;
+    max-width: 520px;
+  }
+  .intro__left h2 .italic { display: block; color: var(--stone-mid); }
+  .intro__body {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--stone-dark);
+    max-width: 520px;
+    text-wrap: pretty;
+  }
+  .intro__body p + p { margin-top: 18px; }
+  .intro__body .dropcap::first-letter {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 72px;
+    line-height: 0.85;
+    float: left;
+    padding: 6px 14px 0 0;
+    color: var(--terra);
+  }
+
+  .features {
+    margin-top: 56px;
+    border-top: 1px solid var(--stone-light);
+    padding-top: 32px;
+  }
+  .features__label { display: block; margin-bottom: 24px; }
+  .features__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 40px;
+  }
+  .features__list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--stone-light);
+    gap: 16px;
+  }
+  .features__list .key {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--stone-mid);
+    flex-shrink: 0;
+  }
+  .features__list .val {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--stone-dark);
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  /* Booking card */
+  .booking-card {
+    position: sticky;
+    top: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .booking-card__img-wrap {
+    overflow: hidden;
+    border-radius: 200px 200px 0 0;
+    aspect-ratio: 3 / 4;
+    background-color: #B89F84;
+  }
+  .booking-card__img {
+    width: 100%; height: 100%;
+    background-image:
+      radial-gradient(ellipse at 50% 30%, rgba(244, 226, 208, 0.55) 0%, transparent 55%),
+      radial-gradient(ellipse at 60% 80%, rgba(74, 94, 69, 0.25) 0%, transparent 65%),
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.28) 100%),
+      var(--grain);
+    background-blend-mode: normal, normal, normal, multiply;
+    background-color: #B89F84;
+    background-size: cover;
+  }
+  .booking-card__body {
+    padding: 32px 4px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .booking-card__price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--stone-light);
+  }
+  .booking-card__price-from {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--stone-mid);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .booking-card__price {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 300;
+    color: var(--stone-dark);
+    line-height: 1;
+  }
+  .booking-card__price .per {
+    font-size: 14px;
+    color: var(--stone-mid);
+    font-style: italic;
+    margin-left: 4px;
+    font-family: var(--font-serif);
+  }
+  .booking-card__nights {
+    font-size: 12px;
+    color: var(--stone-mid);
+    line-height: 1.5;
+    text-align: right;
+    max-width: 140px;
+  }
+  .booking-card__bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 4px 0 8px;
+  }
+  .booking-card__bullets li {
+    position: relative;
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--stone-dark);
+    line-height: 1.5;
+  }
+  .booking-card__bullets li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 9px;
+    width: 10px; height: 1px;
+    background: var(--terra);
+  }
+  .btn-terra {
+    background: var(--terra);
+    color: var(--white);
+    border-radius: 100px;
+    padding: 16px 32px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-align: center;
+    transition: background 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+    margin-top: 8px;
+  }
+  .btn-terra:hover { background: #b1561f; transform: translateY(-1px); }
+  .booking-card__note {
+    font-size: 12px;
+    color: var(--stone-mid);
+    text-align: center;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .booking-card__note em { font-style: italic; color: var(--stone-dark); }
+
+  /* ===== Gallery row ===== */
+  .gallery { background: var(--cream); padding: 0; }
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+  .gallery__img {
+    aspect-ratio: 4 / 3;
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    cursor: zoom-in;
+    transition: filter 0.4s ease;
+  }
+  .gallery__img:hover { filter: brightness(0.92); }
+  .gallery__img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 70%, rgba(0,0,0,0.2) 100%);
+  }
+  .gallery__caption {
+    position: absolute;
+    bottom: 18px;
+    left: 22px;
+    color: var(--white);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 16px;
+    z-index: 2;
+    opacity: 0.85;
+  }
+
+  /* ===== What's included ===== */
+  .included { background: var(--cream); padding: 120px 40px; }
+  .included__header {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 64px;
+  }
+  .included__header .label { margin-bottom: 18px; display: block; }
+  .included__header h2 { margin-bottom: 18px; }
+  .included__header p { color: var(--stone-mid); font-size: 15px; line-height: 1.7; }
+  .amenities__grid {
+    max-width: 920px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: #F2F0EA;
+    border: 1px solid #F2F0EA;
+  }
+  .amenity {
+    background: var(--white);
+    padding: 44px 24px;
+    text-align: center;
+    color: var(--stone-dark);
+    display: flex; flex-direction: column; align-items: center;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .amenity:hover { background: var(--cream); color: var(--terra); }
+  .amenity svg { width: 32px; height: 32px; margin-bottom: 16px; }
+  .amenity__label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--stone-mid);
+    transition: color 0.2s ease;
+  }
+  .amenity:hover .amenity__label { color: var(--terra); }
+
+  /* ===== Adjacent rooms ===== */
+  .adjacent {
+    background: var(--cream-deep);
+    padding: 120px 40px;
+    border-top: 1px solid var(--stone-light);
+  }
+  .adjacent__header {
+    max-width: 1100px;
+    margin: 0 auto 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+  }
+  .adjacent__header .left { max-width: 480px; }
+  .adjacent__header .label { margin-bottom: 16px; display: block; }
+  .adjacent__header h2 { margin-bottom: 8px; }
+  .adjacent__header h2 .italic { color: var(--stone-mid); display: block; }
+  .adjacent__header .right a {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--terra);
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+  }
+  .adjacent__header .right a:hover { opacity: 0.7; }
+  .adjacent__grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .room-card { display: flex; flex-direction: column; }
+  .room-card__img-wrap {
+    overflow: hidden;
+    border-radius: 200px 200px 0 0;
+  }
+  .room-card__img {
+    width: 100%;
+    height: 340px;
+    background-image: var(--grain);
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.6s ease;
+    position: relative;
+  }
+  .room-card:hover .room-card__img { transform: scale(1.04); }
+  .room-card__body { padding: 24px 8px 0; }
+  .room-card__type {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--stone-mid);
+    margin-bottom: 10px;
+  }
+  .room-card__name {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--stone-dark);
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  .room-card__feature {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--stone-mid);
+    line-height: 1.55;
+    max-width: 280px;
+  }
+  .room-card__divider {
+    height: 1px;
+    background: var(--stone-light);
+    margin: 20px 0 16px;
+  }
+  .room-card__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .room-card__price {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--stone-dark);
+  }
+  .room-card__price strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 24px;
+    color: var(--stone-dark);
+    margin-right: 4px;
+  }
+  .room-card__price .per { color: var(--stone-mid); font-size: 12px; }
+  .room-card__cta {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--terra);
+  }
+  .room-card__cta::after {
+    content: " →";
+    display: inline-block;
+    transition: transform 0.25s ease;
+  }
+  .room-card:hover .room-card__cta::after { transform: translateX(4px); }
+
+  /* ===== Footer ===== */
+  footer {
+    background: var(--stone-dark);
+    color: rgba(255,255,255,0.65);
+    padding: 80px 40px 40px;
+  }
+  .footer__grid {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px;
+  }
+  .footer__logo {
+    font-family: var(--font-serif); font-size: 20px;
+    color: var(--white); margin-bottom: 12px;
+  }
+  .footer__tagline {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 14px; color: rgba(255,255,255,0.5); max-width: 320px;
+  }
+  .footer__col .label { color: rgba(255,255,255,0.35); margin-bottom: 20px; display: block; }
+  .footer__links { display: flex; flex-direction: column; gap: 10px; }
+  .footer__links a { font-size: 14px; color: rgba(255,255,255,0.65); transition: color 0.2s ease; }
+  .footer__links a:hover { color: var(--white); }
+  .footer__contact { display: flex; flex-direction: column; gap: 8px; }
+  .footer__contact .email { font-size: 13px; color: rgba(255,255,255,0.65); }
+  .footer__contact .addr { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer__sep { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+  .footer__guarantee { font-size: 12px; color: rgba(255,255,255,0.4); font-style: italic; }
+  .footer__bottom {
+    max-width: 1200px; margin: 60px auto 0;
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; font-size: 11px;
+  }
+  .footer__bottom .left { color: rgba(255,255,255,0.3); }
+  .footer__bottom .right { color: rgba(255,255,255,0.25); }
+
+  /* ===== Scroll-in ===== */
+  [data-animate] {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  [data-animate].visible { opacity: 1; transform: none; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1024px) {
+    h1 { font-size: 64px; }
+    h2 { font-size: 36px; }
+    .img-hero h1 .italic-tag { font-size: 26px; vertical-align: 14px; margin-left: 12px; }
+    .img-hero__inner { flex-direction: column; align-items: flex-start; gap: 32px; }
+    .img-hero__meta { gap: 28px; padding-bottom: 0; }
+    .intro__grid { grid-template-columns: 1fr; gap: 64px; }
+    .intro__left { max-width: 600px; margin: 0 auto; }
+    .booking-card { position: static; max-width: 480px; margin: 0 auto; }
+    .features__list { grid-template-columns: 1fr; }
+    .gallery__grid { grid-template-columns: 1fr; }
+    .gallery__img { aspect-ratio: 16 / 10; }
+    .adjacent__grid { grid-template-columns: 1fr 1fr; }
+    .adjacent__grid .room-card:last-child { display: none; }
+    .footer__grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+  @media (max-width: 768px) {
+    .nav { padding: 18px 24px; }
+    .nav.scrolled { padding: 14px 24px; }
+    .nav__center, .nav__right .nav__lang, .nav__right .nav__book { display: none; }
+    .nav__burger { display: inline-flex; flex-direction: column; gap: 5px; padding: 4px; }
+    .nav__burger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
+    .mobile-menu { display: flex; }
+    .mobile-menu a { font-family: var(--font-serif); font-size: 32px; color: var(--white); font-weight: 300; }
+    .mobile-menu .nav__book { font-family: var(--font-sans); font-size: 12px; margin-top: 20px; }
+
+    h1 { font-size: 48px; }
+    h2 { font-size: 30px; }
+    .img-hero { min-height: 520px; }
+    .img-hero__inner { left: 24px; right: 24px; bottom: 40px; }
+    .img-hero__sub { font-size: 18px; }
+    .breadcrumb { left: 24px; top: 84px; }
+    .intro { padding: 80px 24px; }
+    .included { padding: 80px 24px; }
+    .included__header { margin-bottom: 40px; }
+    .amenities__grid { grid-template-columns: repeat(2, 1fr); max-width: 480px; }
+    .adjacent { padding: 80px 24px; }
+    .adjacent__header { flex-direction: column; align-items: flex-start; }
+    .adjacent__grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; }
+    .adjacent__grid .room-card:nth-child(n+2) { display: none; }
+    footer { padding: 60px 24px 32px; }
+    .footer__grid { grid-template-columns: 1fr; gap: 40px; }
+    .footer__bottom { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav__logo">La Cueva de Miravet</a>
+  <div class="nav__center">
+    <a href="Stay.html" class="nav__link active">Stay</a>
+    <a href="Experiences.html" class="nav__link">Experiences</a>
+    <a href="Location.html" class="nav__link">Location</a>
+    <a href="Journal.html" class="nav__link">Journal</a>
+  </div>
+  <div class="nav__right">
+    <a href="Book Now.html" class="nav__book">Book Direct</a>
+    <div class="nav__lang">
+      <button class="active">EN</button><span class="divider">|</span><button>ES</button>
+    </div>
+    <button class="nav__burger" id="burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="Stay.html">Stay</a>
+  <a href="Experiences.html">Experiences</a>
+  <a href="Location.html">Location</a>
+  <a href="Journal.html">Journal</a>
+  <a href="Book Now.html" class="nav__book" style="background: var(--terra); padding: 12px 28px;">Book Direct</a>
+</div>
+
+<main>
+
+<!-- ===== Image Hero ===== -->
+<section class="img-hero">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a>
+    <span class="sep">/</span>
+    <a href="Stay.html">Stay</a>
+    <span class="sep">/</span>
+    <span class="current">Almendro</span>
+  </nav>
+
+  <div class="img-hero__inner">
+    <div class="img-hero__title-block">
+      <span class="label img-hero__label">Room two of seven</span>
+      <h1>Almendro <span class="italic-tag">/ The Almond Tree</span></h1>
+      <p class="img-hero__sub">King bed, exposed beams, a private balcony, and the kind of light that makes you reset your day around it.</p>
+    </div>
+    <div class="img-hero__meta">
+      <div class="img-hero__meta-item">
+        <span class="img-hero__meta-label">Sleeps</span>
+        <span class="img-hero__meta-value">2 guests</span>
+      </div>
+      <div class="img-hero__meta-item">
+        <span class="img-hero__meta-label">Size</span>
+        <span class="img-hero__meta-value">36 m²</span>
+      </div>
+      <div class="img-hero__meta-item">
+        <span class="img-hero__meta-label">From</span>
+        <span class="img-hero__meta-value">€295 / night</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Intro ===== -->
+<section class="intro">
+  <div class="intro__grid">
+    <div class="intro__left" data-animate>
+      <h2>
+        Linen, tile,
+        <span class="italic">and very little else.</span>
+      </h2>
+      <div class="intro__body">
+        <p class="dropcap">Almendro is a room that pays attention. Original beams overhead, the tile floor cool underfoot, two tall windows and the kind of light that arrives slowly in the morning and stays late into the afternoon.</p>
+        <p>The bed is a king, dressed in undyed linen. A private balcony with a daybed under a linen shade and a small table that fits two for breakfast. The bathroom is terracotta floor, a rain shower, and a deep ceramic basin.</p>
+        <p>The name is for the almond trees on the property. Nothing more is made of it.</p>
+      </div>
+
+      <div class="features">
+        <span class="label features__label">The Particulars</span>
+        <ul class="features__list">
+          <li><span class="key">Bed</span><span class="val">King · linen</span></li>
+          <li><span class="key">Size</span><span class="val">36 m² + balcony</span></li>
+          <li><span class="key">View</span><span class="val">South-facing</span></li>
+          <li><span class="key">Balcony</span><span class="val">Private</span></li>
+          <li><span class="key">Bathroom</span><span class="val">Private ensuite</span></li>
+          <li><span class="key">Materials</span><span class="val">Linen, tile, beams</span></li>
+          <li><span class="key">Sleeps</span><span class="val">2 adults</span></li>
+          <li><span class="key">Heating</span><span class="val">Wood stove</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <aside class="booking-card" data-animate>
+      <div class="booking-card__img-wrap">
+        <div class="booking-card__img"></div>
+      </div>
+      <div class="booking-card__body">
+        <div class="booking-card__price-row">
+          <div>
+            <span class="booking-card__price-from">From</span>
+            <div class="booking-card__price">€295<span class="per">/ night</span></div>
+          </div>
+          <div class="booking-card__nights">2-night minimum stay · Breakfast included</div>
+        </div>
+        <ul class="booking-card__bullets">
+          <li>Best rate guaranteed when booking direct</li>
+          <li>Flexible cancellation up to 14 days before</li>
+          <li>Welcome carafe of valley wine on arrival</li>
+        </ul>
+        <a href="Book Now.html" class="btn-terra">Request to Book</a>
+        <p class="booking-card__note">No payment until we confirm. <em>Usually within a few hours.</em></p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ===== Gallery row ===== -->
+<section class="gallery" aria-label="Almendro gallery">
+  <div class="gallery__grid">
+    <div class="gallery__img" style="background-color:#C8B89E;" role="img" aria-label="The bed beneath the beams">
+      <span class="gallery__caption">The bed, the beams.</span>
+    </div>
+    <div class="gallery__img" style="background-color:#8B9A7A;" role="img" aria-label="The balcony in late light">
+      <span class="gallery__caption">The balcony.</span>
+    </div>
+    <div class="gallery__img" style="background-color:#A88A6B;" role="img" aria-label="The terracotta bathroom">
+      <span class="gallery__caption">The terracotta bathroom.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== What's included ===== -->
+<section class="included">
+  <div class="included__header" data-animate>
+    <span class="label">What's included</span>
+    <h2>Everything you'd hope for.<br/><span class="italic" style="color:var(--stone-mid);">Nothing you wouldn't.</span></h2>
+    <p>Breakfast from the valley below, slow wifi where you want it and none where you don't, and a balcony with the kind of quiet you forget existed.</p>
+  </div>
+
+
+  <div class="amenities__grid" data-animate>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 22 H28 V26 H4 Z"/>
+        <path d="M4 22 V14 a2 2 0 0 1 2 -2 H26 a2 2 0 0 1 2 2 V22"/>
+        <path d="M9 14 a2 2 0 0 1 2 -2 H15 a2 2 0 0 1 2 2 V18 H9 Z"/>
+        <path d="M15 14 a2 2 0 0 1 2 -2 H21 a2 2 0 0 1 2 2 V18 H15 Z"/>
+      </svg>
+      <div class="amenity__label">King Bed · Linen</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 22 H29"/>
+        <path d="M3 26 H29"/>
+        <path d="M6 22 Q16 8 26 22"/>
+      </svg>
+      <div class="amenity__label">Private Balcony</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="22" cy="10" r="4"/>
+        <path d="M22 14 V28"/>
+        <path d="M14 28 H30"/>
+        <path d="M4 18 H12 V28 H4 Z"/>
+      </svg>
+      <div class="amenity__label">Natural Light</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 4 Q12 8 8 14 Q4 20 8 28"/>
+        <path d="M16 4 Q20 8 16 14 Q12 20 16 28"/>
+        <path d="M24 4 Q28 8 24 14 Q20 20 24 28"/>
+      </svg>
+      <div class="amenity__label">Rain Shower</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 8 H26 V24 H6 Z"/>
+        <path d="M6 12 H26"/>
+        <circle cx="22" cy="10" r="0.6" fill="currentColor"/>
+        <path d="M11 18 q2 -3 5 0 t5 0"/>
+      </svg>
+      <div class="amenity__label">Breakfast Included</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="16" cy="22" r="2"/>
+        <path d="M11 18 q5 -5 10 0"/>
+        <path d="M7 14 q9 -8 18 0"/>
+        <path d="M3 10 q13 -10 26 0"/>
+      </svg>
+      <div class="amenity__label">WIFI</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="16" cy="16" r="6"/>
+        <path d="M16 4 V8"/><path d="M16 24 V28"/>
+        <path d="M4 16 H8"/><path d="M24 16 H28"/>
+        <path d="M7.5 7.5 L10.3 10.3"/><path d="M21.7 21.7 L24.5 24.5"/>
+      </svg>
+      <div class="amenity__label">Solar-Heated Water</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 10 q-2 6 0 12 q2 6 6 6 q4 0 6 -6 q2 -6 0 -12"/>
+        <path d="M10 10 q3 -4 6 -4 q3 0 6 4"/>
+        <path d="M16 6 V2"/>
+      </svg>
+      <div class="amenity__label">Welcome Carafe</div>
+    </div>
+    <div class="amenity">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="4" width="20" height="24" rx="2"/>
+        <path d="M11 10 H21"/><path d="M11 15 H21"/><path d="M11 20 H17"/>
+      </svg>
+      <div class="amenity__label">Writing Table</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Adjacent rooms ===== -->
+<section class="adjacent">
+  <div class="adjacent__header" data-animate>
+    <div class="left">
+      <span class="label">Adjacent rooms</span>
+      <h2>Other corners of the masia.<span class="italic">All seven, side by side.</span></h2>
+    </div>
+    <div class="right">
+      <a href="Stay.html">View all seven rooms →</a>
+    </div>
+  </div>
+
+  <div class="adjacent__grid" data-animate>
+    <a href="Room.html" class="room-card">
+      <div class="room-card__img-wrap">
+        <div class="room-card__img" style="background-color:#5C4838;"></div>
+      </div>
+      <div class="room-card__body">
+        <div class="room-card__type">Olive Suite</div>
+        <h3 class="room-card__name">Olivo</h3>
+        <p class="room-card__feature">A double bed in undyed linen. Low-lit, easy to settle into.</p>
+        <div class="room-card__divider"></div>
+        <div class="room-card__row">
+          <div class="room-card__price"><strong>€420</strong><span class="per">/ night</span></div>
+          <span class="room-card__cta">View room</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="Room.html" class="room-card">
+      <div class="room-card__img-wrap">
+        <div class="room-card__img" style="background-color:#8FA59A;"></div>
+      </div>
+      <div class="room-card__body">
+        <div class="room-card__type">Oak Suite</div>
+        <h3 class="room-card__name">Roble</h3>
+        <p class="room-card__feature">Warm timber, a private terrace with sun-beds and a view of the mediterranean.</p>
+        <div class="room-card__divider"></div>
+        <div class="room-card__row">
+          <div class="room-card__price"><strong>€380</strong><span class="per">/ night</span></div>
+          <span class="room-card__cta">View room</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="Room.html" class="room-card">
+      <div class="room-card__img-wrap">
+        <div class="room-card__img" style="background-color:#B8A48A;"></div>
+      </div>
+      <div class="room-card__body">
+        <div class="room-card__type">Lavender Suite</div>
+        <h3 class="room-card__name">Lavanda</h3>
+        <p class="room-card__feature">Pale walls, a single quiet view, and the room people come back to.</p>
+        <div class="room-card__divider"></div>
+        <div class="room-card__row">
+          <div class="room-card__price"><strong>€340</strong><span class="per">/ night</span></div>
+          <span class="room-card__cta">View room</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="footer__grid">
+    <div class="footer__col">
+      <div class="footer__logo">La Cueva de Miravet</div>
+      <div class="footer__tagline">"Where the mountain meets the Mediterranean."</div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Explore</span>
+      <div class="footer__links">
+        <a href="Stay.html">Stay</a>
+        <a href="Experiences.html">Experiences</a>
+        <a href="Location.html">Location</a>
+        <a href="Journal.html">Journal</a>
+        <a href="Book Now.html">Book Now</a>
+        <a href="Contact.html">Contact</a>
+      </div>
+    </div>
+    <div class="footer__col">
+      <span class="label">Contact</span>
+      <div class="footer__contact">
+        <a href="mailto:hola@lacuevademiravet.com" class="email">hola@lacuevademiravet.com</a>
+        <div class="addr">Cabanes, Castellón, Spain</div>
+      </div>
+      <div class="footer__sep"></div>
+      <div class="footer__guarantee">Best rate guaranteed — book direct.</div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="left">© 2026 La Cueva de Miravet · Privacy · Terms</div>
+    <div class="right">A Nomada project</div>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  }
+
+  // Lang switch
+  document.querySelectorAll('.nav__lang button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav__lang button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Scroll-in
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('[data-animate]').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
