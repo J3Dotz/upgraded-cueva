@@ -15,9 +15,14 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
-            S.singleton('siteSettings', 'Site Settings').child(
-              S.document().schemaType('siteSettings').documentId('siteSettings')
-            ),
+            S.listItem()
+              .title('Site Settings')
+              .id('siteSettings')
+              .child(
+                S.document()
+                  .schemaType('siteSettings')
+                  .documentId('siteSettings')
+              ),
             S.divider(),
             S.documentTypeListItem('room').title('Rooms'),
             S.documentTypeListItem('experience').title('Experiences'),
