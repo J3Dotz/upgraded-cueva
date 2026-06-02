@@ -97,6 +97,11 @@ h3 { font-size: 22px; font-weight: 400; line-height: 1.25; }
   transition: color 0.2s ease;
 }
 .nav__link:hover { color: var(--white); }
+.nav__link.active { color: var(--white); position: relative; }
+.nav__link.active::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px;
+  height: 1px; background: var(--terra);
+}
 .nav__right { display: flex; align-items: center; gap: 20px; }
 .nav__book {
   background: var(--terra);
@@ -299,6 +304,110 @@ h3 { font-size: 22px; font-weight: 400; line-height: 1.25; }
   color: var(--stone-mid);
   font-size: 14px;
   pointer-events: none;
+}
+
+/* ===== Room preference — visual tile grid ===== */
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 6px;
+}
+.room-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  border: 1px solid var(--stone-light);
+  border-radius: 7px;
+  background: rgba(255,255,255,0.5);
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.room-tile:hover {
+  border-color: #cfc9bd;
+  background: rgba(255,255,255,0.9);
+  transform: translateY(-1px);
+}
+.room-tile__body {
+  padding: 15px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 48px;
+}
+.room-tile__type {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stone-mid);
+  padding-right: 26px;
+}
+.room-tile__name {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  line-height: 1.05;
+  color: var(--stone-dark);
+  letter-spacing: -0.01em;
+}
+.room-tile--nopref,
+.room-tile--lodge {
+  background: var(--cream-deep);
+}
+.room-tile--nopref:hover,
+.room-tile--lodge:hover {
+  background: #efe9dc;
+}
+.room-tile--nopref .room-tile__name,
+.room-tile--lodge .room-tile__name {
+  font-style: italic;
+}
+.room-tile__check {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  width: 19px;
+  height: 19px;
+  border-radius: 5px;
+  border: 1.5px solid var(--stone-light);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.room-tile__check::after {
+  content: "✓";
+  color: var(--white);
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.room-tile.is-selected {
+  border-color: var(--terra);
+  background: rgba(196,98,45,0.05);
+}
+.room-tile.is-selected .room-tile__check {
+  background: var(--terra);
+  border-color: var(--terra);
+}
+.room-tile.is-selected .room-tile__check::after {
+  opacity: 1;
+  transform: scale(1);
+}
+.room-tile:focus-visible {
+  outline: 2px solid var(--terra);
+  outline-offset: 2px;
+}
+.room-hint {
+  margin-top: 12px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--stone-mid);
 }
 
 .form-divider {
@@ -537,6 +646,7 @@ footer {
   transition: color 0.2s ease;
 }
 .footer__links a:hover { color: var(--white); }
+.footer__links a.active { color: var(--white); }
 .footer__contact { display: flex; flex-direction: column; gap: 8px; }
 .footer__contact .email { font-size: 13px; color: rgba(255,255,255,0.65); }
 .footer__contact .addr { font-size: 13px; color: rgba(255,255,255,0.4); }
@@ -615,6 +725,9 @@ footer {
   .form-aside__sub { font-size: 18px; margin-bottom: 28px; }
   .form-section { padding: 96px 24px 80px; }
   .form-grid { grid-template-columns: 1fr; gap: 28px; }
+  .room-grid { gap: 10px; }
+  .room-tile__name { font-size: 17px; }
+  .room-tile__body { padding: 12px 13px 13px; }
   .form-success { padding: 60px 28px 40px; border-radius: 120px 120px 8px 8px; }
   .next { padding: 80px 24px; }
   .guarantee { padding: 70px 24px; }
@@ -629,7 +742,7 @@ footer {
 <body>
 
 <!-- ===== Navigation ===== -->
-<nav class="nav nav--solid" id="nav">
+<nav class="nav" id="nav">
   <a href="index.html" class="nav__logo">La Cueva de Miravet</a>
   <div class="nav__center">
     <a href="Stay.html" class="nav__link">Stay</a>
@@ -682,28 +795,81 @@ footer {
       <div class="form-grid">
         <div class="field">
           <label for="checkin" class="label">Check-in</label>
-          <input type="date" id="checkin" name="checkin" value="2026-06-12" required />
+          <input type="date" id="checkin" name="checkin" required />
         </div>
         <div class="field">
           <label for="checkout" class="label">Check-out</label>
-          <input type="date" id="checkout" name="checkout" value="2026-06-15" required />
+          <input type="date" id="checkout" name="checkout" required />
         </div>
         <div class="field field--full">
-          <label for="room" class="label">Room preference</label>
-          <div class="select-wrap">
-            <select id="room" name="room">
-              <option value="">No preference — recommend a room</option>
-              <option>La Pedrera · The Quarry</option>
-              <option>El Mirador · The Viewpoint</option>
-              <option>La Vinya · The Vineyard</option>
-              <option>La Cova · The Cave</option>
-              <option>El Garbí · The Sea Wind</option>
-              <option>La Figuera · The Fig Tree</option>
-              <option>El Tossal · The Hilltop</option>
-              <option>Full lodge — exclusive use</option>
-            </select>
-            <span class="select-chev" aria-hidden="true">▾</span>
+          <label class="label" id="roomLabel">Room preference <span class="label-opt">(optional — choose one or more)</span></label>
+          <input type="hidden" id="room" name="room" value="" />
+          <div class="room-grid" role="group" aria-labelledby="roomLabel">
+            <button type="button" class="room-tile room-tile--nopref is-selected" role="checkbox" aria-checked="true" data-value="">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Just one bedroom</span>
+                <span class="room-tile__name">No preference</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile" role="checkbox" aria-checked="false" data-value="Olivo · Olive Suite">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Olive Suite</span>
+                <span class="room-tile__name">Olivo</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile" role="checkbox" aria-checked="false" data-value="Lavanda · Lavender Suite">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Lavender Suite</span>
+                <span class="room-tile__name">Lavanda</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile" role="checkbox" aria-checked="false" data-value="Laurel · Bay Laurel Suite">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Bay Laurel Suite</span>
+                <span class="room-tile__name">Laurel</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile" role="checkbox" aria-checked="false" data-value="Tomillo · Thyme Suite">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Thyme Suite</span>
+                <span class="room-tile__name">Tomillo</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile" role="checkbox" aria-checked="false" data-value="Almendro · Almond Suite">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Almond Suite</span>
+                <span class="room-tile__name">Almendro</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile" role="checkbox" aria-checked="false" data-value="Roble · Oak Suite">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Oak Suite</span>
+                <span class="room-tile__name">Roble</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile" role="checkbox" aria-checked="false" data-value="Hinojo · Fennel Suite">
+              <span class="room-tile__body">
+                <span class="room-tile__type">Fennel Suite</span>
+                <span class="room-tile__name">Hinojo</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="room-tile room-tile--lodge" role="checkbox" aria-checked="false" data-value="Whole lodge — exclusive use">
+              <span class="room-tile__body">
+                <span class="room-tile__type">All seven rooms</span>
+                <span class="room-tile__name">Whole lodge</span>
+              </span>
+              <span class="room-tile__check" aria-hidden="true"></span>
+            </button>
           </div>
+          <p class="room-hint" id="roomHint"></p>
         </div>
         <div class="field field--full">
           <label for="guests" class="label">Number of guests</label>
@@ -874,6 +1040,53 @@ if (ci && co) {
   ci.addEventListener('change', sync);
   sync();
 }
+
+// ===== Room preference tiles (multi-select) =====
+const roomInput = document.getElementById('room');
+const roomHint = document.getElementById('roomHint');
+const roomTiles = Array.from(document.querySelectorAll('.room-tile'));
+const noPrefTile = document.querySelector('.room-tile--nopref');
+const lodgeTile = document.querySelector('.room-tile--lodge');
+
+function isSpecial(t) { return t === noPrefTile || t === lodgeTile; }
+
+function updateRoom() {
+  roomTiles.forEach(t => t.setAttribute('aria-checked', t.classList.contains('is-selected') ? 'true' : 'false'));
+  const rooms = roomTiles.filter(t => !isSpecial(t) && t.classList.contains('is-selected'));
+  const vals = rooms.map(t => t.dataset.value);
+  if (noPrefTile.classList.contains('is-selected')) {
+    roomInput.value = '';
+    roomHint.textContent = "No preference — we'll choose the room that fits you best.";
+  } else if (lodgeTile.classList.contains('is-selected')) {
+    roomInput.value = 'Whole lodge — exclusive use';
+    roomHint.textContent = 'The whole lodge — all seven rooms, exclusively yours.';
+  } else if (vals.length === 0) {
+    roomInput.value = '';
+    roomHint.textContent = 'Select one or more rooms, or take the whole lodge.';
+  } else {
+    roomInput.value = vals.join(', ');
+    roomHint.textContent = vals.length === 1 ? '1 room selected.' : vals.length + ' rooms selected.';
+  }
+}
+
+roomTiles.forEach(tile => {
+  tile.addEventListener('click', () => {
+    if (isSpecial(tile)) {
+      // No preference / Whole lodge are exclusive
+      roomTiles.forEach(t => t.classList.remove('is-selected'));
+      tile.classList.add('is-selected');
+    } else {
+      // A specific room: clear exclusive tiles, toggle this one, allow several
+      noPrefTile.classList.remove('is-selected');
+      lodgeTile.classList.remove('is-selected');
+      tile.classList.toggle('is-selected');
+      const anyRoom = roomTiles.some(t => !isSpecial(t) && t.classList.contains('is-selected'));
+      if (!anyRoom) noPrefTile.classList.add('is-selected'); // fall back
+    }
+    updateRoom();
+  });
+});
+updateRoom();
 
 // ===== Scroll-in animations =====
 const io = new IntersectionObserver((entries) => {
