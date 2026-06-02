@@ -1,0 +1,226 @@
+---
+import { useTranslations, prefix } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  transparent?: boolean;
+  onCream?: boolean;
+  lang?: Lang;
+  activePage?: string;
+}
+
+const { transparent = true, onCream = false, lang = 'en', activePage } = Astro.props;
+const t = useTranslations(lang);
+const p = prefix(lang);
+---
+
+<nav
+  class:list={['nav', { 'nav--on-cream': onCream, 'nav--solid': !transparent }]}
+  id="nav"
+>
+  <a href={`${p}/`} class="nav__logo">La Cueva de Miravet</a>
+
+  <div class="nav__center">
+    <a href={`${p}/stay`}        class:list={['nav__link', { active: activePage === 'stay'        }]}>{t('nav.stay')}</a>
+    <a href={`${p}/experiences`} class:list={['nav__link', { active: activePage === 'experiences' }]}>{t('nav.experiences')}</a>
+    <a href={`${p}/location`}    class:list={['nav__link', { active: activePage === 'location'    }]}>{t('nav.location')}</a>
+    <a href={`${p}/journal`}     class:list={['nav__link', { active: activePage === 'journal'     }]}>{t('nav.journal')}</a>
+  </div>
+
+  <div class="nav__right">
+    <a href={`${p}/book`} class="nav__book">{t('nav.book')}</a>
+    <div class="nav__lang">
+      <a href="/"    class:list={['lang-btn', { active: lang === 'en' }]}>EN</a>
+      <span class="divider">|</span>
+      <a href="/es/" class:list={['lang-btn', { active: lang === 'es' }]}>ES</a>
+    </div>
+    <button class="nav__burger" id="burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href={`${p}/stay`}>{t('nav.stay')}</a>
+  <a href={`${p}/experiences`}>{t('nav.experiences')}</a>
+  <a href={`${p}/location`}>{t('nav.location')}</a>
+  <a href={`${p}/journal`}>{t('nav.journal')}</a>
+  <a href={`${p}/book`} class="nav__book" style="background: var(--terra); padding: 12px 28px;">
+    {t('nav.book')}
+  </a>
+</div>
+
+<style>
+/* ===== Nav shell ===== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 40px;
+  transition: background 0.4s ease, padding 0.3s ease;
+}
+.nav--solid { background: var(--forest); padding: 16px 40px; }
+
+.nav.scrolled       { background: var(--forest); padding: 16px 40px; }
+
+/* ===== Logo ===== */
+.nav__logo {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  white-space: nowrap;
+}
+.nav--on-cream .nav__logo   { color: var(--stone-dark); }
+.nav--on-cream.scrolled .nav__logo { color: var(--white); }
+
+/* ===== Centre links ===== */
+.nav__center { display: flex; gap: 32px; }
+
+.nav__link {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+  transition: color 0.2s ease;
+  position: relative;
+}
+.nav__link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0;
+  width: 0; height: 1px;
+  background: var(--terra);
+  transition: width 0.3s var(--ease);
+}
+.nav__link:hover,
+.nav__link.active { color: var(--white); }
+.nav__link:hover::after,
+.nav__link.active::after { width: 100%; }
+
+.nav--on-cream .nav__link         { color: var(--stone-mid); }
+.nav--on-cream.scrolled .nav__link { color: rgba(255,255,255,0.8); }
+
+/* ===== Right side ===== */
+.nav__right { display: flex; align-items: center; gap: 20px; }
+
+.nav__book {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--terra);
+  padding: 10px 20px;
+  border-radius: 2px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.nav__book:hover { background: #b1561f; transform: translateY(-1px); }
+
+.nav__lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.lang-btn { color: rgba(255,255,255,0.45); transition: color 0.2s; }
+.lang-btn:hover,
+.lang-btn.active { color: var(--white); }
+
+.nav--on-cream .lang-btn        { color: var(--stone-light); }
+.nav--on-cream .lang-btn.active { color: var(--stone-dark); }
+.nav--on-cream.scrolled .lang-btn        { color: rgba(255,255,255,0.45); }
+.nav--on-cream.scrolled .lang-btn.active { color: var(--white); }
+
+.divider { color: rgba(255,255,255,0.25); }
+
+/* ===== Burger ===== */
+.nav__burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.nav__burger span {
+  display: block;
+  width: 22px; height: 1.5px;
+  background: var(--white);
+}
+
+/* ===== Mobile menu ===== */
+.mobile-menu {
+  position: fixed; inset: 0;
+  background: var(--forest);
+  z-index: 99;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  transform: translateX(100%);
+  transition: transform 0.4s ease;
+}
+.mobile-menu.open { transform: translateX(0); }
+
+.mobile-menu a {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  color: var(--white);
+  font-weight: 300;
+}
+.mobile-menu .nav__book {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .nav { padding: 18px 24px; }
+  .nav.scrolled { padding: 14px 24px; }
+  .nav--solid { padding: 18px 24px; }
+  .nav--solid.scrolled { padding: 14px 24px; }
+  .nav__center,
+  .nav__right .nav__lang,
+  .nav__right .nav__book { display: none; }
+  .nav__burger { display: inline-flex; }
+  .mobile-menu { display: flex; }
+}
+</style>
+
+<script>
+const nav    = document.getElementById('nav')!;
+const burger = document.getElementById('burger')!;
+const menu   = document.getElementById('mobileMenu')!;
+
+// Scroll handler
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 80);
+}, { passive: true });
+
+// Burger toggle
+burger.addEventListener('click', () => {
+  const open = menu.classList.toggle('open');
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+
+// Close on link click inside mobile menu
+menu.addEventListener('click', (e) => {
+  if ((e.target as HTMLElement).tagName === 'A') {
+    menu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+</script>

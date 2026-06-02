@@ -1,0 +1,98 @@
+---
+export const prerender = true;
+// Spanish room detail — mirrors /stay/[slug].astro with lang='es'
+import Base from '../../../layouts/Base.astro';
+import EnquiryForm from '../../../components/EnquiryForm.astro';
+import RoomCard from '../../../components/RoomCard.astro';
+import { client, urlFor } from '../../../lib/sanity';
+import { roomBySlugQuery, roomSlugsQuery, roomsQuery } from '../../../queries/rooms';
+import { loc, useTranslations } from '../../../i18n/utils';
+
+export async function getStaticPaths() {
+  const slugs = await client.fetch<{ slug: string }[]>(roomSlugsQuery);
+  return slugs.map(({ slug }) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const lang     = 'es';
+const t        = useTranslations(lang);
+
+const [room, allRooms] = await Promise.all([
+  client.fetch(roomBySlugQuery, { slug }),
+  client.fetch(roomsQuery),
+]);
+
+if (!room) return Astro.redirect('/es/stay');
+
+const name       = loc(room.name, lang);
+const otherRooms = allRooms.filter((r: any) => r.slug.current !== slug).slice(0, 3);
+
+const heroImage = room.images?.[0]
+  ? urlFor(room.images[0]).width(1600).height(900).auto('format').url()
+  : null;
+---
+
+<Base title={name} activePage="stay" lang={lang}>
+
+  {heroImage && (
+    <section class="img-hero" style={`background-image: url('${heroImage}')`}>
+      <div class="img-hero__inner">
+        <p class="breadcrumb"><a href="/es/stay">Alojamiento</a> / {name}</p>
+        <h1>{name}</h1>
+      </div>
+    </section>
+  )}
+
+  <section class="intro">
+    <div class="intro__inner">
+      {room.priceFrom && (
+        <p class="price">{t('stay.from')} <strong>€{room.priceFrom}</strong> {t('stay.night')}</p>
+      )}
+      <a href="#enquire" class="btn-terra">{t('room.book')}</a>
+    </div>
+  </section>
+
+  <section class="enquire" id="enquire">
+    <div class="enquire__inner">
+      <h2>{t('room.book')}</h2>
+      <EnquiryForm lang={lang} roomSlug={slug} rooms={allRooms} />
+    </div>
+  </section>
+
+  {otherRooms.length > 0 && (
+    <section class="adjacent">
+      <h2>{t('room.other')}</h2>
+      <div class="adjacent__grid">
+        {otherRooms.map((r: any) => <RoomCard room={r} lang={lang} />)}
+      </div>
+    </section>
+  )}
+
+</Base>
+
+<style>
+.img-hero { min-height: 65vh; background-size: cover; background-position: center; display: flex; align-items: flex-end; position: relative; }
+.img-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%); }
+.img-hero__inner { position: relative; z-index: 1; padding: 0 60px 60px; color: var(--white); }
+.img-hero__inner h1 { font-size: 64px; font-weight: 300; }
+.breadcrumb { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; margin-bottom: 16px; }
+.breadcrumb a { opacity: 0.7; }
+.intro { padding: 60px; }
+.intro__inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.price { font-size: 13px; color: var(--stone-mid); }
+.price strong { font-family: var(--font-serif); font-size: 28px; color: var(--stone-dark); }
+.enquire { padding: 80px 60px; }
+.enquire__inner { max-width: 760px; margin: 0 auto; }
+.enquire h2 { font-size: 48px; margin-bottom: 48px; }
+.adjacent { padding: 80px 40px; }
+.adjacent h2 { font-size: 36px; max-width: 1200px; margin: 0 auto 48px; }
+.adjacent__grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+@media (max-width: 768px) {
+  .img-hero__inner { padding: 0 24px 40px; }
+  .img-hero__inner h1 { font-size: 40px; }
+  .intro { padding: 40px 24px; }
+  .enquire { padding: 60px 24px; }
+  .adjacent { padding: 60px 24px; }
+  .adjacent__grid { grid-template-columns: 1fr; }
+}
+</style>

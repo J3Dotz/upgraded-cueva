@@ -1,0 +1,81 @@
+---
+export const prerender = true;
+// Spanish homepage — mirrors /index.astro with lang='es'
+import Base from '../../layouts/Base.astro';
+import RoomCard from '../../components/RoomCard.astro';
+import { client } from '../../lib/sanity';
+import { roomsQuery } from '../../queries/rooms';
+import { siteSettingsQuery } from '../../queries/settings';
+import { loc } from '../../i18n/utils';
+
+const lang = 'es';
+
+const [rooms, settings] = await Promise.all([
+  client.fetch(roomsQuery),
+  client.fetch(siteSettingsQuery),
+]);
+
+const heroTitle    = loc(settings?.heroTitle,    lang) || 'Una habitación en la roca. Cielo abierto sobre ella.';
+const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Siete habitaciones en los acantilados de Miravet, Catalunya.';
+---
+
+<Base
+  title="Inicio"
+  description={heroSubtitle}
+  lang={lang}
+>
+
+  <section class="hero">
+    <div class="hero__inner">
+      <h1 class="hero__title">{heroTitle}</h1>
+      <p class="hero__sub">{heroSubtitle}</p>
+      <div class="hero__cta">
+        <a href="/es/stay" class="btn-terra">Explorar habitaciones</a>
+        <a href="/es/book" class="hero__link">Reservar directamente →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="rooms-preview">
+    <div class="rooms-preview__grid">
+      {rooms.slice(0, 3).map((room: any) => (
+        <RoomCard room={room} lang={lang} />
+      ))}
+    </div>
+    <div style="text-align:center; margin-top: 48px;">
+      <a href="/es/stay" class="terra-link">Ver todas las habitaciones</a>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+.hero {
+  background: var(--forest);
+  min-height: 90vh;
+  display: flex; align-items: center;
+  padding: 120px 60px 80px;
+}
+.hero__inner { max-width: 800px; }
+.hero__title {
+  font-family: var(--font-serif);
+  font-size: 80px; font-weight: 300; color: var(--white);
+  line-height: 1.08; margin-bottom: 24px;
+}
+.hero__sub { font-size: 16px; color: rgba(255,255,255,0.65); margin-bottom: 48px; }
+.hero__cta { display: flex; align-items: center; gap: 32px; }
+.hero__link { font-size: 12px; color: rgba(255,255,255,0.7); transition: color 0.2s; }
+.hero__link:hover { color: var(--white); }
+
+.rooms-preview { padding: 100px 40px 80px; max-width: 1280px; margin: 0 auto; }
+.rooms-preview__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+
+@media (max-width: 768px) {
+  .hero { padding: 130px 24px 60px; }
+  .hero__title { font-size: 52px; }
+  .rooms-preview { padding: 60px 24px; }
+  .rooms-preview__grid { grid-template-columns: 1fr; }
+}
+</style>

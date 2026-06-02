@@ -1,0 +1,65 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import { type Lang } from '../i18n/ui';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** If false the nav starts solid (forest bg) instead of transparent */
+  transparentNav?: boolean;
+  /** Nav text adapts to sit on a cream/light background */
+  onCream?: boolean;
+  /** Marks the active link in the footer nav */
+  activePage?: string;
+  lang?: Lang;
+}
+
+const {
+  title,
+  description = 'A singular retreat carved into the stone of Catalunya.',
+  transparentNav = true,
+  onCream = false,
+  activePage,
+  lang = 'en',
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} — La Cueva de Miravet</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalUrl} />
+  {lang === 'en' && <link rel="alternate" hreflang="es" href={`/es${Astro.url.pathname}`} />}
+  {lang === 'es' && <link rel="alternate" hreflang="en" href={Astro.url.pathname.replace(/^\/es/, '') || '/'} />}
+  <link rel="alternate" hreflang="x-default" href={lang === 'es' ? Astro.url.pathname.replace(/^\/es/, '') || '/' : Astro.url.pathname} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body>
+  <Nav transparent={transparentNav} onCream={onCream} lang={lang} activePage={activePage} />
+  <slot />
+  <Footer lang={lang} activePage={activePage} />
+
+  <!-- Scroll-in animation observer -->
+  <script>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('[data-animate]').forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+---
+export const prerender = true;
+import Base from '../../../layouts/Base.astro';
+import { client, urlFor } from '../../../lib/sanity';
+import { journalPostBySlugQuery, journalSlugQuery } from '../../../queries/journal';
+import { loc, formatDate, useTranslations } from '../../../i18n/utils';
+
+export async function getStaticPaths() {
+  const slugs = await client.fetch<{ slug: string }[]>(journalSlugQuery);
+  return slugs.map(({ slug }) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const lang     = 'es';
+const t        = useTranslations(lang);
+const post     = await client.fetch(journalPostBySlugQuery, { slug });
+
+if (!post) return Astro.redirect('/es/diario');
+
+const title  = loc(post.title, lang);
+const heroSrc = post.coverImage
+  ? urlFor(post.coverImage).width(1600).height(800).auto('format').url()
+  : null;
+---
+
+<Base title={title} onCream={true} activePage="journal" lang={lang}>
+
+  {heroSrc && (
+    <section class="art-hero" style={`background-image: url('${heroSrc}')`}>
+      <div class="art-hero__inner">
+        <p class="breadcrumb"><a href="/es/diario">Diario</a> / {title}</p>
+        <h1 class="art-hero__title">{title}</h1>
+      </div>
+    </section>
+  )}
+
+  <section class="art-intro">
+    <div class="art-intro__inner">
+      <div class="art-intro__meta">
+        <span>{formatDate(post.publishedAt, lang)}</span>
+        {post.readingMinutes && <span>{post.readingMinutes} {t('journal.min')}</span>}
+      </div>
+      {post.excerpt && <p class="art-intro__lede">{loc(post.excerpt, lang)}</p>}
+    </div>
+  </section>
+
+  <section class="art-body">
+    <div class="art-body__inner">
+      <!-- Render locArr(post.body, lang) with @portabletext/astro -->
+    </div>
+  </section>
+</Base>
+
+<style>
+.art-hero { min-height: 60vh; background-size: cover; background-position: center; display: flex; align-items: flex-end; position: relative; }
+.art-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%); }
+.art-hero__inner { position: relative; z-index: 1; padding: 0 60px 56px; color: var(--white); }
+.breadcrumb { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; margin-bottom: 16px; }
+.breadcrumb a { opacity: 0.7; }
+.art-hero__title { font-size: 56px; font-weight: 300; max-width: 760px; }
+.art-intro { background: var(--cream-deep); padding: 60px; }
+.art-intro__inner { max-width: 720px; margin: 0 auto; }
+.art-intro__meta { display: flex; gap: 24px; font-size: 12px; color: var(--stone-light); margin-bottom: 24px; }
+.art-intro__lede { font-family: var(--font-serif); font-size: 22px; font-weight: 300; line-height: 1.5; }
+.art-body { padding: 60px; }
+.art-body__inner { max-width: 720px; margin: 0 auto; font-size: 16px; line-height: 1.8; }
+@media (max-width: 768px) {
+  .art-hero__inner { padding: 0 24px 40px; }
+  .art-hero__title { font-size: 36px; }
+  .art-intro { padding: 48px 24px; }
+  .art-body { padding: 48px 24px; }
+}
+</style>

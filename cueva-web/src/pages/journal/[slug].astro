@@ -1,0 +1,153 @@
+---
+export const prerender = true;
+import Base from '../../layouts/Base.astro';
+import { client, urlFor } from '../../lib/sanity';
+import { journalPostBySlugQuery, journalSlugQuery } from '../../queries/journal';
+import { loc, formatDate, useTranslations } from '../../i18n/utils';
+
+export async function getStaticPaths() {
+  const slugs = await client.fetch<{ slug: string }[]>(journalSlugQuery);
+  return slugs.map(({ slug }) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const lang     = 'en';
+const t        = useTranslations(lang);
+const post     = await client.fetch(journalPostBySlugQuery, { slug });
+
+if (!post) return Astro.redirect('/journal');
+
+const title   = loc(post.title, lang);
+const excerpt = loc(post.excerpt, lang);
+
+const heroSrc = post.coverImage
+  ? urlFor(post.coverImage).width(1600).height(800).auto('format').url()
+  : null;
+---
+
+<Base
+  title={title}
+  description={excerpt}
+  onCream={true}
+  activePage="journal"
+  lang={lang}
+>
+  <!-- Reading progress bar -->
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <!-- Hero image -->
+  {heroSrc && (
+    <section class="art-hero" style={`background-image: url('${heroSrc}')`}>
+      <div class="art-hero__inner">
+        <p class="breadcrumb">
+          <a href="/journal">Journal</a> / {title}
+        </p>
+        {post.category && <p class="art-hero__cat pill">{post.category}</p>}
+        <h1 class="art-hero__title">{title}</h1>
+      </div>
+    </section>
+  )}
+
+  <!-- Article intro -->
+  <section class="art-intro">
+    <div class="art-intro__inner">
+      <div class="art-intro__meta">
+        <span>{formatDate(post.publishedAt, lang)}</span>
+        {post.readingMinutes && <span>{post.readingMinutes} {t('journal.min')}</span>}
+        {post.author && <span>{post.author}</span>}
+      </div>
+      {excerpt && <p class="art-intro__lede">{excerpt}</p>}
+    </div>
+  </section>
+
+  <!-- Article body (Portable Text will render here) -->
+  <section class="art-body">
+    <div class="art-body__inner">
+      <!-- TODO: render post.body[lang] using @portabletext/astro -->
+      <!-- Install: npm i @portabletext/astro -->
+      <!-- Usage:  <PortableText value={locArr(post.body, lang)} /> -->
+      <p style="color: var(--stone-light); font-style: italic;">
+        Article body coming from Sanity Portable Text.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    // Reading progress bar
+    const bar = document.getElementById('progress');
+    if (bar) {
+      window.addEventListener('scroll', () => {
+        const h  = document.documentElement;
+        const pct = h.scrollTop / (h.scrollHeight - h.clientHeight);
+        bar.style.width = `${pct * 100}%`;
+      }, { passive: true });
+    }
+  </script>
+
+</Base>
+
+<style>
+.progress {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0;
+  background: var(--terra);
+  z-index: 200;
+  transition: width 0.1s linear;
+}
+
+.art-hero {
+  min-height: 60vh;
+  background-size: cover;
+  background-position: center;
+  display: flex; align-items: flex-end;
+  position: relative;
+}
+.art-hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+}
+.art-hero__inner {
+  position: relative; z-index: 1;
+  padding: 0 60px 56px;
+  color: var(--white);
+}
+.breadcrumb {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  opacity: 0.7; margin-bottom: 16px;
+}
+.breadcrumb a { opacity: 0.7; transition: opacity 0.2s; }
+.breadcrumb a:hover { opacity: 1; }
+.art-hero__cat { margin-bottom: 16px; border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
+.art-hero__title { font-size: 56px; font-weight: 300; max-width: 760px; }
+
+.art-intro { background: var(--cream-deep); padding: 60px; }
+.art-intro__inner { max-width: 720px; margin: 0 auto; }
+.art-intro__meta {
+  display: flex; gap: 24px;
+  font-family: var(--font-sans);
+  font-size: 12px; color: var(--stone-light);
+  margin-bottom: 24px;
+}
+.art-intro__lede {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--stone-dark);
+  line-height: 1.5;
+}
+
+.art-body { padding: 60px; }
+.art-body__inner {
+  max-width: 720px; margin: 0 auto;
+  font-size: 16px; line-height: 1.8; color: var(--stone-dark);
+}
+
+@media (max-width: 768px) {
+  .art-hero__inner { padding: 0 24px 40px; }
+  .art-hero__title { font-size: 36px; }
+  .art-intro { padding: 48px 24px; }
+  .art-intro__lede { font-size: 19px; }
+  .art-body { padding: 48px 24px 80px; }
+}
+</style>

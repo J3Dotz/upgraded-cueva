@@ -1,0 +1,214 @@
+---
+export const prerender = true;
+import Base from '../../layouts/Base.astro';
+import EnquiryForm from '../../components/EnquiryForm.astro';
+import RoomCard from '../../components/RoomCard.astro';
+import { client, urlFor } from '../../lib/sanity';
+import { roomBySlugQuery, roomSlugsQuery, roomsQuery } from '../../queries/rooms';
+import { loc, useTranslations } from '../../i18n/utils';
+
+export async function getStaticPaths() {
+  const slugs = await client.fetch<{ slug: string }[]>(roomSlugsQuery);
+  return slugs.map(({ slug }) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const lang     = 'en';
+const t        = useTranslations(lang);
+
+const [room, allRooms] = await Promise.all([
+  client.fetch(roomBySlugQuery, { slug }),
+  client.fetch(roomsQuery),
+]);
+
+if (!room) return Astro.redirect('/stay');
+
+const name        = loc(room.name, lang);
+const tagline     = loc(room.tagline, lang);
+const bedConfig   = loc(room.bedConfig, lang);
+const view        = loc(room.view, lang);
+const otherRooms  = allRooms.filter((r: any) => r.slug.current !== slug).slice(0, 3);
+
+const heroImage = room.images?.[0]
+  ? urlFor(room.images[0]).width(1600).height(900).auto('format').url()
+  : null;
+---
+
+<Base
+  title={name}
+  description={tagline}
+  activePage="stay"
+  lang={lang}
+>
+
+  <!-- Image hero -->
+  {heroImage && (
+    <section class="img-hero" style={`background-image: url('${heroImage}')`}>
+      <div class="img-hero__inner">
+        <p class="breadcrumb">
+          <a href="/stay">Stay</a> / {name}
+        </p>
+        <p class="img-hero__swatch" style={`background: ${room.swatchColor ?? 'var(--terra)'}`}></p>
+        <h1 class="img-hero__title">{name}</h1>
+        {tagline && <p class="img-hero__sub">{tagline}</p>}
+      </div>
+    </section>
+  )}
+
+  <!-- Intro -->
+  <section class="intro">
+    <div class="intro__inner">
+      <div class="intro__meta">
+        {bedConfig && <p>{bedConfig}</p>}
+        {view      && <p>{view}</p>}
+        {room.priceFrom && (
+          <p class="intro__price">
+            {t('stay.from')} <strong>€{room.priceFrom}</strong> {t('stay.night')}
+          </p>
+        )}
+        <a href="#enquire" class="btn-terra" style="margin-top: 24px; display: inline-block;">
+          {t('room.book')}
+        </a>
+      </div>
+      <div class="intro__desc">
+        <!-- Rich text rendered here once @portabletext/astro is added -->
+        <!-- description is a localeBlock — see docs for rendering Portable Text -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Image gallery -->
+  {room.images?.length > 1 && (
+    <section class="gallery">
+      <div class="gallery__grid">
+        {room.images.slice(1).map((img: any) => (
+          <img
+            src={urlFor(img).width(900).height(600).auto('format').url()}
+            alt={img.alt ?? name}
+            loading="lazy"
+            decoding="async"
+          />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Amenities -->
+  {room.amenities?.length > 0 && (
+    <section class="included">
+      <div class="included__inner">
+        <h2>{t('room.amenities')}</h2>
+        <ul class="amenities__grid">
+          {room.amenities.map((a: any) => (
+            <li>{loc(a.label, lang)}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- Enquiry form -->
+  <section class="enquire" id="enquire">
+    <div class="enquire__inner">
+      <h2>{t('room.book')}</h2>
+      <EnquiryForm lang={lang} roomSlug={slug} rooms={allRooms} />
+    </div>
+  </section>
+
+  <!-- Adjacent rooms -->
+  {otherRooms.length > 0 && (
+    <section class="adjacent">
+      <div class="adjacent__inner">
+        <h2>{t('room.other')}</h2>
+        <div class="adjacent__grid">
+          {otherRooms.map((r: any) => <RoomCard room={r} lang={lang} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+</Base>
+
+<style>
+.img-hero {
+  min-height: 70vh;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+.img-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+}
+.img-hero__inner {
+  position: relative; z-index: 1;
+  padding: 0 60px 60px;
+  color: var(--white);
+}
+.breadcrumb {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+.breadcrumb a { opacity: 0.7; transition: opacity 0.2s; }
+.breadcrumb a:hover { opacity: 1; }
+.img-hero__swatch { width: 32px; height: 4px; border-radius: 2px; margin-bottom: 12px; }
+.img-hero__title { font-size: 64px; font-weight: 300; }
+.img-hero__sub { font-size: 18px; opacity: 0.8; margin-top: 8px; }
+
+.intro { padding: 80px 60px; }
+.intro__inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 280px 1fr; gap: 80px;
+}
+.intro__meta { display: flex; flex-direction: column; gap: 8px; }
+.intro__price { margin-top: 16px; font-size: 13px; color: var(--stone-mid); }
+.intro__price strong { font-family: var(--font-serif); font-size: 28px; color: var(--stone-dark); }
+
+.gallery { padding: 0 40px 80px; }
+.gallery__grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+}
+.gallery__grid img { width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 2px; }
+
+.included { background: var(--cream-deep); padding: 80px 60px; }
+.included__inner { max-width: 1100px; margin: 0 auto; }
+.included h2 { font-size: 36px; margin-bottom: 40px; }
+.amenities__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px 24px; list-style: none;
+}
+.amenities__grid li { font-size: 14px; color: var(--stone-mid); }
+
+.enquire { padding: 80px 60px; }
+.enquire__inner { max-width: 760px; margin: 0 auto; }
+.enquire h2 { font-size: 48px; margin-bottom: 48px; }
+
+.adjacent { padding: 80px 40px 120px; background: var(--cream-deep); }
+.adjacent__inner { max-width: 1200px; margin: 0 auto; }
+.adjacent h2 { font-size: 36px; margin-bottom: 48px; }
+.adjacent__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+
+@media (max-width: 768px) {
+  .img-hero { min-height: 50vh; }
+  .img-hero__inner { padding: 0 24px 40px; }
+  .img-hero__title { font-size: 40px; }
+  .intro { padding: 60px 24px; }
+  .intro__inner { grid-template-columns: 1fr; gap: 40px; }
+  .gallery { padding: 0 24px 60px; }
+  .gallery__grid { grid-template-columns: 1fr; }
+  .included { padding: 60px 24px; }
+  .amenities__grid { grid-template-columns: 1fr 1fr; }
+  .enquire { padding: 60px 24px; }
+  .adjacent { padding: 60px 24px 80px; }
+  .adjacent__grid { grid-template-columns: 1fr; max-width: 360px; }
+}
+</style>

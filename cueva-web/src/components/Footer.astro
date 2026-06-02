@@ -1,0 +1,132 @@
+---
+import { useTranslations, prefix } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+  activePage?: string;
+}
+
+const { lang = 'en', activePage } = Astro.props;
+const t = useTranslations(lang);
+const p = prefix(lang);
+---
+
+<footer>
+  <div class="footer__inner">
+    <div class="footer__grid">
+
+      <div class="footer__brand-col">
+        <p class="footer__name">La Cueva de Miravet</p>
+        <p class="footer__tagline">{t('footer.tagline')}</p>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer navigation">
+        <a href={`${p}/stay`}        class:list={{ active: activePage === 'stay'        }}>{t('nav.stay')}</a>
+        <a href={`${p}/experiences`} class:list={{ active: activePage === 'experiences' }}>{t('nav.experiences')}</a>
+        <a href={`${p}/location`}    class:list={{ active: activePage === 'location'    }}>{t('nav.location')}</a>
+        <a href={`${p}/journal`}     class:list={{ active: activePage === 'journal'     }}>{t('nav.journal')}</a>
+        <a href={`${p}/book`}        class:list={{ active: activePage === 'book'        }}>{t('nav.book')}</a>
+      </nav>
+
+      <div class="footer__contact">
+        <a href="mailto:hola@lacuevademiravet.com" class="footer__email">
+          hola@lacuevademiravet.com
+        </a>
+        <p class="footer__address">Miravet, Tarragona<br />Catalonia, Spain</p>
+      </div>
+
+    </div>
+
+    <div class="footer__bottom">
+      <p class="footer__copy">
+        © {new Date().getFullYear()} La Cueva de Miravet.
+        {t('footer.rights')}.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+footer {
+  background: var(--forest);
+  color: rgba(255,255,255,0.65);
+  padding: 80px 40px 40px;
+}
+
+.footer__inner { max-width: 1200px; margin: 0 auto; }
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 60px;
+  padding-bottom: 60px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer__name {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.footer__tagline {
+  font-size: 13px;
+  font-style: italic;
+  opacity: 0.55;
+}
+
+.footer__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer__nav a {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+  transition: color 0.2s ease;
+}
+.footer__nav a:hover,
+.footer__nav a.active { color: var(--white); }
+
+.footer__email {
+  display: block;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  transition: color 0.2s;
+  margin-bottom: 16px;
+}
+.footer__email:hover { color: var(--white); }
+
+.footer__address {
+  font-size: 13px;
+  line-height: 1.7;
+  opacity: 0.45;
+}
+
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 32px;
+}
+
+.footer__copy {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  opacity: 0.35;
+}
+
+@media (max-width: 768px) {
+  footer { padding: 60px 24px 32px; }
+  .footer__grid { grid-template-columns: 1fr; gap: 40px; }
+  .footer__bottom { flex-direction: column; gap: 8px; }
+}
+</style>

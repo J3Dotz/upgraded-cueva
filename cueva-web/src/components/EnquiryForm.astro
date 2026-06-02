@@ -1,0 +1,229 @@
+---
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+  roomSlug?: string;  // Pre-select a room from the URL if coming from a room page
+  rooms?: Array<{ name: { en?: string; es?: string }; slug: { current: string } }>;
+}
+
+const { lang = 'en', roomSlug, rooms = [] } = Astro.props;
+const t = useTranslations(lang);
+
+// Room names in the current language
+function roomName(r: typeof rooms[number]) {
+  return lang === 'es' ? r.name.es ?? r.name.en ?? '' : r.name.en ?? '';
+}
+---
+
+<form class="enquiry-form" id="enquiryForm" novalidate>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="f-name">{t('book.name')}</label>
+      <input type="text"  id="f-name"     name="name"     required autocomplete="name" />
+    </div>
+    <div class="form-group">
+      <label for="f-email">{t('book.email')}</label>
+      <input type="email" id="f-email"    name="email"    required autocomplete="email" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="f-checkin">{t('book.checkin')}</label>
+      <input type="date"  id="f-checkin"  name="checkin"  required />
+    </div>
+    <div class="form-group">
+      <label for="f-checkout">{t('book.checkout')}</label>
+      <input type="date"  id="f-checkout" name="checkout" required />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="f-guests">{t('book.guests')}</label>
+      <select id="f-guests" name="guests">
+        <option>1</option>
+        <option selected>2</option>
+        <option>3</option>
+        <option>4</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="f-room">{t('book.room')}</label>
+      <select id="f-room" name="room">
+        <option value="">{t('book.room.any')}</option>
+        {rooms.map((r) => (
+          <option value={r.slug.current} selected={r.slug.current === roomSlug}>
+            {roomName(r)}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group form-group--full">
+    <label for="f-message">{t('book.message')}</label>
+    <textarea id="f-message" name="message" rows="4"></textarea>
+  </div>
+
+  <!-- Availability status (shown after date selection) -->
+  <div class="avail-status" id="availStatus" aria-live="polite"></div>
+
+  <button type="submit" class="btn-terra form-submit" id="submitBtn">
+    {t('book.submit')}
+  </button>
+
+  <p class="form-success" id="formSuccess" style="display:none">{t('book.success')}</p>
+  <p class="form-error"   id="formError"   style="display:none">{t('book.error')}</p>
+</form>
+
+<style>
+.enquiry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group--full { grid-column: 1 / -1; }
+
+label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stone-mid);
+}
+
+input, select, textarea {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--stone-dark);
+  background: var(--white);
+  border: 1px solid var(--stone-light);
+  border-radius: 2px;
+  padding: 12px 14px;
+  width: 100%;
+  transition: border-color 0.2s;
+  appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--forest);
+}
+
+textarea { resize: vertical; min-height: 100px; }
+
+.avail-status {
+  font-size: 13px;
+  min-height: 20px;
+}
+.avail-status.available   { color: var(--olive); }
+.avail-status.unavailable { color: var(--terra); }
+.avail-status.loading     { color: var(--stone-mid); }
+
+.form-submit { align-self: flex-start; margin-top: 8px; }
+
+.form-success {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--forest);
+  padding: 16px 0;
+}
+
+.form-error {
+  font-size: 13px;
+  color: var(--terra);
+  padding: 8px 0;
+}
+
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+// Availability check on date change
+async function checkAvailability() {
+  const roomSel  = document.getElementById('f-room')    as HTMLSelectElement;
+  const checkin  = (document.getElementById('f-checkin')  as HTMLInputElement).value;
+  const checkout = (document.getElementById('f-checkout') as HTMLInputElement).value;
+  const status   = document.getElementById('availStatus')!;
+
+  const slug = roomSel?.value;
+  if (!slug || !checkin || !checkout) {
+    status.textContent = '';
+    status.className = 'avail-status';
+    return;
+  }
+  if (checkin >= checkout) {
+    status.textContent = '';
+    return;
+  }
+
+  status.textContent = '…';
+  status.className = 'avail-status loading';
+
+  try {
+    const res  = await fetch(`/api/availability/${slug}?from=${checkin}&to=${checkout}`);
+    const data = await res.json() as { available: boolean };
+    if (data.available) {
+      status.textContent = '✓ Available for those dates';
+      status.className = 'avail-status available';
+    } else {
+      status.textContent = '✗ Not available — please choose different dates';
+      status.className = 'avail-status unavailable';
+    }
+  } catch {
+    status.textContent = '';
+    status.className = 'avail-status';
+  }
+}
+
+document.getElementById('f-checkin')?.addEventListener('change', checkAvailability);
+document.getElementById('f-checkout')?.addEventListener('change', checkAvailability);
+document.getElementById('f-room')?.addEventListener('change', checkAvailability);
+
+// Form submission
+document.getElementById('enquiryForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form   = e.target as HTMLFormElement;
+  const btn    = document.getElementById('submitBtn') as HTMLButtonElement;
+  const successEl = document.getElementById('formSuccess')!;
+  const errorEl   = document.getElementById('formError')!;
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    const res = await fetch('/api/enquiry', {
+      method: 'POST',
+      body: new FormData(form),
+    });
+
+    if (res.ok) {
+      form.style.display = 'none';
+      successEl.style.display = 'block';
+    } else {
+      throw new Error('Server error');
+    }
+  } catch {
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = btn.dataset.label ?? 'Send enquiry';
+  }
+});
+</script>

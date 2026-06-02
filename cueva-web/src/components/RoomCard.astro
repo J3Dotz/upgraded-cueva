@@ -1,0 +1,146 @@
+---
+import { urlFor } from '../lib/sanity';
+import { useTranslations, loc, prefix } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  room: {
+    name: { en?: string; es?: string };
+    slug: { current: string };
+    tagline?: { en?: string; es?: string };
+    swatchColor?: string;
+    bedConfig?: { en?: string; es?: string };
+    view?: { en?: string; es?: string };
+    priceFrom?: number;
+    coverImage?: { asset: { _ref: string }; alt?: string };
+  };
+  lang?: Lang;
+}
+
+const { room, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+const p = prefix(lang);
+
+const imgSrc = room.coverImage
+  ? urlFor(room.coverImage).width(640).height(800).auto('format').url()
+  : null;
+---
+
+<article class="room-card">
+  {imgSrc && (
+    <div class="room-card__img-wrap">
+      <img
+        src={imgSrc}
+        alt={room.coverImage?.alt ?? loc(room.name, lang)}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  )}
+  {!imgSrc && (
+    <div class="room-card__img-wrap room-card__img-wrap--placeholder"
+         style={`background: ${room.swatchColor ?? 'var(--stone-light)'}`}>
+    </div>
+  )}
+
+  <div class="room-card__body">
+    {room.swatchColor && (
+      <span class="room-card__swatch" style={`background: ${room.swatchColor}`}></span>
+    )}
+    <h3 class="room-card__name">{loc(room.name, lang)}</h3>
+    {room.bedConfig && (
+      <p class="room-card__meta">{loc(room.bedConfig, lang)}</p>
+    )}
+    {room.view && (
+      <p class="room-card__view">{loc(room.view, lang)}</p>
+    )}
+    <div class="room-card__foot">
+      {room.priceFrom && (
+        <p class="room-card__price">
+          {t('stay.from')} <strong>€{room.priceFrom}</strong> {t('stay.night')}
+        </p>
+      )}
+      <a href={`${p}/stay/${room.slug.current}`} class="room-card__cta terra-link">
+        {t('stay.view')}
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+.room-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--cream-deep);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.room-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+
+.room-card__img-wrap {
+  aspect-ratio: 4/5;
+  overflow: hidden;
+}
+.room-card__img-wrap--placeholder { aspect-ratio: 4/5; }
+
+.room-card__img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+.room-card:hover .room-card__img-wrap img { transform: scale(1.03); }
+
+.room-card__body {
+  padding: 24px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.room-card__swatch {
+  display: block;
+  width: 24px; height: 4px;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.room-card__name {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--stone-dark);
+}
+
+.room-card__meta {
+  font-size: 12px;
+  color: var(--stone-mid);
+  letter-spacing: 0.05em;
+}
+
+.room-card__view {
+  font-size: 12px;
+  color: var(--stone-light);
+  font-style: italic;
+}
+
+.room-card__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.room-card__price {
+  font-size: 13px;
+  color: var(--stone-mid);
+}
+.room-card__price strong {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--stone-dark);
+}
+</style>

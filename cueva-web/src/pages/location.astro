@@ -1,0 +1,162 @@
+---
+export const prerender = true;
+// Location page — content migrated from Location.html
+// Static map SVG, arrival modes, and nearby places can be
+// moved into Sanity fields later if needed.
+import Base from '../layouts/Base.astro';
+import { useTranslations } from '../i18n/utils';
+
+const lang = 'en';
+const t    = useTranslations(lang);
+---
+
+<Base
+  title="Location"
+  description="La Cueva de Miravet — Carretera de Benissanet km 2, 43747 Miravet, Tarragona, Catalunya."
+  activePage="location"
+  lang={lang}
+>
+
+  <!-- Hero -->
+  <section class="loc-hero">
+    <div class="loc-hero__inner">
+      <p class="loc-hero__label">Location</p>
+      <h1 class="loc-hero__title">{t('loc.hero.title')}</h1>
+      <p class="loc-hero__coords">40°07′09.5″N · 0°29′36.1″E · 412m</p>
+    </div>
+  </section>
+
+  <!-- Address + map -->
+  <section class="address">
+    <div class="address__inner">
+      <div class="address__text">
+        <h2>Find us</h2>
+        <p>Carretera de Benissanet km 2<br />43747 Miravet<br />Tarragona, Catalunya</p>
+        <p style="margin-top: 16px; color: var(--stone-mid); font-size: 14px;">
+          The property sits above the village on the road toward Benissanet,
+          just past the last olive grove. Follow signs for La Cueva.
+        </p>
+        <a
+          href="https://maps.google.com/?q=La+Cueva+de+Miravet,+Tarragona"
+          target="_blank"
+          rel="noopener"
+          class="terra-link"
+          style="margin-top: 24px;"
+        >
+          Open in Google Maps
+        </a>
+      </div>
+
+      <!-- Placeholder for the SVG map from Location.html -->
+      <div class="address__map">
+        <div class="map-placeholder">
+          <!-- Inline SVG map from Location.html goes here -->
+          <p>Map illustration</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Arrival modes -->
+  <section class="arrive">
+    <div class="arrive__inner">
+      <h2>{t('loc.directions')}</h2>
+      <div class="arrive__grid">
+        <div class="arrive-mode">
+          <h3>By car</h3>
+          <p>From Barcelona (2h): A-7 south toward Tarragona, exit 35 Móra d'Ebre. Follow C-12 through Riba-roja d'Ebre to Miravet. From Valencia (2.5h): A-7 north to same exit.</p>
+        </div>
+        <div class="arrive-mode">
+          <h3>By train</h3>
+          <p>Take Renfe to Móra la Nova (via Reus or Lleida). We arrange transfers from the station — let us know your arrival time when you book.</p>
+        </div>
+        <div class="arrive-mode">
+          <h3>By air</h3>
+          <p>Nearest airports: Reus (1h), Barcelona El Prat (2h), Valencia (2.5h). Car hire from any airport is straightforward; we can also arrange private transfers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="loc-cta">
+    <div class="loc-cta__inner">
+      <h2>Now you know the way. Pick a room.</h2>
+      <a href="/stay" class="btn-terra">View rooms</a>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+.loc-hero {
+  background: var(--forest);
+  min-height: 65vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 60px 80px;
+}
+.loc-hero__inner { max-width: 1000px; }
+.loc-hero__label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--terra);
+  margin-bottom: 16px;
+}
+.loc-hero__title {
+  font-family: var(--font-serif);
+  font-size: 80px;
+  font-weight: 300;
+  color: var(--white);
+}
+.loc-hero__coords {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.45);
+  margin-top: 16px;
+}
+
+.address { padding: 100px 60px; }
+.address__inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.address__text h2 { font-size: 40px; margin-bottom: 24px; }
+.address__text p { font-size: 15px; color: var(--stone-mid); line-height: 1.7; }
+
+.map-placeholder {
+  background: var(--cream-deep);
+  border-radius: 4px;
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stone-light);
+  font-style: italic;
+}
+
+.arrive { background: var(--forest); padding: 100px 60px; }
+.arrive__inner { max-width: 1100px; margin: 0 auto; }
+.arrive h2 { font-size: 48px; font-weight: 300; color: var(--white); margin-bottom: 60px; }
+.arrive__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.arrive-mode h3 { font-family: var(--font-serif); font-size: 24px; color: var(--white); margin-bottom: 12px; }
+.arrive-mode p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.75; }
+
+.loc-cta { padding: 120px 60px; text-align: center; }
+.loc-cta__inner h2 { font-size: 56px; font-weight: 300; margin-bottom: 40px; }
+
+@media (max-width: 768px) {
+  .loc-hero { padding: 0 24px 60px; min-height: 50vh; }
+  .loc-hero__title { font-size: 52px; }
+  .address { padding: 60px 24px; }
+  .address__inner { grid-template-columns: 1fr; gap: 40px; }
+  .arrive { padding: 60px 24px; }
+  .arrive__grid { grid-template-columns: 1fr; gap: 32px; }
+  .loc-cta { padding: 80px 24px; }
+  .loc-cta__inner h2 { font-size: 36px; }
+}
+</style>

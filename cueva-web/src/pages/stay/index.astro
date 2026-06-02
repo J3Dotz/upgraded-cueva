@@ -1,0 +1,82 @@
+---
+export const prerender = true;
+import Base from '../../layouts/Base.astro';
+import RoomCard from '../../components/RoomCard.astro';
+import { client } from '../../lib/sanity';
+import { roomsQuery } from '../../queries/rooms';
+import { useTranslations } from '../../i18n/utils';
+
+const lang = 'en';
+const t    = useTranslations(lang);
+const rooms = await client.fetch(roomsQuery);
+---
+
+<Base
+  title="Stay"
+  description="Seven rooms named for the plants that grow here — each distinct, each unhurried."
+  activePage="stay"
+  lang={lang}
+>
+
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="page-hero__inner">
+      <p class="page-hero__label">Stay</p>
+      <h1 class="page-hero__title">{t('stay.hero.title')}</h1>
+    </div>
+  </section>
+
+  <!-- Room grid -->
+  <section class="rooms">
+    <div class="rooms__grid">
+      {rooms.map((room: any) => (
+        <RoomCard room={room} lang={lang} />
+      ))}
+    </div>
+  </section>
+
+</Base>
+
+<style>
+/* Page hero (cream bg — nav adapts) */
+.page-hero {
+  background: var(--cream-deep);
+  padding: 160px 40px 80px;
+}
+.page-hero__inner { max-width: 800px; margin: 0 auto; }
+.page-hero__label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--terra);
+  margin-bottom: 16px;
+}
+.page-hero__title {
+  font-family: var(--font-serif);
+  font-size: 72px;
+  font-weight: 300;
+  color: var(--stone-dark);
+}
+
+/* Room grid */
+.rooms { padding: 80px 40px 120px; }
+.rooms__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+@media (max-width: 960px) {
+  .rooms__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .page-hero { padding: 130px 24px 60px; }
+  .page-hero__title { font-size: 48px; }
+  .rooms { padding: 60px 24px 80px; }
+  .rooms__grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+}
+</style>

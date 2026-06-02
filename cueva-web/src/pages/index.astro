@@ -1,0 +1,271 @@
+---
+export const prerender = true;
+// Homepage — content-driven via Sanity
+// Mirrors the structure of index.html in the wireframe repo
+import Base from '../layouts/Base.astro';
+import RoomCard from '../components/RoomCard.astro';
+import { client, urlFor } from '../lib/sanity';
+import { roomsQuery } from '../queries/rooms';
+import { featuredExperiencesQuery } from '../queries/experiences';
+import { journalPostsQuery } from '../queries/journal';
+import { siteSettingsQuery } from '../queries/settings';
+import { loc, formatDate } from '../i18n/utils';
+
+const lang = 'en';
+
+const [rooms, experiences, posts, settings] = await Promise.all([
+  client.fetch(roomsQuery),
+  client.fetch(featuredExperiencesQuery),
+  client.fetch(`${journalPostsQuery} [0..2]`),
+  client.fetch(siteSettingsQuery),
+]);
+
+const heroTitle    = loc(settings?.heroTitle,    lang) || 'A room inside the rock. Open sky above it.';
+const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cliffs of Miravet, Catalunya.';
+---
+
+<Base
+  title="Home"
+  description={heroSubtitle}
+  lang={lang}
+>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero__inner">
+      <h1 class="hero__title">{heroTitle}</h1>
+      <p class="hero__sub">{heroSubtitle}</p>
+      <div class="hero__cta">
+        <a href="/stay" class="btn-terra">Explore rooms</a>
+        <a href="/book" class="hero__link">Book directly →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Room preview ===== -->
+  <section class="rooms-preview">
+    <div class="rooms-preview__header">
+      <p class="rooms-preview__label">Stay</p>
+      <h2>Seven rooms, each named for what grows here.</h2>
+      <a href="/stay" class="terra-link">All rooms</a>
+    </div>
+    <div class="rooms-preview__grid">
+      {rooms.slice(0, 3).map((room: any) => (
+        <RoomCard room={room} lang={lang} />
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== Experiences preview ===== -->
+  {experiences.length > 0 && (
+    <section class="exp-preview">
+      <div class="exp-preview__inner">
+        <div class="exp-preview__header">
+          <p class="section-label">Experiences</p>
+          <h2>The land is part of the stay.</h2>
+          <a href="/experiences" class="terra-link">All experiences</a>
+        </div>
+        <div class="exp-preview__grid">
+          {experiences.map((exp: any) => {
+            const imgSrc = exp.image
+              ? urlFor(exp.image).width(600).height(500).auto('format').url()
+              : null;
+            return (
+              <article class="exp-tile">
+                {imgSrc && (
+                  <div class="exp-tile__img">
+                    <img src={imgSrc} alt={exp.image?.alt ?? loc(exp.title, lang)} loading="lazy" />
+                  </div>
+                )}
+                <h3>{loc(exp.title, lang)}</h3>
+                <a href="/experiences" class="terra-link">Discover</a>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ===== Journal preview ===== -->
+  {posts.length > 0 && (
+    <section class="journal-preview">
+      <div class="journal-preview__header">
+        <p class="section-label">Journal</p>
+        <h2>Notes from the land.</h2>
+        <a href="/journal" class="terra-link">All entries</a>
+      </div>
+      <div class="journal-preview__grid">
+        {posts.map((post: any) => {
+          const imgSrc = post.coverImage
+            ? urlFor(post.coverImage).width(500).height(360).auto('format').url()
+            : null;
+          return (
+            <article class="journal-tile" data-animate>
+              {imgSrc && (
+                <a href={`/journal/${post.slug.current}`} class="journal-tile__img">
+                  <img src={imgSrc} alt={post.coverImage?.alt ?? loc(post.title, lang)} loading="lazy" />
+                </a>
+              )}
+              <p class="journal-tile__cat">{post.category}</p>
+              <h3><a href={`/journal/${post.slug.current}`}>{loc(post.title, lang)}</a></h3>
+              <span class="journal-tile__date">{formatDate(post.publishedAt, lang)}</span>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  <!-- ===== CTA strip ===== -->
+  <section class="cta-strip">
+    <div class="cta-strip__inner">
+      <h2>Ready to arrive?</h2>
+      <a href="/book" class="btn-terra">Book now</a>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+/* ===== Hero ===== */
+.hero {
+  background: var(--forest);
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  padding: 120px 60px 80px;
+}
+.hero__inner { max-width: 800px; }
+.hero__title {
+  font-family: var(--font-serif);
+  font-size: 84px;
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1.08;
+  margin-bottom: 24px;
+}
+.hero__sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 48px;
+}
+.hero__cta { display: flex; align-items: center; gap: 32px; }
+.hero__link {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.7);
+  transition: color 0.2s;
+}
+.hero__link:hover { color: var(--white); }
+
+/* ===== Room preview ===== */
+.rooms-preview { padding: 100px 40px 60px; }
+.rooms-preview__header {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 48px;
+}
+.rooms-preview__header h2 {
+  font-size: 40px; font-weight: 300;
+}
+.rooms-preview__label {
+  font-family: var(--font-sans); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.14em; color: var(--terra);
+}
+.rooms-preview__grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+
+/* ===== Section label ===== */
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--terra);
+}
+
+/* ===== Experiences preview ===== */
+.exp-preview { background: var(--cream-deep); padding: 100px 40px; }
+.exp-preview__inner { max-width: 1200px; margin: 0 auto; }
+.exp-preview__header {
+  display: flex; flex-direction: column; gap: 12px; margin-bottom: 48px;
+}
+.exp-preview__header h2 { font-size: 48px; font-weight: 300; }
+.exp-preview__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+.exp-tile { display: flex; flex-direction: column; gap: 12px; }
+.exp-tile__img { overflow: hidden; border-radius: 2px; }
+.exp-tile__img img {
+  width: 100%; aspect-ratio: 4/3; object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+.exp-tile:hover .exp-tile__img img { transform: scale(1.03); }
+.exp-tile h3 { font-size: 22px; }
+
+/* ===== Journal preview ===== */
+.journal-preview { padding: 100px 40px; }
+.journal-preview__header {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 48px;
+}
+.journal-preview__header h2 { font-size: 40px; font-weight: 300; }
+.journal-preview__grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+.journal-tile { display: flex; flex-direction: column; gap: 10px; }
+.journal-tile__img { display: block; overflow: hidden; border-radius: 2px; }
+.journal-tile__img img {
+  width: 100%; aspect-ratio: 3/2; object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+.journal-tile:hover .journal-tile__img img { transform: scale(1.03); }
+.journal-tile__cat {
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--terra);
+}
+.journal-tile h3 { font-size: 22px; line-height: 1.2; }
+.journal-tile h3 a:hover { color: var(--terra); }
+.journal-tile__date { font-size: 11px; color: var(--stone-light); }
+
+/* ===== CTA strip ===== */
+.cta-strip { background: var(--terra); padding: 100px 60px; }
+.cta-strip__inner {
+  max-width: 800px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center; gap: 40px;
+}
+.cta-strip h2 { font-size: 48px; font-weight: 300; color: var(--white); }
+.cta-strip .btn-terra {
+  background: var(--white);
+  color: var(--terra);
+  white-space: nowrap;
+}
+.cta-strip .btn-terra:hover { background: var(--cream); }
+
+@media (max-width: 1024px) {
+  .rooms-preview__header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .journal-preview__header { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+@media (max-width: 768px) {
+  .hero { padding: 130px 24px 60px; min-height: 70vh; }
+  .hero__title { font-size: 52px; }
+  .rooms-preview { padding: 60px 24px; }
+  .rooms-preview__grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .exp-preview { padding: 60px 24px; }
+  .exp-preview__grid { grid-template-columns: 1fr; }
+  .journal-preview { padding: 60px 24px; }
+  .journal-preview__grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .cta-strip { padding: 60px 24px; }
+  .cta-strip__inner { flex-direction: column; text-align: center; }
+  .cta-strip h2 { font-size: 36px; }
+}
+</style>

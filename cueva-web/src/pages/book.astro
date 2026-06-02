@@ -1,0 +1,134 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import { client } from '../lib/sanity';
+import { roomsQuery } from '../queries/rooms';
+import { useTranslations } from '../i18n/utils';
+
+const lang  = 'en';
+const t     = useTranslations(lang);
+const rooms = await client.fetch(roomsQuery);
+---
+
+<Base
+  title="Book Now"
+  description="Reserve your stay at La Cueva de Miravet. Enquire directly — we'll confirm within 24 hours."
+  transparentNav={false}
+  activePage="book"
+  lang={lang}
+>
+
+  <main class="book-page" id="form">
+
+    <div class="book-page__aside">
+      <p class="book-page__label">Reserve</p>
+      <h1 class="book-page__title">{t('book.hero.title')}</h1>
+      <p class="book-page__note">
+        We respond to every enquiry within 24 hours. For same-day requests,
+        email <a href="mailto:hola@lacuevademiravet.com">hola@lacuevademiravet.com</a> directly.
+      </p>
+      <div class="book-page__rooms">
+        {rooms.map((r: any) => (
+          <a href={`/stay/${r.slug.current}`} class="room-pill">
+            <span class="room-pill__swatch" style={`background: ${r.swatchColor ?? 'var(--stone-light)'}`}></span>
+            {r.name?.en}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="book-page__form">
+      <EnquiryForm lang={lang} rooms={rooms} />
+    </div>
+
+  </main>
+
+</Base>
+
+<style>
+.book-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-top: 80px; /* clear fixed nav */
+}
+
+.book-page__aside {
+  background: var(--forest);
+  color: var(--white);
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+.book-page__label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--terra);
+}
+
+.book-page__title {
+  font-family: var(--font-serif);
+  font-size: 56px;
+  font-weight: 300;
+  line-height: 1.1;
+}
+
+.book-page__note {
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+}
+.book-page__note a {
+  color: rgba(255,255,255,0.9);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  transition: border-color 0.2s;
+}
+.book-page__note a:hover { border-color: var(--white); }
+
+.book-page__rooms {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.room-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.6);
+  transition: color 0.2s;
+}
+.room-pill:hover { color: var(--white); }
+.room-pill__swatch {
+  display: block;
+  width: 20px; height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.book-page__form {
+  background: var(--cream);
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .book-page { grid-template-columns: 1fr; }
+  .book-page__aside { padding: 80px 24px 48px; }
+  .book-page__title { font-size: 40px; }
+  .book-page__form  { padding: 48px 24px 80px; }
+}
+</style>

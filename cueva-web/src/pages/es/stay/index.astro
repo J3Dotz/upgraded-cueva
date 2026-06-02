@@ -1,0 +1,50 @@
+---
+export const prerender = true;
+// Spanish Stay page
+import Base from '../../../layouts/Base.astro';
+import RoomCard from '../../../components/RoomCard.astro';
+import { client } from '../../../lib/sanity';
+import { roomsQuery } from '../../../queries/rooms';
+import { useTranslations } from '../../../i18n/utils';
+
+const lang  = 'es';
+const t     = useTranslations(lang);
+const rooms = await client.fetch(roomsQuery);
+---
+
+<Base
+  title="Alojamiento"
+  description="Siete habitaciones nombradas por las plantas que crecen aquí — cada una distinta, cada una sin prisa."
+  activePage="stay"
+  lang={lang}
+>
+  <section class="page-hero">
+    <div class="page-hero__inner">
+      <p class="page-hero__label">Alojamiento</p>
+      <h1 class="page-hero__title">{t('stay.hero.title')}</h1>
+    </div>
+  </section>
+
+  <section class="rooms">
+    <div class="rooms__grid">
+      {rooms.map((room: any) => (
+        <RoomCard room={room} lang={lang} />
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+.page-hero { background: var(--cream-deep); padding: 160px 40px 80px; }
+.page-hero__inner { max-width: 800px; margin: 0 auto; }
+.page-hero__label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra); margin-bottom: 16px; }
+.page-hero__title { font-family: var(--font-serif); font-size: 72px; font-weight: 300; color: var(--stone-dark); }
+.rooms { padding: 80px 40px 120px; }
+.rooms__grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+@media (max-width: 768px) {
+  .page-hero { padding: 130px 24px 60px; }
+  .page-hero__title { font-size: 48px; }
+  .rooms { padding: 60px 24px 80px; }
+  .rooms__grid { grid-template-columns: 1fr; }
+}
+</style>

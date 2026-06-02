@@ -1,0 +1,141 @@
+/* ==========================================
+   Google Fonts
+   ========================================== */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap');
+
+/* ==========================================
+   Design Tokens
+   ========================================== */
+:root {
+  /* Palette */
+  --cream:      #F5EFE0;
+  --cream-deep: #EDE4D0;
+  --stone-dark: #2C2B28;
+  --stone-mid:  #6B6860;
+  --stone-light:#B5B0A8;
+  --terra:      #C4622D;
+  --olive:      #7A8C5E;
+  --forest:     #2D4A3E;
+  --forest-deep:#243A30;
+  --white:      #FFFFFF;
+
+  /* Typography */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'Inter', system-ui, sans-serif;
+
+  /* Easing */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ==========================================
+   Reset
+   ========================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--stone-dark);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, video { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration: none; }
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+/* ==========================================
+   Utility classes
+   ========================================== */
+
+/* Animate-in — triggered by IntersectionObserver in Base layout */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+[data-animate].visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Terra text link with animated arrow */
+.terra-link {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--terra);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.terra-link::after {
+  content: "→";
+  display: inline-block;
+  transition: transform 0.3s var(--ease);
+}
+.terra-link:hover::after { transform: translateX(4px); }
+
+/* Pill / tag label */
+.pill {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid currentColor;
+}
+
+/* Primary CTA button */
+.btn-terra {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--terra);
+  padding: 14px 28px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.btn-terra:hover { background: #b1561f; transform: translateY(-1px); }
+
+/* Ghost button */
+.btn-ghost {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--forest);
+  background: transparent;
+  padding: 12px 24px;
+  border-radius: 2px;
+  border: 1px solid var(--forest);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-ghost:hover { background: var(--forest); color: var(--white); }
