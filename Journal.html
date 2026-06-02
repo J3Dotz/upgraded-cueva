@@ -304,15 +304,13 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    transition: gap 0.25s ease;
   }
   .terra-link::after {
     content: "→";
     display: inline-block;
-    transition: transform 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
   }
-  .terra-link:hover { gap: 14px; }
-  .terra-link:hover::after { transform: translateX(3px); }
+  .terra-link:hover::after { transform: translateX(4px); }
 
   /* ===== Filter + Grid ===== */
   .archive {
