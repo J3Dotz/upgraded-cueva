@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Find Us — La Cueva de Miravet</title>
+<title>Location — La Cueva de Miravet</title>
 <meta name="description" content="How to arrive at La Cueva de Miravet — a 19th-century Masia on a mountaintop in Cabanes, Castellón. By road, rail or air. With the correct directions (because Google Maps gets it wrong)." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +23,8 @@
 
     --font-serif:   'Cormorant Garamond', Georgia, serif;
     --font-sans:    'Inter', system-ui, sans-serif;
+
+    --ease:         cubic-bezier(0.22, 0.61, 0.36, 1);
 
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   }
@@ -96,11 +98,20 @@
   .nav__lang button { color: inherit; font-size: 11px; transition: color 0.2s; }
   .nav__lang button.active, .nav__lang button:hover { color: var(--white); }
   .nav__burger { display: none; }
+
+  /* Mobile menu */
   .mobile-menu {
-    position: fixed; inset: 0; background: var(--forest);
-    z-index: 99; display: none;
-    flex-direction: column; justify-content: center; align-items: center; gap: 28px;
-    transform: translateX(100%); transition: transform 0.4s ease;
+    position: fixed;
+    inset: 0;
+    background: var(--forest);
+    z-index: 99;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 28px;
+    transform: translateX(100%);
+    transition: transform 0.4s ease;
   }
   .mobile-menu.open { transform: translateX(0); }
 
@@ -364,14 +375,16 @@
     gap: 24px;
     padding: 22px 4px;
     border-bottom: 1px solid var(--stone-light);
-    transition: padding 0.2s ease;
+    transition: border-color 0.4s var(--ease);
   }
-  .route:hover { padding-left: 8px; padding-right: 0; }
+  .route:hover { border-color: var(--terra); }
   .route__left {
     display: flex;
     align-items: center;
     gap: 18px;
+    transition: transform 0.45s var(--ease);
   }
+  .route:hover .route__left { transform: translateX(6px); }
   .route__from {
     font-family: var(--font-sans);
     font-size: 10px;
@@ -398,10 +411,9 @@
     align-items: center;
     gap: 8px;
     white-space: nowrap;
-    transition: gap 0.2s ease;
   }
-  .route:hover .route__arrow { gap: 14px; }
-  .route__arrow svg { width: 16px; height: 10px; }
+  .route__arrow svg { width: 16px; height: 10px; transition: transform 0.45s var(--ease); }
+  .route:hover .route__arrow svg { transform: translateX(5px); }
 
   /* Map */
   .map {
@@ -522,7 +534,7 @@
     display: block;
   }
 
-  /* Labels floated on map (e.g., Cabanes, Mediterranean) */
+  /* Labels floated on map */
   .map__label {
     position: absolute;
     font-family: var(--font-sans);
@@ -705,12 +717,17 @@
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    transition: transform 0.5s var(--ease);
   }
+  .place:hover { transform: translateY(-6px); }
   .place__img-wrap {
     overflow: hidden;
     border-radius: 200px 200px 0 0;
     position: relative;
+    box-shadow: 0 0 0 -10px rgba(44,42,36,0);
+    transition: box-shadow 0.5s var(--ease);
   }
+  .place:hover .place__img-wrap { box-shadow: 0 26px 50px -22px rgba(44,42,36,0.5); }
   .place__img {
     width: 100%;
     aspect-ratio: 3 / 4;
@@ -718,10 +735,11 @@
     background-blend-mode: multiply;
     background-size: cover;
     background-position: center;
-    transition: transform 0.6s ease;
+    transition: transform 0.7s var(--ease);
+    will-change: transform;
     position: relative;
   }
-  .place:hover .place__img { transform: scale(1.04); }
+  .place:hover .place__img { transform: scale(1.06); }
   .place__img::after {
     content: "";
     position: absolute;
@@ -756,7 +774,7 @@
     font-weight: 400;
     color: var(--stone-dark);
     line-height: 1.1;
-    transition: color 0.2s ease;
+    transition: color 0.3s var(--ease);
   }
   .place:hover .place__name { color: var(--terra); }
   .place__sub {
@@ -799,7 +817,9 @@
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    transition: transform 0.45s var(--ease);
   }
+  .place:hover .place__arrow { transform: translateX(4px); }
 
   /* ===== CTA strip ===== */
   .ready {
@@ -908,10 +928,21 @@
     .nav { padding: 18px 24px; }
     .nav.scrolled { padding: 14px 24px; }
     .nav__center, .nav__right .nav__lang, .nav__right .nav__book { display: none; }
-    .nav__burger { display: inline-flex; flex-direction: column; gap: 5px; padding: 4px; }
+    .nav__burger {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
     .nav__burger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
     .mobile-menu { display: flex; }
-    .mobile-menu a { font-family: var(--font-serif); font-size: 28px; color: var(--white); font-weight: 300; }
+    .mobile-menu a {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      color: var(--white);
+      font-weight: 300;
+    }
     .mobile-menu .nav__book { font-family: var(--font-sans); font-size: 12px; margin-top: 20px; }
 
     h1 { font-size: 64px; }
@@ -1035,14 +1066,14 @@
         </div>
         <div class="address__stat">
           <span class="k">Valencia</span>
-          <span class="v">1 h 15<small>By car, CV-1'</small></span>
+          <span class="v">1 h 15<small>By car, CV-10</small></span>
         </div>
         <div class="address__stat">
           <span class="k">Barcelona</span>
           <span class="v">3 hrs<small>By car</small></span>
         </div>
         <div class="address__stat">
-          <span class="k">OROPESA DEL MAR</span>
+          <span class="k">Oropesa del Mar</span>
           <span class="v">20 min<small>Nearest train station</small></span>
         </div>
       </div>
@@ -1089,7 +1120,7 @@
       </div>
     </div>
 
-    <!-- ===== Map placeholder ===== -->
+    <!-- ===== Map ===== -->
     <div class="map" data-animate aria-label="Map showing La Cueva de Miravet">
       <!-- Decorative SVG map: contour lines + faint coast -->
       <svg class="map__svg" viewBox="0 0 600 650" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -1207,7 +1238,7 @@
       <span class="label">How to arrive</span>
       <h2>Three ways to the mountain.<span class="italic">All of them quiet by the end.</span></h2>
     </div>
-    <p class="note">However you come, the last fifteen minutes feel like the trip is just beginning. Olive groves, then a single-track road, then the cave.</p>
+    <p class="note">However you come, the last fifteen minutes feel like the trip is just beginning. Olive groves, then a single-track road, then open sky.</p>
   </div>
 
   <div class="arrive__grid">
@@ -1414,11 +1445,13 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Mobile menu burger
+  // Mobile menu
   const burger = document.getElementById('burger');
-  burger && burger.addEventListener('click', () => {
-    document.documentElement.classList.toggle('menu-open');
-  });
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+  }
 
   // Lang switch
   document.querySelectorAll('.nav__lang button').forEach(btn => {
