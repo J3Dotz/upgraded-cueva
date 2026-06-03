@@ -41,13 +41,20 @@ const wireframeData: Record<string, {
 const wf = wireframeData[slug as keyof typeof wireframeData] ?? wireframeData.almendro;
 
 // Resolve values — Sanity first, wireframe fallback
-const roomName    = (room?.name  ? loc(room.name, lang)    : null) ?? wf.name;
-const roomType    = (room?.tagline ? loc(room.tagline, lang) : null) ?? wf.type;
-const roomTagline = wf.tagline;
-const roomPrice   = room?.priceFrom ?? wf.price;
-const roomColor   = room?.swatchColor ?? wf.color;
-const roomBed     = (room?.bedConfig ? loc(room.bedConfig, lang) : null) ?? wf.bed;
-const roomView    = (room?.view ? loc(room.view, lang) : null) ?? wf.view;
+const roomName            = (room?.name        ? loc(room.name, lang)        : null) ?? wf.name;
+const roomNameTranslation = room?.nameTranslation ?? wf.nameEs;
+const roomSuiteType       = (room?.suiteType   ? loc(room.suiteType, lang)   : null) ?? wf.type;
+const roomTagline         = (room?.tagline      ? loc(room.tagline, lang)     : null) ?? wf.tagline;
+const roomPrice           = room?.priceFrom ?? wf.price;
+const roomColor           = room?.swatchColor ?? wf.color;
+const roomBed             = (room?.bedConfig   ? loc(room.bedConfig, lang)   : null) ?? wf.bed;
+const roomView            = (room?.view        ? loc(room.view, lang)        : null) ?? wf.view;
+const roomBalcony         = (room?.balcony     ? loc(room.balcony, lang)     : null) ?? wf.balcony;
+const roomBathroom        = (room?.bathroom    ? loc(room.bathroom, lang)    : null) ?? wf.bathroom;
+const roomMaterials       = (room?.materials   ? loc(room.materials, lang)   : null) ?? wf.materials;
+const roomHeating         = (room?.heating     ? loc(room.heating, lang)     : null) ?? wf.heating;
+const roomSleeps          = room?.sleeps ? `${room.sleeps} guests` : wf.sleeps;
+const roomSize            = room?.size ?? wf.size;
 
 const heroImgSrc = room?.images?.[0]
   ? urlFor(room.images[0]).width(1600).height(900).auto('format').url()
@@ -96,18 +103,18 @@ const galleryPlaceholders = [
 
     <div class="img-hero__inner">
       <div class="img-hero__title-block">
-        <span class="label img-hero__label">{roomType}</span>
-        <h1>{roomName} <span class="italic-tag">/ {wf.nameEs}</span></h1>
+        <span class="label img-hero__label">{roomSuiteType}</span>
+        <h1>{roomName} <span class="italic-tag">/ {roomNameTranslation}</span></h1>
         <p class="img-hero__sub">{roomTagline}</p>
       </div>
       <div class="img-hero__meta">
         <div class="img-hero__meta-item">
           <span class="img-hero__meta-label">Sleeps</span>
-          <span class="img-hero__meta-value">{wf.sleeps}</span>
+          <span class="img-hero__meta-value">{roomSleeps}</span>
         </div>
         <div class="img-hero__meta-item">
           <span class="img-hero__meta-label">Size</span>
-          <span class="img-hero__meta-value">{wf.size}</span>
+          <span class="img-hero__meta-value">{roomSize}</span>
         </div>
         <div class="img-hero__meta-item">
           <span class="img-hero__meta-label">From</span>
@@ -133,13 +140,13 @@ const galleryPlaceholders = [
           <span class="label features__label">The Particulars</span>
           <ul class="features__list">
             <li><span class="key">Bed</span><span class="val">{roomBed}</span></li>
-            <li><span class="key">Size</span><span class="val">{wf.size}</span></li>
+            <li><span class="key">Size</span><span class="val">{roomSize}</span></li>
             <li><span class="key">View</span><span class="val">{roomView}</span></li>
-            <li><span class="key">Balcony</span><span class="val">{wf.balcony}</span></li>
-            <li><span class="key">Bathroom</span><span class="val">{wf.bathroom}</span></li>
-            <li><span class="key">Materials</span><span class="val">{wf.materials}</span></li>
-            <li><span class="key">Sleeps</span><span class="val">{wf.sleeps}</span></li>
-            <li><span class="key">Heating</span><span class="val">{wf.heating}</span></li>
+            <li><span class="key">Balcony</span><span class="val">{roomBalcony}</span></li>
+            <li><span class="key">Bathroom</span><span class="val">{roomBathroom}</span></li>
+            <li><span class="key">Materials</span><span class="val">{roomMaterials}</span></li>
+            <li><span class="key">Sleeps</span><span class="val">{roomSleeps}</span></li>
+            <li><span class="key">Heating</span><span class="val">{roomHeating}</span></li>
           </ul>
         </div>
       </div>
