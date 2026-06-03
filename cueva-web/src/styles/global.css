@@ -8,13 +8,13 @@
    ========================================== */
 :root {
   /* Palette */
-  --cream:      #F5EFE0;
-  --cream-deep: #EDE4D0;
-  --stone-dark: #2C2B28;
+  --cream:      #FDFCF8;
+  --cream-deep: #F0EDE6;
+  --stone-dark: #2C2A24;
   --stone-mid:  #6B6860;
   --stone-light:#B5B0A8;
   --terra:      #C4622D;
-  --olive:      #7A8C5E;
+  --olive:      #4A5E45;
   --forest:     #2D4A3E;
   --forest-deep:#243A30;
   --white:      #FFFFFF;
@@ -115,7 +115,7 @@ h1, h2, h3, h4, h5 {
   color: var(--white);
   background: var(--terra);
   padding: 14px 28px;
-  border-radius: 2px;
+  border-radius: 100px;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
@@ -133,7 +133,7 @@ h1, h2, h3, h4, h5 {
   color: var(--forest);
   background: transparent;
   padding: 12px 24px;
-  border-radius: 2px;
+  border-radius: 100px;
   border: 1px solid var(--forest);
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
