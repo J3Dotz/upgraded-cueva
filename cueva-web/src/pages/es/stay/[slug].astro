@@ -2,97 +2,259 @@
 export const prerender = true;
 // Spanish room detail — mirrors /stay/[slug].astro with lang='es'
 import Base from '../../../layouts/Base.astro';
-import EnquiryForm from '../../../components/EnquiryForm.astro';
-import RoomCard from '../../../components/RoomCard.astro';
 import { client, urlFor } from '../../../lib/sanity';
 import { roomBySlugQuery, roomSlugsQuery, roomsQuery } from '../../../queries/rooms';
-import { loc, useTranslations } from '../../../i18n/utils';
+import { loc, prefix } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
-  const slugs = await client.fetch<{ slug: string }[]>(roomSlugsQuery);
-  return slugs.map(({ slug }) => ({ params: { slug } }));
+  const sanityRooms = await client.fetch<{ slug: string }[]>(roomSlugsQuery);
+  const wireframeSlugs = ['olivo', 'lavanda', 'laurel', 'tomillo', 'almendro', 'roble', 'hinojo'];
+  const allSlugs = new Set([...sanityRooms.map((r: any) => r.slug), ...wireframeSlugs]);
+  return Array.from(allSlugs).map(slug => ({ params: { slug } }));
 }
 
 const { slug } = Astro.params;
-const lang     = 'es';
-const t        = useTranslations(lang);
+const lang = 'es';
+const p    = prefix(lang);
 
 const [room, allRooms] = await Promise.all([
   client.fetch(roomBySlugQuery, { slug }),
   client.fetch(roomsQuery),
 ]);
 
-if (!room) return Astro.redirect('/es/stay');
+const wireframeData: Record<string, any> = {
+  olivo:    { type: 'Suite Olivo',     name: 'Olivo',    nameEn: 'The Olive Tree',  tagline: 'Excavado en la roca natural. 16°C constantes, iluminado por vela y tragaluz.',          price: 420, color: '#5C4838' },
+  lavanda:  { type: 'Suite Lavanda',   name: 'Lavanda',  nameEn: 'The Lavender',    tagline: 'Terraza privada con vistas al mar, cama de día y bañera exterior.',                     price: 380, color: '#8FA59A' },
+  laurel:   { type: 'Suite Laurel',    name: 'Laurel',   nameEn: 'The Bay Laurel',  tagline: 'Ventanas de suelo a techo orientadas al sur. Montañas y Mediterráneo.',              price: 340, color: '#B8A48A' },
+  tomillo:  { type: 'Suite Tomillo',   name: 'Tomillo',  nameEn: 'The Thyme',       tagline: 'Vigas originales del siglo XIX. Una cama doble bajo la ventana del pajar.',            price: 310, color: '#7E6E58' },
+  almendro: { type: 'Suite Almendro',  name: 'Almendro', nameEn: 'The Almond Tree', tagline: 'Cama de matrimonio, vigas expuestas, balcón privado y una luz que reencuadra el día.', price: 290, color: '#6F8366' },
+  roble:    { type: 'Suite Roble',     name: 'Roble',    nameEn: 'The Oak',         tagline: 'Madera cálida, terraza privada con hamacas y vistas al Mediterráneo.',                 price: 260, color: '#9A8A74' },
+  hinojo:   { type: 'Suite Hinojo',    name: 'Hinojo',   nameEn: 'The Fennel',      tagline: 'Techos abovedados de ladrillo, una ventana profunda. Fresco y silencioso todo el año.', price: 240, color: '#4A3F35' },
+};
 
-const name       = loc(room.name, lang);
-const otherRooms = allRooms.filter((r: any) => r.slug.current !== slug).slice(0, 3);
+const wf = wireframeData[slug as string] ?? wireframeData.almendro;
+const roomName  = (room?.name ? loc(room.name, lang) : null) ?? wf.name;
+const roomType  = (room?.tagline ? loc(room.tagline, lang) : null) ?? wf.type;
+const roomPrice = room?.priceFrom ?? wf.price;
+const roomColor = room?.swatchColor ?? wf.color;
 
-const heroImage = room.images?.[0]
+const heroImgSrc = room?.images?.[0]
   ? urlFor(room.images[0]).width(1600).height(900).auto('format').url()
   : null;
+const cardImgSrc = room?.images?.[1] ?? room?.images?.[0]
+  ? urlFor((room?.images?.[1] ?? room?.images?.[0])).width(640).height(860).auto('format').url()
+  : null;
+
+const otherRooms = allRooms.length > 0
+  ? allRooms.filter((r: any) => r.slug?.current !== slug).slice(0, 3)
+  : Object.entries(wireframeData).filter(([s]) => s !== slug).slice(0, 3).map(([s, d]) => ({ slug: { current: s }, ...d }));
 ---
 
-<Base title={name} activePage="stay" lang={lang}>
+<Base title={`${roomName} · La Cueva de Miravet`} description={wf.tagline} activePage="stay" lang={lang}>
 
-  {heroImage && (
-    <section class="img-hero" style={`background-image: url('${heroImage}')`}>
-      <div class="img-hero__inner">
-        <p class="breadcrumb"><a href="/es/stay">Alojamiento</a> / {name}</p>
-        <h1>{name}</h1>
+  <section
+    class="img-hero"
+    style={`background-color: ${roomColor}; background-image: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 35%, rgba(0,0,0,0.65) 100%), var(--grain)${heroImgSrc ? `, url('${heroImgSrc}')` : ''};`}
+  >
+    <nav class="breadcrumb" aria-label="Ruta">
+      <a href="/es/">Inicio</a><span class="sep">/</span>
+      <a href={`${p}/stay`}>Alojamiento</a><span class="sep">/</span>
+      <span class="current">{roomName}</span>
+    </nav>
+    <div class="img-hero__inner">
+      <div class="img-hero__title-block">
+        <span class="label img-hero__label">{roomType}</span>
+        <h1>{roomName} <span class="italic-tag">/ {wf.nameEn}</span></h1>
+        <p class="img-hero__sub">{wf.tagline}</p>
       </div>
-    </section>
-  )}
+      <div class="img-hero__meta">
+        <div class="img-hero__meta-item"><span class="img-hero__meta-label">Huéspedes</span><span class="img-hero__meta-value">2</span></div>
+        <div class="img-hero__meta-item"><span class="img-hero__meta-label">Desde</span><span class="img-hero__meta-value">€{roomPrice} / noche</span></div>
+      </div>
+    </div>
+  </section>
 
   <section class="intro">
-    <div class="intro__inner">
-      {room.priceFrom && (
-        <p class="price">{t('stay.from')} <strong>€{room.priceFrom}</strong> {t('stay.night')}</p>
-      )}
-      <a href="#enquire" class="btn-terra">{t('room.book')}</a>
-    </div>
-  </section>
-
-  <section class="enquire" id="enquire">
-    <div class="enquire__inner">
-      <h2>{t('room.book')}</h2>
-      <EnquiryForm lang={lang} roomSlug={slug} rooms={allRooms} />
-    </div>
-  </section>
-
-  {otherRooms.length > 0 && (
-    <section class="adjacent">
-      <h2>{t('room.other')}</h2>
-      <div class="adjacent__grid">
-        {otherRooms.map((r: any) => <RoomCard room={r} lang={lang} />)}
+    <div class="intro__grid">
+      <div class="intro__left" data-animate>
+        <h2>Lino, azulejo,<span class="italic"> y muy poco más.</span></h2>
+        <div class="intro__body">
+          <p class="dropcap">{wf.tagline}</p>
+          <p>Desayuno incluido, terraza compartida con vistas a la montaña, y el tipo de silencio que uno olvida que existe.</p>
+        </div>
+        <div class="features">
+          <span class="label features__label">Los particulares</span>
+          <ul class="features__list">
+            <li><span class="key">Cama</span><span class="val">{(room?.bedConfig ? loc(room.bedConfig, lang) : null) ?? 'Lino sin teñir'}</span></li>
+            <li><span class="key">Vista</span><span class="val">{(room?.view ? loc(room.view, lang) : null) ?? 'Valle / Mediterráneo'}</span></li>
+            <li><span class="key">Baño</span><span class="val">Privado en suite</span></li>
+            <li><span class="key">Duermen</span><span class="val">2 adultos</span></li>
+          </ul>
+        </div>
       </div>
-    </section>
-  )}
+      <aside class="booking-card" data-animate>
+        <div class="booking-card__img-wrap">
+          {cardImgSrc ? <img src={cardImgSrc} alt={roomName} loading="lazy" /> : <div class="booking-card__img" style={`background-color: ${roomColor};`}></div>}
+        </div>
+        <div class="booking-card__body">
+          <div class="booking-card__price-row">
+            <div>
+              <span class="booking-card__price-from">Desde</span>
+              <div class="booking-card__price">€{roomPrice}<span class="per">/ noche</span></div>
+            </div>
+            <div class="booking-card__nights">Mínimo 2 noches · Desayuno incluido</div>
+          </div>
+          <ul class="booking-card__bullets">
+            <li>Mejor precio garantizado reservando directo</li>
+            <li>Cancelación flexible hasta 14 días antes</li>
+            <li>Jarra de vino del valle a la llegada</li>
+          </ul>
+          <a href={`${p}/reservar`} class="btn-terra">Solicitar reserva</a>
+          <p class="booking-card__note">Sin pago hasta confirmar. <em>Solemos responder en pocas horas.</em></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="gallery">
+    <div class="gallery__grid">
+      {['#C8B89E','#8B9A7A','#A88A6B'].map((c, i) => (
+        <div class="gallery__img" style={`background-color: ${c};`} role="img">
+          <span class="gallery__caption">{['La cama y las vigas.','La terraza.','El baño.'][i]}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="included">
+    <div class="included__header" data-animate>
+      <span class="label">Qué incluye</span>
+      <h2>Todo lo que esperarías.<br/><span class="italic" style="color:var(--stone-mid);">Nada que no quisieras.</span></h2>
+    </div>
+    <div class="amenities__grid" data-animate>
+      {[['Cama de lino','M4 22 H28 V26 H4 Z M4 22 V14 a2 2 0 0 1 2 -2 H26 a2 2 0 0 1 2 2 V22'],['Ducha de lluvia','M8 4 Q12 8 8 14 Q4 20 8 28 M16 4 Q20 8 16 14 Q12 20 16 28 M24 4 Q28 8 24 14 Q20 20 24 28'],['Desayuno incluido','M6 8 H26 V24 H6 Z M6 12 H26'],['WiFi','M11 18 q5 -5 10 0 M7 14 q9 -8 18 0 M3 10 q13 -10 26 0 M16 22 m0 2 a2 2 0 1 0 0-0.01'],['Agua solar','M16 4 V8 M16 24 V28 M4 16 H8 M24 16 H28 M16 10 a6 6 0 1 0 0.01 0'],['Jarra de bienvenida','M10 10 q-2 6 0 12 q2 6 6 6 q4 0 6 -6 q2 -6 0 -12 M16 6 V2']].map(([label]) => (
+        <div class="amenity"><span class="amenity__label">{label}</span></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="adjacent">
+    <div class="adjacent__header" data-animate>
+      <div class="left">
+        <span class="label">Habitaciones contiguas</span>
+        <h2>Otros rincones de la masía.<span class="italic"> Las siete, una al lado de la otra.</span></h2>
+      </div>
+      <div class="right"><a href={`${p}/stay`}>Ver las siete habitaciones →</a></div>
+    </div>
+    <div class="adjacent__grid" data-animate>
+      {otherRooms.map((r: any) => {
+        const rSlug  = r.slug?.current ?? '';
+        const rWf    = wireframeData[rSlug] ?? wireframeData.olivo;
+        const rName  = (r.name ? loc(r.name, lang) : null) ?? rWf.name;
+        const rColor = r.swatchColor ?? rWf.color;
+        const rPrice = r.priceFrom ?? rWf.price;
+        const rImg   = r.images?.[0] ? urlFor(r.images[0]).width(480).height(640).auto('format').url() : null;
+        return (
+          <a href={`${p}/stay/${rSlug}`} class="room-card">
+            <div class="room-card__img-wrap">
+              {rImg ? <img src={rImg} alt={rName} loading="lazy" /> : <div class="room-card__img" style={`background-color: ${rColor};`}></div>}
+            </div>
+            <div class="room-card__body">
+              <p class="room-card__type">{rWf.type}</p>
+              <h3 class="room-card__name">{rName}</h3>
+              <div class="room-card__divider"></div>
+              <div class="room-card__row">
+                <p class="room-card__price"><strong>€{rPrice}</strong><span class="per">/ noche</span></p>
+                <span class="room-card__cta">Ver habitación</span>
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
 
 </Base>
 
 <style>
-.img-hero { min-height: 65vh; background-size: cover; background-position: center; display: flex; align-items: flex-end; position: relative; }
-.img-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%); }
-.img-hero__inner { position: relative; z-index: 1; padding: 0 60px 60px; color: var(--white); }
-.img-hero__inner h1 { font-size: 64px; font-weight: 300; }
-.breadcrumb { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; margin-bottom: 16px; }
-.breadcrumb a { opacity: 0.7; }
-.intro { padding: 60px; }
-.intro__inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-.price { font-size: 13px; color: var(--stone-mid); }
-.price strong { font-family: var(--font-serif); font-size: 28px; color: var(--stone-dark); }
-.enquire { padding: 80px 60px; }
-.enquire__inner { max-width: 760px; margin: 0 auto; }
-.enquire h2 { font-size: 48px; margin-bottom: 48px; }
-.adjacent { padding: 80px 40px; }
-.adjacent h2 { font-size: 36px; max-width: 1200px; margin: 0 auto 48px; }
-.adjacent__grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-@media (max-width: 768px) {
-  .img-hero__inner { padding: 0 24px 40px; }
-  .img-hero__inner h1 { font-size: 40px; }
-  .intro { padding: 40px 24px; }
-  .enquire { padding: 60px 24px; }
-  .adjacent { padding: 60px 24px; }
-  .adjacent__grid { grid-template-columns: 1fr; }
-}
+.label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
+.italic { font-style: italic; }
+.img-hero { position: relative; height: 70vh; min-height: 600px; background-size: cover; background-position: center; overflow: hidden; }
+.img-hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--terra); z-index: 4; }
+.breadcrumb { position: absolute; top: 100px; left: 40px; z-index: 5; display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.7); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; }
+.breadcrumb a { transition: color 0.2s; } .breadcrumb a:hover { color: var(--white); } .breadcrumb .sep { color: rgba(255,255,255,0.35); } .breadcrumb .current { color: var(--white); }
+.img-hero__inner { position: absolute; bottom: 56px; left: 40px; right: 40px; color: var(--white); z-index: 3; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+.img-hero__title-block { max-width: 760px; }
+.img-hero__label { color: rgba(255,255,255,0.7); margin-bottom: 18px; display: block; }
+.img-hero__inner h1 { font-family: var(--font-serif); font-size: 96px; font-weight: 300; letter-spacing: -0.02em; line-height: 0.98; color: var(--white); margin-bottom: 14px; }
+.italic-tag { font-style: italic; font-size: 36px; color: rgba(255,255,255,0.7); margin-left: 18px; vertical-align: 18px; font-weight: 300; }
+.img-hero__sub { font-family: var(--font-serif); font-style: italic; font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.88); max-width: 540px; line-height: 1.4; }
+.img-hero__meta { display: flex; gap: 36px; align-items: flex-end; flex-shrink: 0; padding-bottom: 6px; }
+.img-hero__meta-item { display: flex; flex-direction: column; gap: 4px; }
+.img-hero__meta-label { font-family: var(--font-sans); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.55); }
+.img-hero__meta-value { font-family: var(--font-serif); font-style: italic; font-size: 22px; color: var(--white); font-weight: 300; }
+.intro { background: var(--cream); padding: 120px 40px; }
+.intro__grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.45fr 1fr; gap: 120px; align-items: start; }
+.intro__left h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; margin-bottom: 36px; max-width: 520px; }
+.intro__left h2 .italic { display: block; color: var(--stone-mid); }
+.intro__body { font-size: 16px; line-height: 1.85; color: var(--stone-dark); text-wrap: pretty; }
+.intro__body p + p { margin-top: 18px; }
+.intro__body .dropcap::first-letter { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 72px; line-height: 0.85; float: left; padding: 6px 14px 0 0; color: var(--terra); }
+.features { margin-top: 56px; border-top: 1px solid var(--stone-light); padding-top: 32px; }
+.features__label { display: block; margin-bottom: 24px; }
+.features__list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 40px; }
+.features__list li { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid var(--stone-light); gap: 16px; }
+.features__list .key { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--stone-mid); flex-shrink: 0; }
+.features__list .val { font-family: var(--font-serif); font-style: italic; font-size: 18px; color: var(--stone-dark); text-align: right; }
+.booking-card { position: sticky; top: 110px; display: flex; flex-direction: column; }
+.booking-card__img-wrap { overflow: hidden; border-radius: 200px 200px 0 0; aspect-ratio: 3/4; background-color: #B89F84; }
+.booking-card__img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.booking-card__img { width: 100%; height: 100%; background-image: var(--grain); background-blend-mode: multiply; }
+.booking-card__body { padding: 32px 4px 0; display: flex; flex-direction: column; gap: 18px; }
+.booking-card__price-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--stone-light); }
+.booking-card__price-from { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); margin-bottom: 4px; display: block; }
+.booking-card__price { font-family: var(--font-serif); font-size: 42px; font-weight: 300; color: var(--stone-dark); line-height: 1; }
+.booking-card__price .per { font-size: 14px; color: var(--stone-mid); font-style: italic; margin-left: 4px; }
+.booking-card__nights { font-size: 12px; color: var(--stone-mid); line-height: 1.5; text-align: right; max-width: 140px; }
+.booking-card__bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.booking-card__bullets li { position: relative; padding-left: 20px; font-size: 13px; color: var(--stone-dark); }
+.booking-card__bullets li::before { content: ""; position: absolute; left: 0; top: 9px; width: 10px; height: 1px; background: var(--terra); }
+.btn-terra { background: var(--terra); color: var(--white); border-radius: 100px; padding: 16px 32px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; text-align: center; transition: background 0.2s ease, transform 0.2s ease; display: block; }
+.btn-terra:hover { background: #b1561f; transform: translateY(-1px); }
+.booking-card__note { font-size: 12px; color: var(--stone-mid); text-align: center; }
+.booking-card__note em { font-style: italic; color: var(--stone-dark); }
+.gallery { background: var(--cream); }
+.gallery__grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+.gallery__img { aspect-ratio: 4/3; background-image: var(--grain); background-blend-mode: multiply; background-size: cover; position: relative; overflow: hidden; }
+.gallery__img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 70%, rgba(0,0,0,0.2) 100%); }
+.gallery__caption { position: absolute; bottom: 18px; left: 22px; color: var(--white); font-family: var(--font-serif); font-style: italic; font-size: 16px; z-index: 2; opacity: 0.85; }
+.included { background: var(--cream); padding: 120px 40px; }
+.included__header { text-align: center; max-width: 640px; margin: 0 auto 64px; }
+.included__header .label { margin-bottom: 18px; display: block; }
+.included__header h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; margin-bottom: 18px; }
+.amenities__grid { max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--cream-deep); }
+.amenity { background: var(--white); padding: 44px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.amenity__label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--stone-mid); }
+.adjacent { background: var(--cream-deep); padding: 120px 40px; border-top: 1px solid var(--stone-light); }
+.adjacent__header { max-width: 1100px; margin: 0 auto 56px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; }
+.adjacent__header .left .label { margin-bottom: 16px; display: block; }
+.adjacent__header h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; }
+.adjacent__header h2 .italic { color: var(--stone-mid); display: block; }
+.adjacent__header .right a { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--terra); }
+.adjacent__grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.room-card { display: flex; flex-direction: column; }
+.room-card__img-wrap { display: block; overflow: hidden; border-radius: 200px 200px 0 0; }
+.room-card__img-wrap img { width: 100%; height: 340px; object-fit: cover; transition: transform 0.6s ease; }
+.room-card__img { width: 100%; height: 340px; background-image: var(--grain); background-blend-mode: multiply; transition: transform 0.6s ease; }
+.room-card:hover .room-card__img-wrap img, .room-card:hover .room-card__img { transform: scale(1.04); }
+.room-card__body { padding: 24px 8px 0; }
+.room-card__type { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); margin-bottom: 10px; }
+.room-card__name { font-family: var(--font-serif); font-size: 28px; font-weight: 400; color: var(--stone-dark); margin-bottom: 10px; }
+.room-card__divider { height: 1px; background: var(--stone-light); margin: 20px 0 16px; }
+.room-card__row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.room-card__price strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 24px; color: var(--stone-dark); margin-right: 4px; }
+.room-card__price .per { color: var(--stone-mid); font-size: 12px; }
+.room-card__cta { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terra); }
+@media (max-width: 1024px) { .intro__grid { grid-template-columns: 1fr; gap: 64px; } .booking-card { position: static; max-width: 480px; margin: 0 auto; } .gallery__grid { grid-template-columns: 1fr 1fr; } .adjacent__grid { grid-template-columns: 1fr 1fr; } .adjacent__grid > :last-child { display: none; } }
+@media (max-width: 768px) { .img-hero { min-height: 520px; } .img-hero__inner { left: 24px; right: 24px; bottom: 40px; flex-direction: column; } .img-hero__inner h1 { font-size: 48px; } .breadcrumb { left: 24px; top: 84px; } .intro { padding: 80px 24px; } .included { padding: 80px 24px; } .amenities__grid { grid-template-columns: 1fr 1fr; } .adjacent { padding: 80px 24px; } .adjacent__header { flex-direction: column; } .adjacent__grid { grid-template-columns: 1fr; max-width: 360px; } .adjacent__grid > :nth-child(n+2) { display: none; } }
 </style>
