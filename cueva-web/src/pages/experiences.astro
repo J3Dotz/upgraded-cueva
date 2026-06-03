@@ -1,24 +1,20 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
-import { client, urlFor } from '../lib/sanity';
-import { experiencesQuery } from '../queries/experiences';
-import { loc, useTranslations } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
 
-const lang        = 'en';
-const t           = useTranslations(lang);
-const experiences = await client.fetch(experiencesQuery);
-
+const lang = 'en';
+const t    = useTranslations(lang);
 ---
 
 <Base
   title="Experiences"
-  description="Guided walks, olive harvests, rock climbing, stargazing — slow pursuits for open minds."
+  description="Cave exploration, wine and olive tasting, hiking Desert de les Palmes. A few we run ourselves, a few we recommend, and a few we'll arrange on request."
   activePage="experiences"
   lang={lang}
 >
 
-  <!-- Hero -->
+  <!-- ===== Hero ===== -->
   <section class="page-hero">
     <div class="page-hero__inner">
       <p class="page-hero__label">Experiences</p>
@@ -26,30 +22,94 @@ const experiences = await client.fetch(experiencesQuery);
     </div>
   </section>
 
-  <!-- Grid -->
+  <!-- ===== Signature experience ===== -->
+  <section class="signature">
+    <div class="signature__inner">
+      <div class="signature__body">
+        <p class="section-label">Signature experience</p>
+        <h2>Cave Exploration — <em>the original one.</em></h2>
+        <p class="signature__desc">Guided access into the natural cave on the property grounds. It sits a short walk through the back garden, in its own pocket of the mountain. We go in small groups, by lantern, at the hour the light is kindest.</p>
+        <ul class="signature__details">
+          <li><span>Duration</span> 90 min</li>
+          <li><span>Group size</span> Up to 6</li>
+          <li><span>Price</span> From €45 pp</li>
+        </ul>
+        <a href="/book" class="btn-terra">{t('exp.enquire')}</a>
+      </div>
+      <div class="signature__img-placeholder">
+        <div class="arch-placeholder"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Experience grid ===== -->
   <section class="exp-grid">
     <div class="exp-grid__inner">
-      {experiences.map((exp: any) => {
-        const imgSrc = exp.image
-          ? urlFor(exp.image).width(720).height(540).auto('format').url()
-          : null;
-        return (
-          <article class="exp-card" data-animate>
-            {imgSrc && (
-              <div class="exp-card__img">
-                <img src={imgSrc} alt={exp.image?.alt ?? loc(exp.title, lang)} loading="lazy" decoding="async" />
-              </div>
-            )}
-            <div class="exp-card__body">
-              {exp.category && <p class="exp-card__tag">{exp.category}</p>}
-              <h3 class="exp-card__title">{loc(exp.title, lang)}</h3>
-              {exp.description && <p class="exp-card__desc">{loc(exp.description, lang)}</p>}
-              {exp.duration && <p class="exp-card__dur">{loc(exp.duration, lang)}</p>}
-              <a href="/book" class="terra-link">{t('exp.enquire')}</a>
+      <div class="exp-grid__header">
+        <h2>In and around the valley.</h2>
+        <p>A few we run ourselves, a few we recommend, and a few we'll arrange on request. Nothing on this page is mandatory.</p>
+      </div>
+
+      <div class="exp-grid__cards">
+
+        <article class="exp-card">
+          <div class="exp-card__body">
+            <p class="exp-card__label">Wine & Olive Tasting / <em>Cata</em></p>
+            <p class="exp-card__desc">Local producers from the valleys below Cabanes. Five wines, three oils, a long table, and the kind of conversation that makes the afternoon disappear.</p>
+            <div class="exp-card__meta">
+              <span>2 hrs</span>
+              <span>€55 per guest</span>
             </div>
-          </article>
-        );
-      })}
+            <a href="/book" class="terra-link">{t('exp.enquire')}</a>
+          </div>
+        </article>
+
+        <article class="exp-card">
+          <div class="exp-card__body">
+            <p class="exp-card__label">Hiking Desert de les Palmes / <em>Parque Natural</em></p>
+            <p class="exp-card__desc">A guided walk into the natural park at our doorstep. Cork oaks, the old monastery ruins, and a route that ends at a viewpoint over the coast.</p>
+            <div class="exp-card__meta">
+              <span>3 hrs</span>
+              <span>€35 per guest</span>
+            </div>
+            <a href="/book" class="terra-link">{t('exp.enquire')}</a>
+          </div>
+        </article>
+
+        <article class="exp-card">
+          <div class="exp-card__body">
+            <p class="exp-card__label">Sunrise Yoga / <em>Al amanecer</em></p>
+            <p class="exp-card__desc">A slow practice on the upper terrace as the sun comes up behind the mountains. Open to all levels. Coffee and almond cake afterwards, no rush.</p>
+            <div class="exp-card__meta">
+              <span>60 min</span>
+              <span>€25 per guest</span>
+            </div>
+            <a href="/book" class="terra-link">{t('exp.enquire')}</a>
+          </div>
+        </article>
+
+        <article class="exp-card">
+          <div class="exp-card__body">
+            <p class="exp-card__label">Private Dining on the Terrace / <em>A solas</em></p>
+            <p class="exp-card__desc">A table set for you alone on the south terrace, candles low, four courses from our kitchen. Booked the day before, sourced the morning of.</p>
+            <div class="exp-card__meta">
+              <span>4 courses</span>
+              <span>€95 per guest</span>
+            </div>
+            <a href="/book" class="terra-link">{t('exp.enquire')}</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Bespoke ===== -->
+  <section class="bespoke">
+    <div class="bespoke__inner">
+      <h2>{t('exp.bespoke.title')}</h2>
+      <p>{t('exp.bespoke.body')}</p>
+      <a href="mailto:hola@lacuevademiravet.com" class="btn-terra">{t('exp.bespoke.cta')}</a>
     </div>
   </section>
 
@@ -57,79 +117,122 @@ const experiences = await client.fetch(experiencesQuery);
 
 <style>
 .page-hero {
-  background: var(--stone-dark);
-  padding: 160px 40px 80px;
+  background: var(--forest);
+  padding: 160px 60px 100px;
+  min-height: 55vh;
+  display: flex; align-items: flex-end;
 }
-.page-hero__inner { max-width: 800px; margin: 0 auto; }
+.page-hero__inner { max-width: 900px; }
 .page-hero__label {
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--terra);
-  margin-bottom: 16px;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--terra); margin-bottom: 16px;
 }
 .page-hero__title {
   font-family: var(--font-serif);
-  font-size: 72px;
-  font-weight: 300;
-  color: var(--white);
+  font-size: 80px; font-weight: 300;
+  color: var(--white); line-height: 1.05;
 }
 
-.exp-grid { padding: 80px 40px 120px; }
-.exp-grid__inner {
+/* ===== Signature ===== */
+.signature { padding: 100px 60px; }
+.signature__inner {
   max-width: 1200px; margin: 0 auto;
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px 40px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.signature__body { display: flex; flex-direction: column; gap: 20px; }
+.signature__body h2 { font-size: 48px; font-weight: 300; line-height: 1.1; }
+.signature__body h2 em { font-style: italic; color: var(--terra); }
+.signature__desc { font-size: 15px; color: var(--stone-mid); line-height: 1.8; }
+.signature__details {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.signature__details li {
+  font-size: 13px; color: var(--stone-dark);
+  display: flex; gap: 12px;
+}
+.signature__details span {
+  font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.08em; font-size: 11px;
+  color: var(--stone-light); width: 90px; flex-shrink: 0;
 }
 
-.exp-card { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
-
-.exp-card__img { overflow: hidden; border-radius: 2px; }
-.exp-card__img img {
-  width: 100%; aspect-ratio: 4/3;
-  object-fit: cover;
-  transition: transform 0.6s var(--ease);
+.arch-placeholder {
+  background: var(--cream-deep);
+  border-radius: 200px 200px 0 0;
+  aspect-ratio: 3/4;
+  width: 100%;
 }
-.exp-card:hover .exp-card__img img { transform: scale(1.03); }
 
-.exp-card__body { display: flex; flex-direction: column; gap: 10px; padding: 8px 0; }
-
-.exp-card__tag {
+/* ===== Section label ===== */
+.section-label {
   font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--terra);
 }
 
-.exp-card__title {
+/* ===== Grid ===== */
+.exp-grid { background: var(--cream-deep); padding: 100px 60px; }
+.exp-grid__inner { max-width: 1100px; margin: 0 auto; }
+.exp-grid__header { margin-bottom: 64px; }
+.exp-grid__header h2 { font-size: 48px; font-weight: 300; margin-bottom: 16px; }
+.exp-grid__header p { font-size: 14px; color: var(--stone-mid); max-width: 560px; }
+.exp-grid__cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+}
+.exp-card {
+  background: var(--cream);
+  padding: 40px;
+  transition: background 0.2s;
+}
+.exp-card:hover { background: var(--white); }
+.exp-card__body { display: flex; flex-direction: column; gap: 14px; }
+.exp-card__label {
   font-family: var(--font-serif);
-  font-size: 28px;
-  font-weight: 400;
-  color: var(--stone-dark);
+  font-size: 22px; font-weight: 400;
+  color: var(--stone-dark); line-height: 1.2;
 }
-
-.exp-card__desc {
-  font-size: 14px;
-  color: var(--stone-mid);
-  line-height: 1.7;
+.exp-card__label em { font-style: italic; color: var(--stone-mid); font-size: 18px; }
+.exp-card__desc { font-size: 14px; color: var(--stone-mid); line-height: 1.75; flex: 1; }
+.exp-card__meta {
+  display: flex; gap: 24px;
+  font-family: var(--font-sans);
+  font-size: 12px; color: var(--stone-light);
+  padding-top: 8px;
+  border-top: 1px solid var(--cream-deep);
 }
+.exp-card__meta span:last-child { color: var(--terra); font-weight: 500; }
 
-.exp-card__dur {
-  font-size: 12px;
-  color: var(--stone-light);
-  font-style: italic;
+/* ===== Bespoke ===== */
+.bespoke { background: var(--forest); padding: 100px 60px; }
+.bespoke__inner {
+  max-width: 760px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 24px;
 }
+.bespoke h2 {
+  font-family: var(--font-serif);
+  font-size: 44px; font-weight: 300;
+  color: var(--white); line-height: 1.15;
+}
+.bespoke p { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.8; }
 
+/* ===== Responsive ===== */
 @media (max-width: 960px) {
-  .exp-grid__inner { grid-template-columns: 1fr; }
+  .signature__inner { grid-template-columns: 1fr; }
+  .arch-placeholder { display: none; }
+  .exp-grid__cards { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
-  .page-hero { padding: 130px 24px 60px; }
-  .page-hero__title { font-size: 48px; }
-  .exp-grid { padding: 60px 24px 80px; }
-  .exp-card { grid-template-columns: 1fr; }
+  .page-hero { padding: 130px 24px 60px; min-height: auto; }
+  .page-hero__title { font-size: 52px; }
+  .signature { padding: 60px 24px; }
+  .signature__body h2 { font-size: 36px; }
+  .exp-grid { padding: 60px 24px; }
+  .exp-card { padding: 28px 24px; }
+  .bespoke { padding: 60px 24px; }
+  .bespoke h2 { font-size: 32px; }
 }
 </style>

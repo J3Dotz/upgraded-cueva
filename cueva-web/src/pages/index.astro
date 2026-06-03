@@ -1,40 +1,31 @@
 ---
 export const prerender = true;
-// Homepage — content-driven via Sanity
-// Mirrors the structure of index.html in the wireframe repo
 import Base from '../layouts/Base.astro';
 import RoomCard from '../components/RoomCard.astro';
 import { client, urlFor } from '../lib/sanity';
 import { roomsQuery } from '../queries/rooms';
-import { featuredExperiencesQuery } from '../queries/experiences';
 import { journalPostsQuery } from '../queries/journal';
-import { siteSettingsQuery } from '../queries/settings';
 import { loc, formatDate } from '../i18n/utils';
 
 const lang = 'en';
 
-const [rooms, experiences, posts, settings] = await Promise.all([
+const [rooms, posts] = await Promise.all([
   client.fetch(roomsQuery),
-  client.fetch(featuredExperiencesQuery),
-  client.fetch(`${journalPostsQuery} [0..2]`),
-  client.fetch(siteSettingsQuery),
+  client.fetch(journalPostsQuery),
 ]);
-
-const heroTitle    = loc(settings?.heroTitle,    lang) || 'A room inside the rock. Open sky above it.';
-const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cliffs of Miravet, Catalunya.';
 ---
 
 <Base
   title="Home"
-  description={heroSubtitle}
+  description="A 19th-century Masia. A natural cave. Seven rooms where the mountain meets the Mediterranean."
   lang={lang}
 >
 
   <!-- ===== Hero ===== -->
   <section class="hero">
     <div class="hero__inner">
-      <h1 class="hero__title">{heroTitle}</h1>
-      <p class="hero__sub">{heroSubtitle}</p>
+      <p class="hero__eyebrow">Sustainable luxury in the Valencian mountains.</p>
+      <h1 class="hero__title">A 19th-century Masia.<br />A natural cave.<br />Seven rooms where the mountain meets the Mediterranean.</h1>
       <div class="hero__cta">
         <a href="/stay" class="btn-terra">Explore rooms</a>
         <a href="/book" class="hero__link">Book directly →</a>
@@ -42,11 +33,47 @@ const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cl
     </div>
   </section>
 
+  <!-- ===== Lodge intro ===== -->
+  <section class="lodge">
+    <div class="lodge__inner">
+      <div class="lodge__text">
+        <p class="section-label">The property</p>
+        <h2>A Masia that remembers everything.</h2>
+        <p class="lodge__body">A restored 19th-century farmhouse in Cabanes, Castellón — off-grid on solar, set into a mountainside, with a natural cave on the grounds and uninterrupted views over the Desert de les Palmes and the Mediterranean coast beyond.</p>
+        <div class="lodge__rating">
+          <span class="rating__score">8.7</span>
+          <div class="rating__meta">
+            <span class="rating__word">Exceptional</span>
+            <span class="rating__source">Booking.com</span>
+          </div>
+        </div>
+      </div>
+      <div class="lodge__amenities">
+        {[
+          'Cave Access',
+          'Swimming Pool',
+          'Panoramic Hot Tub',
+          'Off-Grid & Solar',
+          '7 Rooms',
+          'Mountain Terrace',
+        ].map(a => (
+          <div class="amenity">
+            <span class="amenity__dot"></span>
+            <span class="amenity__name">{a}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- ===== Room preview ===== -->
   <section class="rooms-preview">
     <div class="rooms-preview__header">
-      <p class="rooms-preview__label">Stay</p>
-      <h2>Seven rooms, each named for what grows here.</h2>
+      <div>
+        <p class="section-label">Stay</p>
+        <h2>Seven worlds under one roof.</h2>
+        <p class="rooms-preview__sub">Each room opens onto something — a terrace, the valley, a particular angle of the Mediterranean.</p>
+      </div>
       <a href="/stay" class="terra-link">All rooms</a>
     </div>
     <div class="rooms-preview__grid">
@@ -54,49 +81,53 @@ const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cl
         <RoomCard room={room} lang={lang} />
       ))}
     </div>
+    {rooms.length === 0 && (
+      <p class="rooms-preview__empty">
+        Rooms opening soon — <a href="/book">enquire directly</a>.
+      </p>
+    )}
   </section>
 
   <!-- ===== Experiences preview ===== -->
-  {experiences.length > 0 && (
-    <section class="exp-preview">
-      <div class="exp-preview__inner">
-        <div class="exp-preview__header">
+  <section class="exp-preview">
+    <div class="exp-preview__inner">
+      <div class="exp-preview__header">
+        <div>
           <p class="section-label">Experiences</p>
-          <h2>The land is part of the stay.</h2>
-          <a href="/experiences" class="terra-link">All experiences</a>
+          <h2>What you do here.</h2>
         </div>
-        <div class="exp-preview__grid">
-          {experiences.map((exp: any) => {
-            const imgSrc = exp.image
-              ? urlFor(exp.image).width(600).height(500).auto('format').url()
-              : null;
-            return (
-              <article class="exp-tile">
-                {imgSrc && (
-                  <div class="exp-tile__img">
-                    <img src={imgSrc} alt={exp.image?.alt ?? loc(exp.title, lang)} loading="lazy" />
-                  </div>
-                )}
-                <h3>{loc(exp.title, lang)}</h3>
-                <a href="/experiences" class="terra-link">Discover</a>
-              </article>
-            );
-          })}
-        </div>
+        <a href="/experiences" class="terra-link">All experiences</a>
       </div>
-    </section>
-  )}
+      <div class="exp-preview__grid">
+        <article class="exp-tile">
+          <p class="exp-tile__name">Cave Exploration</p>
+          <p class="exp-tile__desc">Guided access into the natural cave on the property grounds. By lantern, at the hour the light is kindest.</p>
+          <a href="/experiences" class="terra-link">Discover</a>
+        </article>
+        <article class="exp-tile">
+          <p class="exp-tile__name">Wine & Olive Tasting</p>
+          <p class="exp-tile__desc">Local producers from the valleys below Cabanes. Five wines, three oils, a long table, and an afternoon that disappears.</p>
+          <a href="/experiences" class="terra-link">Discover</a>
+        </article>
+        <article class="exp-tile">
+          <p class="exp-tile__name">Hiking Desert de les Palmes</p>
+          <p class="exp-tile__desc">A guided walk into the natural park at our doorstep. Cork oaks, monastery ruins, a route that ends at the coast.</p>
+          <a href="/experiences" class="terra-link">Discover</a>
+        </article>
+      </div>
+    </div>
+  </section>
 
   <!-- ===== Journal preview ===== -->
   {posts.length > 0 && (
     <section class="journal-preview">
       <div class="journal-preview__header">
         <p class="section-label">Journal</p>
-        <h2>Notes from the land.</h2>
+        <h2>Notes from the mountain.</h2>
         <a href="/journal" class="terra-link">All entries</a>
       </div>
       <div class="journal-preview__grid">
-        {posts.map((post: any) => {
+        {posts.slice(0, 3).map((post: any) => {
           const imgSrc = post.coverImage
             ? urlFor(post.coverImage).width(500).height(360).auto('format').url()
             : null;
@@ -120,8 +151,11 @@ const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cl
   <!-- ===== CTA strip ===== -->
   <section class="cta-strip">
     <div class="cta-strip__inner">
-      <h2>Ready to arrive?</h2>
-      <a href="/book" class="btn-terra">Book now</a>
+      <div>
+        <h2>Best rate, guaranteed.</h2>
+        <p class="cta-strip__sub">Booking direct is always the better price.</p>
+      </div>
+      <a href="/book" class="btn-terra cta-strip__btn">Request to book</a>
     </div>
   </section>
 
@@ -131,23 +165,25 @@ const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cl
 /* ===== Hero ===== */
 .hero {
   background: var(--forest);
-  min-height: 90vh;
+  min-height: 92vh;
   display: flex;
   align-items: center;
-  padding: 120px 60px 80px;
+  padding: 140px 60px 80px;
 }
-.hero__inner { max-width: 800px; }
+.hero__inner { max-width: 860px; }
+.hero__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 28px;
+}
 .hero__title {
   font-family: var(--font-serif);
-  font-size: 84px;
+  font-size: 72px;
   font-weight: 300;
   color: var(--white);
-  line-height: 1.08;
-  margin-bottom: 24px;
-}
-.hero__sub {
-  font-size: 16px;
-  color: rgba(255,255,255,0.65);
+  line-height: 1.1;
   margin-bottom: 48px;
 }
 .hero__cta { display: flex; align-items: center; gap: 32px; }
@@ -155,73 +191,120 @@ const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cl
   font-family: var(--font-sans);
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.6);
   transition: color 0.2s;
 }
 .hero__link:hover { color: var(--white); }
 
-/* ===== Room preview ===== */
-.rooms-preview { padding: 100px 40px 60px; }
-.rooms-preview__header {
+/* ===== Lodge intro ===== */
+.lodge { padding: 100px 60px; }
+.lodge__inner {
   max-width: 1200px; margin: 0 auto;
-  display: flex; justify-content: space-between; align-items: flex-end;
-  margin-bottom: 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
 }
-.rooms-preview__header h2 {
-  font-size: 40px; font-weight: 300;
+.lodge__text { display: flex; flex-direction: column; gap: 20px; }
+.lodge__text h2 { font-size: 48px; font-weight: 300; }
+.lodge__body { font-size: 15px; color: var(--stone-mid); line-height: 1.8; }
+.lodge__rating {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 8px;
 }
-.rooms-preview__label {
-  font-family: var(--font-sans); font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.14em; color: var(--terra);
+.rating__score {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  font-weight: 300;
+  color: var(--forest);
+  line-height: 1;
 }
-.rooms-preview__grid {
-  max-width: 1200px; margin: 0 auto;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+.rating__meta { display: flex; flex-direction: column; gap: 2px; }
+.rating__word {
+  font-family: var(--font-sans);
+  font-size: 12px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--stone-dark);
+}
+.rating__source { font-size: 11px; color: var(--stone-light); }
+
+.lodge__amenities {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px;
+}
+.amenity {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  background: var(--cream-deep);
+  border-radius: 4px;
+}
+.amenity__dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--terra);
+  flex-shrink: 0;
+}
+.amenity__name {
+  font-family: var(--font-sans);
+  font-size: 13px; font-weight: 400;
+  color: var(--stone-dark);
 }
 
 /* ===== Section label ===== */
 .section-label {
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--terra);
 }
 
-/* ===== Experiences preview ===== */
-.exp-preview { background: var(--cream-deep); padding: 100px 40px; }
-.exp-preview__inner { max-width: 1200px; margin: 0 auto; }
-.exp-preview__header {
-  display: flex; flex-direction: column; gap: 12px; margin-bottom: 48px;
+/* ===== Room preview ===== */
+.rooms-preview { padding: 100px 60px; background: var(--cream-deep); }
+.rooms-preview__header {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 24px; margin-bottom: 56px;
 }
-.exp-preview__header h2 { font-size: 48px; font-weight: 300; }
-.exp-preview__grid {
+.rooms-preview__header h2 { font-size: 48px; font-weight: 300; margin: 12px 0 8px; }
+.rooms-preview__sub { font-size: 14px; color: var(--stone-mid); max-width: 480px; }
+.rooms-preview__grid {
+  max-width: 1200px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
 }
-.exp-tile { display: flex; flex-direction: column; gap: 12px; }
-.exp-tile__img { overflow: hidden; border-radius: 2px; }
-.exp-tile__img img {
-  width: 100%; aspect-ratio: 4/3; object-fit: cover;
-  transition: transform 0.6s var(--ease);
+.rooms-preview__empty {
+  font-size: 14px; color: var(--stone-mid); font-style: italic;
 }
-.exp-tile:hover .exp-tile__img img { transform: scale(1.03); }
-.exp-tile h3 { font-size: 22px; }
+.rooms-preview__empty a { color: var(--terra); }
+
+/* ===== Experiences preview ===== */
+.exp-preview { padding: 100px 60px; }
+.exp-preview__inner { max-width: 1200px; margin: 0 auto; }
+.exp-preview__header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 56px;
+}
+.exp-preview__header h2 { font-size: 48px; font-weight: 300; margin-top: 12px; }
+.exp-preview__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
+}
+.exp-tile { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--cream-deep); padding-top: 28px; }
+.exp-tile__name {
+  font-family: var(--font-serif);
+  font-size: 24px; font-weight: 400;
+  color: var(--stone-dark);
+}
+.exp-tile__desc { font-size: 14px; color: var(--stone-mid); line-height: 1.75; flex: 1; }
 
 /* ===== Journal preview ===== */
-.journal-preview { padding: 100px 40px; }
+.journal-preview { padding: 100px 60px; background: var(--cream-deep); }
 .journal-preview__header {
   max-width: 1200px; margin: 0 auto;
   display: flex; justify-content: space-between; align-items: flex-end;
-  margin-bottom: 48px;
+  margin-bottom: 56px;
 }
-.journal-preview__header h2 { font-size: 40px; font-weight: 300; }
+.journal-preview__header h2 { font-size: 48px; font-weight: 300; margin-top: 12px; }
 .journal-preview__grid {
   max-width: 1200px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
 }
 .journal-tile { display: flex; flex-direction: column; gap: 10px; }
-.journal-tile__img { display: block; overflow: hidden; border-radius: 2px; }
+.journal-tile__img { display: block; overflow: hidden; }
 .journal-tile__img img {
   width: 100%; aspect-ratio: 3/2; object-fit: cover;
   transition: transform 0.5s var(--ease);
@@ -231,39 +314,41 @@ const heroSubtitle = loc(settings?.heroSubtitle, lang) || 'Seven rooms in the cl
   font-family: var(--font-sans);
   font-size: 10px; font-weight: 500;
   letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--terra);
+  color: var(--terra); margin-top: 8px;
 }
 .journal-tile h3 { font-size: 22px; line-height: 1.2; }
 .journal-tile h3 a:hover { color: var(--terra); }
 .journal-tile__date { font-size: 11px; color: var(--stone-light); }
 
 /* ===== CTA strip ===== */
-.cta-strip { background: var(--terra); padding: 100px 60px; }
+.cta-strip { background: var(--forest); padding: 100px 60px; }
 .cta-strip__inner {
-  max-width: 800px; margin: 0 auto;
+  max-width: 1100px; margin: 0 auto;
   display: flex; justify-content: space-between; align-items: center; gap: 40px;
 }
-.cta-strip h2 { font-size: 48px; font-weight: 300; color: var(--white); }
-.cta-strip .btn-terra {
-  background: var(--white);
-  color: var(--terra);
-  white-space: nowrap;
-}
-.cta-strip .btn-terra:hover { background: var(--cream); }
+.cta-strip h2 { font-size: 52px; font-weight: 300; color: var(--white); }
+.cta-strip__sub { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 8px; }
+.cta-strip__btn { background: var(--terra); white-space: nowrap; }
+.cta-strip__btn:hover { background: #b1561f; }
 
+/* ===== Responsive ===== */
 @media (max-width: 1024px) {
-  .rooms-preview__header { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .journal-preview__header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .lodge__inner { grid-template-columns: 1fr; gap: 48px; }
+  .rooms-preview__header { flex-direction: column; align-items: flex-start; }
+  .exp-preview__header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .journal-preview__header { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 768px) {
-  .hero { padding: 130px 24px 60px; min-height: 70vh; }
-  .hero__title { font-size: 52px; }
+  .hero { padding: 130px 24px 60px; min-height: 80vh; }
+  .hero__title { font-size: 44px; }
+  .lodge { padding: 60px 24px; }
+  .lodge__amenities { grid-template-columns: 1fr; }
   .rooms-preview { padding: 60px 24px; }
-  .rooms-preview__grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .rooms-preview__grid { grid-template-columns: 1fr; max-width: 420px; }
   .exp-preview { padding: 60px 24px; }
   .exp-preview__grid { grid-template-columns: 1fr; }
   .journal-preview { padding: 60px 24px; }
-  .journal-preview__grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .journal-preview__grid { grid-template-columns: 1fr; }
   .cta-strip { padding: 60px 24px; }
   .cta-strip__inner { flex-direction: column; text-align: center; }
   .cta-strip h2 { font-size: 36px; }

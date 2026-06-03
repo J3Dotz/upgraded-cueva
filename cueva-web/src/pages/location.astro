@@ -1,8 +1,5 @@
 ---
 export const prerender = true;
-// Location page — content migrated from Location.html
-// Static map SVG, arrival modes, and nearby places can be
-// moved into Sanity fields later if needed.
 import Base from '../layouts/Base.astro';
 import { useTranslations } from '../i18n/utils';
 
@@ -12,76 +9,120 @@ const t    = useTranslations(lang);
 
 <Base
   title="Location"
-  description="La Cueva de Miravet — Carretera de Benissanet km 2, 43747 Miravet, Tarragona, Catalunya."
+  description="La Cueva de Miravet — La Ferradura, Cabanes, Castellón 12595, Spain. 1hr 15min from Valencia, 3hrs from Barcelona."
   activePage="location"
   lang={lang}
 >
 
-  <!-- Hero -->
+  <!-- ===== Hero ===== -->
   <section class="loc-hero">
     <div class="loc-hero__inner">
       <p class="loc-hero__label">Location</p>
       <h1 class="loc-hero__title">{t('loc.hero.title')}</h1>
-      <p class="loc-hero__coords">40°07′09.5″N · 0°29′36.1″E · 412m</p>
+      <p class="loc-hero__coords">40°07′09.5″N · 0°04′47.8″E · 412m above sea level</p>
     </div>
   </section>
 
-  <!-- Address + map -->
+  <!-- ===== Address ===== -->
   <section class="address">
     <div class="address__inner">
       <div class="address__text">
-        <h2>Find us</h2>
-        <p>Carretera de Benissanet km 2<br />43747 Miravet<br />Tarragona, Catalunya</p>
-        <p style="margin-top: 16px; color: var(--stone-mid); font-size: 14px;">
-          The property sits above the village on the road toward Benissanet,
-          just past the last olive grove. Follow signs for La Cueva.
-        </p>
+        <h2>The address</h2>
+        <p class="address__line">La Ferradura<br />Cabanes, Castellón 12595<br />Spain</p>
+        <p class="address__note">End of the road. Then a little further.</p>
+        <p class="address__note">The lodge sits at the conclusion of a mountain lane through olive groves. Google Maps directions are unreliable for the final approach — we'll send precise directions with your booking confirmation.</p>
         <a
-          href="https://maps.google.com/?q=La+Cueva+de+Miravet,+Tarragona"
+          href="https://maps.google.com/?q=40.1192611,0.0799444"
           target="_blank"
           rel="noopener"
           class="terra-link"
-          style="margin-top: 24px;"
         >
-          Open in Google Maps
+          Open in Google Maps →
         </a>
       </div>
-
-      <!-- Placeholder for the SVG map from Location.html -->
-      <div class="address__map">
-        <div class="map-placeholder">
-          <!-- Inline SVG map from Location.html goes here -->
-          <p>Map illustration</p>
+      <div class="address__distances">
+        <div class="distance-item">
+          <span class="distance-item__place">Valencia</span>
+          <span class="distance-item__time">1h 15min</span>
+        </div>
+        <div class="distance-item">
+          <span class="distance-item__place">Barcelona</span>
+          <span class="distance-item__time">3 hrs</span>
+        </div>
+        <div class="distance-item">
+          <span class="distance-item__place">Madrid</span>
+          <span class="distance-item__time">4h 30min</span>
+        </div>
+        <div class="distance-item">
+          <span class="distance-item__place">Castellón Costa Azahar Airport</span>
+          <span class="distance-item__time">40 min</span>
+        </div>
+        <div class="distance-item">
+          <span class="distance-item__place">Valencia Airport</span>
+          <span class="distance-item__time">90 min</span>
+        </div>
+        <div class="distance-item">
+          <span class="distance-item__place">Benicàssim (train station)</span>
+          <span class="distance-item__time">20 min</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Arrival modes -->
+  <!-- ===== How to arrive ===== -->
   <section class="arrive">
     <div class="arrive__inner">
       <h2>{t('loc.directions')}</h2>
       <div class="arrive__grid">
         <div class="arrive-mode">
           <h3>By car</h3>
-          <p>From Barcelona (2h): A-7 south toward Tarragona, exit 35 Móra d'Ebre. Follow C-12 through Riba-roja d'Ebre to Miravet. From Valencia (2.5h): A-7 north to same exit.</p>
+          <p>Exit 45 from the AP-7 motorway toward Cabanes. The final approach follows a narrow mountain lane through olive groves. From Valencia: 1h 15min. From Barcelona: 3hrs. From Madrid: 4h 30min.</p>
         </div>
         <div class="arrive-mode">
           <h3>By train</h3>
-          <p>Take Renfe to Móra la Nova (via Reus or Lleida). We arrange transfers from the station — let us know your arrival time when you book.</p>
+          <p>Renfe service to Benicàssim station — 20 minutes from the lodge by taxi. We can arrange a transfer if you let us know your arrival time when you book.</p>
         </div>
         <div class="arrive-mode">
           <h3>By air</h3>
-          <p>Nearest airports: Reus (1h), Barcelona El Prat (2h), Valencia (2.5h). Car hire from any airport is straightforward; we can also arrange private transfers.</p>
+          <p>Castellón Costa Azahar Airport (40 min) or Valencia Airport (90 min). Car hire from either airport is straightforward; we can also arrange private transfers on request.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
+  <!-- ===== Nearby ===== -->
+  <section class="nearby">
+    <div class="nearby__inner">
+      <h2>{t('loc.nearby')}</h2>
+      <div class="nearby__grid">
+        <div class="nearby-item">
+          <p class="nearby-item__name">Desert de les Palmes</p>
+          <p class="nearby-item__dist">15 min · Natural park</p>
+          <p class="nearby-item__desc">Cork oaks, the old monastery ruins, and hiking routes from the property boundary.</p>
+        </div>
+        <div class="nearby-item">
+          <p class="nearby-item__name">Benicàssim</p>
+          <p class="nearby-item__dist">20 min · Coast</p>
+          <p class="nearby-item__desc">Long sandy beach, seafood, and the weekly market on Saturday mornings.</p>
+        </div>
+        <div class="nearby-item">
+          <p class="nearby-item__name">Peñíscola</p>
+          <p class="nearby-item__dist">45 min · Medieval coast</p>
+          <p class="nearby-item__desc">A walled city on a promontory. Best visited outside July and August.</p>
+        </div>
+        <div class="nearby-item">
+          <p class="nearby-item__name">Castellón de la Plana</p>
+          <p class="nearby-item__dist">30 min · City</p>
+          <p class="nearby-item__desc">Market, cathedral, and the kind of local restaurants that don't open until 9pm.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
   <section class="loc-cta">
     <div class="loc-cta__inner">
-      <h2>Now you know the way. Pick a room.</h2>
+      <h2>{t('loc.cta')}</h2>
       <a href="/stay" class="btn-terra">View rooms</a>
     </div>
   </section>
@@ -92,71 +133,95 @@ const t    = useTranslations(lang);
 .loc-hero {
   background: var(--forest);
   min-height: 65vh;
-  display: flex;
-  align-items: flex-end;
+  display: flex; align-items: flex-end;
   padding: 0 60px 80px;
 }
 .loc-hero__inner { max-width: 1000px; }
 .loc-hero__label {
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--terra);
-  margin-bottom: 16px;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--terra); margin-bottom: 16px;
 }
 .loc-hero__title {
   font-family: var(--font-serif);
-  font-size: 80px;
-  font-weight: 300;
+  font-size: 80px; font-weight: 300;
   color: var(--white);
 }
 .loc-hero__coords {
   font-family: var(--font-sans);
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.45);
-  margin-top: 16px;
+  font-size: 13px; letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4); margin-top: 20px;
 }
 
+/* ===== Address ===== */
 .address { padding: 100px 60px; }
 .address__inner {
   max-width: 1200px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
 }
-.address__text h2 { font-size: 40px; margin-bottom: 24px; }
-.address__text p { font-size: 15px; color: var(--stone-mid); line-height: 1.7; }
+.address__text { display: flex; flex-direction: column; gap: 20px; }
+.address__text h2 { font-size: 44px; font-weight: 300; }
+.address__line { font-size: 16px; color: var(--stone-dark); line-height: 1.7; font-style: italic; }
+.address__note { font-size: 14px; color: var(--stone-mid); line-height: 1.75; }
 
-.map-placeholder {
-  background: var(--cream-deep);
-  border-radius: 4px;
-  aspect-ratio: 4/3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--stone-light);
-  font-style: italic;
+.address__distances { display: flex; flex-direction: column; gap: 0; }
+.distance-item {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--cream-deep);
+}
+.distance-item__place { font-size: 14px; color: var(--stone-dark); }
+.distance-item__time {
+  font-family: var(--font-serif);
+  font-size: 18px; font-weight: 300;
+  color: var(--terra);
 }
 
+/* ===== Arrive ===== */
 .arrive { background: var(--forest); padding: 100px 60px; }
 .arrive__inner { max-width: 1100px; margin: 0 auto; }
-.arrive h2 { font-size: 48px; font-weight: 300; color: var(--white); margin-bottom: 60px; }
+.arrive h2 {
+  font-size: 52px; font-weight: 300;
+  color: var(--white); margin-bottom: 64px;
+}
 .arrive__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.arrive-mode h3 { font-family: var(--font-serif); font-size: 24px; color: var(--white); margin-bottom: 12px; }
-.arrive-mode p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.75; }
+.arrive-mode h3 {
+  font-family: var(--font-serif); font-size: 26px;
+  color: var(--white); margin-bottom: 16px;
+}
+.arrive-mode p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.8; }
 
+/* ===== Nearby ===== */
+.nearby { padding: 100px 60px; background: var(--cream-deep); }
+.nearby__inner { max-width: 1100px; margin: 0 auto; }
+.nearby h2 { font-size: 44px; font-weight: 300; margin-bottom: 56px; }
+.nearby__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.nearby-item { display: flex; flex-direction: column; gap: 6px; }
+.nearby-item__name { font-family: var(--font-serif); font-size: 22px; font-weight: 400; }
+.nearby-item__dist { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--terra); }
+.nearby-item__desc { font-size: 13px; color: var(--stone-mid); line-height: 1.65; margin-top: 4px; }
+
+/* ===== CTA ===== */
 .loc-cta { padding: 120px 60px; text-align: center; }
-.loc-cta__inner h2 { font-size: 56px; font-weight: 300; margin-bottom: 40px; }
+.loc-cta__inner { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+.loc-cta h2 { font-size: 56px; font-weight: 300; }
 
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  .nearby__grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 768px) {
   .loc-hero { padding: 0 24px 60px; min-height: 50vh; }
   .loc-hero__title { font-size: 52px; }
   .address { padding: 60px 24px; }
-  .address__inner { grid-template-columns: 1fr; gap: 40px; }
+  .address__inner { grid-template-columns: 1fr; gap: 48px; }
   .arrive { padding: 60px 24px; }
-  .arrive__grid { grid-template-columns: 1fr; gap: 32px; }
+  .arrive h2 { font-size: 36px; }
+  .arrive__grid { grid-template-columns: 1fr; }
+  .nearby { padding: 60px 24px; }
+  .nearby__grid { grid-template-columns: 1fr; }
   .loc-cta { padding: 80px 24px; }
-  .loc-cta__inner h2 { font-size: 36px; }
+  .loc-cta h2 { font-size: 36px; }
 }
 </style>

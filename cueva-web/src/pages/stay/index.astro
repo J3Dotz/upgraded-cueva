@@ -6,77 +6,125 @@ import { client } from '../../lib/sanity';
 import { roomsQuery } from '../../queries/rooms';
 import { useTranslations } from '../../i18n/utils';
 
-const lang = 'en';
-const t    = useTranslations(lang);
+const lang  = 'en';
+const t     = useTranslations(lang);
 const rooms = await client.fetch(roomsQuery);
 ---
 
 <Base
   title="Stay"
-  description="Seven rooms named for the plants that grow here — each distinct, each unhurried."
+  description="Seven rooms named for the plants that grow here — each distinct, each with its own view of the valley and the Mediterranean."
   activePage="stay"
+  onCream={true}
   lang={lang}
 >
 
-  <!-- Hero -->
+  <!-- ===== Hero ===== -->
   <section class="page-hero">
     <div class="page-hero__inner">
       <p class="page-hero__label">Stay</p>
       <h1 class="page-hero__title">{t('stay.hero.title')}</h1>
+      <p class="page-hero__sub">{t('stay.hero.sub')}</p>
     </div>
   </section>
 
-  <!-- Room grid -->
+  <!-- ===== Rates note ===== -->
+  <div class="rates-note">
+    <p>{t('stay.rates.note')}</p>
+  </div>
+
+  <!-- ===== Room grid ===== -->
   <section class="rooms">
     <div class="rooms__grid">
       {rooms.map((room: any) => (
         <RoomCard room={room} lang={lang} />
       ))}
     </div>
+    {rooms.length === 0 && (
+      <div class="rooms__empty">
+        <p>Rooms coming soon — <a href="/book">enquire directly</a> and we'll match you to the right one.</p>
+      </div>
+    )}
+  </section>
+
+  <!-- ===== Recommendation strip ===== -->
+  <section class="recommend">
+    <div class="recommend__inner">
+      <div class="recommend__text">
+        <h2>{t('stay.recommendation.title')}</h2>
+        <p>{t('stay.recommendation.body')}</p>
+      </div>
+      <a href="/book" class="btn-terra">{t('stay.recommendation.cta')}</a>
+    </div>
   </section>
 
 </Base>
 
 <style>
-/* Page hero (cream bg — nav adapts) */
 .page-hero {
   background: var(--cream-deep);
-  padding: 160px 40px 80px;
+  padding: 160px 60px 80px;
+  min-height: 50vh;
+  display: flex; align-items: flex-end;
 }
-.page-hero__inner { max-width: 800px; margin: 0 auto; }
+.page-hero__inner { max-width: 860px; }
 .page-hero__label {
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--terra);
-  margin-bottom: 16px;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--terra); margin-bottom: 16px;
 }
 .page-hero__title {
   font-family: var(--font-serif);
-  font-size: 72px;
-  font-weight: 300;
-  color: var(--stone-dark);
+  font-size: 72px; font-weight: 300;
+  color: var(--stone-dark); margin-bottom: 20px;
+}
+.page-hero__sub { font-size: 16px; color: var(--stone-mid); line-height: 1.7; max-width: 560px; }
+
+.rates-note {
+  background: var(--cream);
+  padding: 20px 60px;
+  border-bottom: 1px solid var(--cream-deep);
+}
+.rates-note p {
+  max-width: 1200px; margin: 0 auto;
+  font-size: 13px; color: var(--stone-light);
+  font-style: italic; letter-spacing: 0.02em;
 }
 
-/* Room grid */
-.rooms { padding: 80px 40px 120px; }
+.rooms { padding: 60px 40px 100px; }
 .rooms__grid {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
 }
+.rooms__empty {
+  max-width: 1200px; margin: 0 auto;
+  padding: 48px 0; font-size: 15px; color: var(--stone-mid); font-style: italic;
+}
+.rooms__empty a { color: var(--terra); }
+
+.recommend {
+  background: var(--forest);
+  padding: 80px 60px;
+}
+.recommend__inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center; gap: 48px;
+}
+.recommend__text { display: flex; flex-direction: column; gap: 12px; }
+.recommend h2 { font-size: 36px; font-weight: 300; color: var(--white); }
+.recommend p { font-size: 14px; color: rgba(255,255,255,0.55); max-width: 480px; line-height: 1.75; }
 
 @media (max-width: 960px) {
   .rooms__grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .page-hero { padding: 130px 24px 60px; }
+  .page-hero { padding: 130px 24px 60px; min-height: auto; }
   .page-hero__title { font-size: 48px; }
-  .rooms { padding: 60px 24px 80px; }
-  .rooms__grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .rates-note { padding: 16px 24px; }
+  .rooms { padding: 48px 24px 80px; }
+  .rooms__grid { grid-template-columns: 1fr; max-width: 420px; }
+  .recommend { padding: 60px 24px; }
+  .recommend__inner { flex-direction: column; align-items: flex-start; gap: 24px; }
 }
 </style>
