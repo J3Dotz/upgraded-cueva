@@ -9,15 +9,18 @@
 :root {
   /* Palette */
   --cream:      #FDFCF8;
-  --cream-deep: #F0EDE6;
+  --cream-deep: #F2F0EA;
   --stone-dark: #2C2A24;
   --stone-mid:  #6B6860;
-  --stone-light:#B5B0A8;
+  --stone-light:#E8E5DE;
   --terra:      #C4622D;
   --olive:      #4A5E45;
   --forest:     #2D4A3E;
   --forest-deep:#243A30;
   --white:      #FFFFFF;
+
+  /* Grain texture */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 
   /* Typography */
   --font-serif: 'Cormorant Garamond', Georgia, serif;

@@ -13,116 +13,133 @@ const p = prefix(lang);
 ---
 
 <footer>
-  <div class="footer__inner">
-    <div class="footer__grid">
+  <div class="footer__grid">
 
-      <div class="footer__brand-col">
-        <p class="footer__name">La Cueva de Miravet</p>
-        <p class="footer__tagline">{t('footer.tagline')}</p>
+    <!-- Brand col -->
+    <div class="footer__col">
+      <p class="footer__logo">La Cueva de Miravet</p>
+      <p class="footer__tagline">"{t('footer.tagline')}"</p>
+      <div class="footer__social">
+        <a href="#" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/>
+          </svg>
+        </a>
+        <a href="#" aria-label="Pinterest">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><path d="M11 8 v8 l-1 5"/><path d="M8 13 q1 2 3 2 q3 0 3 -3 q0 -2 -2 -2 q-2 0 -2 2"/>
+          </svg>
+        </a>
       </div>
+    </div>
 
-      <nav class="footer__nav" aria-label="Footer navigation">
+    <!-- Nav col -->
+    <div class="footer__col">
+      <span class="footer__col-label">Explore</span>
+      <nav class="footer__links" aria-label="Footer navigation">
         <a href={`${p}/stay`}        class:list={{ active: activePage === 'stay'        }}>{t('nav.stay')}</a>
         <a href={`${p}/experiences`} class:list={{ active: activePage === 'experiences' }}>{t('nav.experiences')}</a>
         <a href={`${p}/location`}    class:list={{ active: activePage === 'location'    }}>{t('nav.location')}</a>
         <a href={`${p}/journal`}     class:list={{ active: activePage === 'journal'     }}>{t('nav.journal')}</a>
         <a href={`${p}/book`}        class:list={{ active: activePage === 'book'        }}>{t('nav.book')}</a>
       </nav>
+    </div>
 
+    <!-- Contact col -->
+    <div class="footer__col">
+      <span class="footer__col-label">Contact</span>
       <div class="footer__contact">
-        <a href="mailto:hola@lacuevademiravet.com" class="footer__email">
-          hola@lacuevademiravet.com
-        </a>
-        <p class="footer__address">Cabanes, Castellón<br />Catalonia, Spain</p>
+        <a href="mailto:hola@lacuevademiravet.com" class="footer__email">hola@lacuevademiravet.com</a>
+        <p class="footer__address">Cabanes, Castellón, Spain</p>
       </div>
-
+      <div class="footer__sep"></div>
+      <p class="footer__guarantee">Best rate guaranteed — book direct.</p>
     </div>
 
-    <div class="footer__bottom">
-      <p class="footer__copy">
-        © {new Date().getFullYear()} La Cueva de Miravet.
-        {t('footer.rights')}.
-      </p>
-    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__copy">© {new Date().getFullYear()} La Cueva de Miravet · {t('footer.rights')}</p>
+    <p class="footer__credit">A Nomada project</p>
   </div>
 </footer>
 
 <style>
 footer {
-  background: var(--forest);
+  background: var(--stone-dark);
   color: rgba(255,255,255,0.65);
   padding: 80px 40px 40px;
 }
 
-.footer__inner { max-width: 1200px; margin: 0 auto; }
-
 .footer__grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr;
-  gap: 60px;
-  padding-bottom: 60px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px;
 }
 
-.footer__name {
+.footer__logo {
   font-family: var(--font-serif);
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--white);
-  margin-bottom: 8px;
+  font-size: 20px; font-weight: 400;
+  color: var(--white); margin-bottom: 12px;
 }
 
 .footer__tagline {
-  font-size: 13px;
-  font-style: italic;
-  opacity: 0.55;
+  font-family: var(--font-serif); font-style: italic;
+  font-size: 14px; color: rgba(255,255,255,0.5);
+  max-width: 320px;
 }
 
-.footer__nav {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.footer__social {
+  margin-top: 24px; display: flex; gap: 18px;
 }
+.footer__social a {
+  color: rgba(255,255,255,0.4);
+  transition: color 0.2s ease;
+  display: inline-flex;
+}
+.footer__social a:hover { color: var(--white); }
 
-.footer__nav a {
+.footer__col-label {
   font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.5);
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.35);
+  display: block; margin-bottom: 20px;
+}
+
+.footer__links {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.footer__links a {
+  font-size: 14px; color: rgba(255,255,255,0.65);
   transition: color 0.2s ease;
 }
-.footer__nav a:hover,
-.footer__nav a.active { color: var(--white); }
+.footer__links a:hover,
+.footer__links a.active { color: var(--white); }
 
+.footer__contact { display: flex; flex-direction: column; gap: 8px; }
 .footer__email {
-  display: block;
-  font-size: 13px;
-  color: rgba(255,255,255,0.7);
+  font-size: 13px; color: rgba(255,255,255,0.65);
   transition: color 0.2s;
-  margin-bottom: 16px;
 }
 .footer__email:hover { color: var(--white); }
+.footer__address { font-size: 13px; color: rgba(255,255,255,0.4); }
 
-.footer__address {
-  font-size: 13px;
-  line-height: 1.7;
-  opacity: 0.45;
+.footer__sep {
+  height: 1px; background: rgba(255,255,255,0.1);
+  margin: 20px 0;
+}
+.footer__guarantee {
+  font-size: 12px; color: rgba(255,255,255,0.4); font-style: italic;
 }
 
 .footer__bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 32px;
+  max-width: 1200px; margin: 60px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between;
 }
-
-.footer__copy {
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  opacity: 0.35;
-}
+.footer__copy { font-size: 11px; color: rgba(255,255,255,0.3); }
+.footer__credit { font-size: 11px; color: rgba(255,255,255,0.25); }
 
 @media (max-width: 768px) {
   footer { padding: 60px 24px 32px; }
