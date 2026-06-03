@@ -1,75 +1,186 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
-import EnquiryForm from '../components/EnquiryForm.astro';
-import { client } from '../lib/sanity';
-import { roomsQuery } from '../queries/rooms';
-import { useTranslations } from '../i18n/utils';
+import { prefix } from '../i18n/utils';
 
-const lang  = 'en';
-const t     = useTranslations(lang);
-const rooms = await client.fetch(roomsQuery);
+const lang = 'en';
+const p    = prefix(lang);
 ---
 
 <Base
-  title="Request to Book"
-  description="Book direct — no third parties, no booking fees. Each request is handled personally and answered the same day."
+  title="Request to Book — La Cueva de Miravet"
+  description="Request to book La Cueva de Miravet. A direct booking — we confirm within hours, then send a secure payment link."
   transparentNav={false}
   activePage="book"
   lang={lang}
 >
 
-  <!-- ===== Hero ===== -->
-  <section class="book-hero">
-    <div class="book-hero__inner">
-      <p class="book-hero__label">Direct booking · No third parties</p>
-      <h1 class="book-hero__title">{t('book.hero.title')}</h1>
-      <p class="book-hero__note">{t('book.note')}</p>
-    </div>
-  </section>
+  <!-- ===== Form section ===== -->
+  <section class="form-section" id="form">
+    <div class="arch-img form-section__arch" aria-hidden="true"></div>
 
-  <!-- ===== Form ===== -->
-  <section class="book-form">
-    <div class="book-form__inner">
-      <EnquiryForm lang={lang} rooms={rooms} />
+    <div class="form-wrap" data-animate>
+      <!-- Left aside -->
+      <div class="form-aside">
+        <div class="label">Direct booking · No third parties</div>
+        <h1>
+          Request
+          <span class="italic"> to book.</span>
+        </h1>
+        <p class="form-aside__sub">We'll confirm availability within a few hours.</p>
+        <p class="form-aside__note">Each request is handled personally by our Manager Javier, and answered the same day. Nothing is charged until we confirm.</p>
+        <div class="form-aside__rule"></div>
+        <div class="form-aside__contact">
+          <div class="label">Or write to us</div>
+          <a href="mailto:hola@lacuevademiravet.com" class="form-aside__email">hola@lacuevademiravet.com</a>
+          <p class="form-aside__phone">+34 641 33 09 42</p>
+        </div>
+      </div>
+
+      <!-- Right form -->
+      <form class="form" id="bookingForm" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="checkin" class="label">Check-in</label>
+            <input type="date" id="checkin" name="checkin" required />
+          </div>
+          <div class="field">
+            <label for="checkout" class="label">Check-out</label>
+            <input type="date" id="checkout" name="checkout" required />
+          </div>
+
+          <div class="field field--full">
+            <label class="label" id="roomLabel">Room preference <span class="label-opt">(optional — choose one or more)</span></label>
+            <input type="hidden" id="roomValue" name="room" value="" />
+            <div class="room-grid" role="group" aria-labelledby="roomLabel">
+              <button type="button" class="room-tile room-tile--nopref is-selected" data-value="">
+                <span class="room-tile__body">
+                  <span class="room-tile__type">Just one bedroom</span>
+                  <span class="room-tile__name">No preference</span>
+                </span>
+                <span class="room-tile__check" aria-hidden="true"></span>
+              </button>
+              {[
+                { type: 'Olive Suite',     name: 'Olivo',    val: 'Olivo · Olive Suite'     },
+                { type: 'Lavender Suite',  name: 'Lavanda',  val: 'Lavanda · Lavender Suite' },
+                { type: 'Bay Laurel Suite',name: 'Laurel',   val: 'Laurel · Bay Laurel Suite'},
+                { type: 'Thyme Suite',     name: 'Tomillo',  val: 'Tomillo · Thyme Suite'   },
+                { type: 'Almond Suite',    name: 'Almendro', val: 'Almendro · Almond Suite'  },
+                { type: 'Oak Suite',       name: 'Roble',    val: 'Roble · Oak Suite'       },
+                { type: 'Fennel Suite',    name: 'Hinojo',   val: 'Hinojo · Fennel Suite'   },
+              ].map(r => (
+                <button type="button" class="room-tile" data-value={r.val}>
+                  <span class="room-tile__body">
+                    <span class="room-tile__type">{r.type}</span>
+                    <span class="room-tile__name">{r.name}</span>
+                  </span>
+                  <span class="room-tile__check" aria-hidden="true"></span>
+                </button>
+              ))}
+              <button type="button" class="room-tile room-tile--lodge" data-value="Whole lodge — exclusive use">
+                <span class="room-tile__body">
+                  <span class="room-tile__type">All seven rooms</span>
+                  <span class="room-tile__name">Whole lodge</span>
+                </span>
+                <span class="room-tile__check" aria-hidden="true"></span>
+              </button>
+            </div>
+            <p class="room-hint" id="roomHint"></p>
+          </div>
+
+          <div class="field field--full">
+            <label for="guests" class="label">Number of guests</label>
+            <div class="select-wrap">
+              <select id="guests" name="guests">
+                <option>1 guest</option><option selected>2 guests</option>
+                <option>3 guests</option><option>4 guests</option>
+                <option>5 guests</option><option>6 guests</option>
+                <option>7 guests</option><option>8 guests</option>
+                <option>More than 8 — exclusive use</option>
+              </select>
+              <span class="select-chev" aria-hidden="true">▾</span>
+            </div>
+          </div>
+
+          <div class="field field--full">
+            <div class="form-divider"><span>Your details</span></div>
+          </div>
+
+          <div class="field field--full">
+            <label for="name" class="label">Full name</label>
+            <input type="text" id="name" name="name" placeholder="As it appears on your ID" required />
+          </div>
+          <div class="field">
+            <label for="email" class="label">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label for="phone" class="label">Phone</label>
+            <input type="tel" id="phone" name="phone" placeholder="+34 600 000 000" />
+          </div>
+          <div class="field field--full">
+            <label for="message" class="label">Message <span class="label-opt">(optional)</span></label>
+            <textarea id="message" name="message" rows="5" placeholder="Anything we should know — dietary requirements, occasion, special requests"></textarea>
+          </div>
+        </div>
+
+        <div class="form-submit">
+          <button type="submit" class="btn-terra" id="submitBtn">Send Request</button>
+          <p class="form-fineprint">No payment is taken at this stage. We'll confirm by email — usually within a few hours.</p>
+        </div>
+
+        <div class="form-success" id="formSuccess" hidden>
+          <div class="form-success__inner">
+            <div class="label">Received</div>
+            <h3>Thank you. We'll be in touch within a few hours.</h3>
+            <p>A confirmation has been sent to your email. Look out for a reply from <em>hola@lacuevademiravet.com</em>.</p>
+          </div>
+        </div>
+      </form>
     </div>
   </section>
 
   <!-- ===== What happens next ===== -->
-  <section class="steps">
-    <div class="steps__inner">
-      <h2>What happens next</h2>
-      <p class="steps__sub">Three quiet steps between request and arrival.</p>
-      <div class="steps__grid">
-        <div class="step">
-          <span class="step__num">01</span>
-          <h3>We review your request</h3>
-          <p>A person — not a calendar bot — checks the dates and your notes.</p>
-        </div>
-        <div class="step">
-          <span class="step__num">02</span>
-          <h3>We confirm by email</h3>
-          <p>Usually within a few hours, always the same day.</p>
-        </div>
-        <div class="step">
-          <span class="step__num">03</span>
-          <h3>Secure payment link</h3>
-          <p>We send a Stripe link to complete your reservation. Nothing is charged before then.</p>
-        </div>
-      </div>
+  <section class="next">
+    <div class="next__header" data-animate>
+      <div class="label">What happens next</div>
+      <h2>Three quiet steps<br/>between request and arrival.</h2>
     </div>
+    <ol class="next__steps" data-animate>
+      <li class="next__step">
+        <div class="next__num">01</div>
+        <h3>We review your request</h3>
+        <p>A person — not a calendar bot — checks the dates against what the rooms are doing.</p>
+      </li>
+      <li class="next__sep" aria-hidden="true"></li>
+      <li class="next__step">
+        <div class="next__num">02</div>
+        <h3>We confirm by email</h3>
+        <p>Usually within a few hours, always the same day. With a quote and the room we've held for you.</p>
+      </li>
+      <li class="next__sep" aria-hidden="true"></li>
+      <li class="next__step">
+        <div class="next__num">03</div>
+        <h3>Secure payment link</h3>
+        <p>We send a Stripe link to complete your reservation. Once paid, the room is yours.</p>
+      </li>
+    </ol>
   </section>
 
-  <!-- ===== Guarantee ===== -->
+  <!-- ===== Best rate guarantee ===== -->
   <section class="guarantee">
-    <div class="guarantee__inner">
-      <p class="guarantee__label">Best rate guaranteed</p>
-      <h2>{t('book.guarantee')}</h2>
-      <p>{t('book.guarantee.body')}</p>
-      <div class="guarantee__perks">
-        <span>✓ Lowest rate</span>
-        <span>✓ Flexible 14-day cancellation</span>
-        <span>✓ Complimentary welcome drink</span>
+    <div class="guarantee__inner" data-animate>
+      <div class="guarantee__left">
+        <div class="label">Best rate, guaranteed</div>
+        <h2>Booking direct is<br/><em>always</em> the better price.</h2>
+      </div>
+      <div class="guarantee__right">
+        <p>If you find our rooms cheaper anywhere else on the same dates, we'll match it and add a bottle of local wine to your room. No middlemen, no commissions — just the mountain and you.</p>
+        <ul class="guarantee__list">
+          <li>Lowest available rate, every time</li>
+          <li>Flexible cancellation up to 14 days before arrival</li>
+          <li>Complimentary welcome drink on arrival</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -77,82 +188,216 @@ const rooms = await client.fetch(roomsQuery);
 </Base>
 
 <style>
-.book-hero {
-  background: var(--forest);
-  padding: 160px 60px 80px;
-  min-height: 50vh;
-  display: flex; align-items: flex-end;
+.label {
+  font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid);
 }
-.book-hero__inner { max-width: 760px; }
-.book-hero__label {
-  font-family: var(--font-sans);
-  font-size: 11px; font-weight: 500;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--terra); margin-bottom: 16px;
-}
-.book-hero__title {
-  font-family: var(--font-serif);
-  font-size: 72px; font-weight: 300;
-  color: var(--white); margin-bottom: 24px;
-}
-.book-hero__note { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.75; }
+.label-opt { text-transform: none; letter-spacing: 0; color: var(--stone-mid); font-weight: 400; font-style: italic; font-family: var(--font-serif); font-size: 13px; margin-left: 4px; }
+.italic { font-style: italic; }
 
-/* ===== Form ===== */
-.book-form { padding: 80px 60px; }
-.book-form__inner { max-width: 720px; margin: 0 auto; }
+/* ===== Form section ===== */
+.form-section { position: relative; background: var(--cream); padding: 128px 40px 120px; overflow: hidden; }
+.form-section__arch { position: absolute; bottom: 0; left: -60px; width: 140px; height: 180px; border-radius: 200px 200px 0 0; background-color: #B8A89A; opacity: 0.5; z-index: 1; pointer-events: none; background-image: var(--grain); background-blend-mode: multiply; }
+.arch-img::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.18) 100%); }
+.form-wrap { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: minmax(360px, 420px) 1fr; gap: 88px; align-items: start; position: relative; z-index: 2; }
+.form-aside { position: sticky; top: 110px; }
+.form-aside .label { margin-bottom: 20px; display: block; }
+.form-aside h1 { font-family: var(--font-serif); font-size: 76px; line-height: 0.98; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 20px; }
+.form-aside__sub { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 21px; color: var(--stone-mid); line-height: 1.45; margin-bottom: 36px; max-width: 360px; }
+.form-aside__note { color: var(--stone-mid); font-size: 15px; line-height: 1.7; text-wrap: pretty; margin-bottom: 32px; }
+.form-aside__rule { width: 40px; height: 1px; background: var(--stone-light); margin-bottom: 28px; }
+.form-aside__contact .label { margin-bottom: 14px; }
+.form-aside__email { display: block; font-family: var(--font-serif); font-size: 20px; font-style: italic; color: var(--stone-dark); margin-bottom: 6px; transition: color 0.2s ease; }
+.form-aside__email:hover { color: var(--terra); }
+.form-aside__phone { font-size: 14px; color: var(--stone-mid); }
 
-/* ===== Steps ===== */
-.steps { background: var(--cream-deep); padding: 100px 60px; }
-.steps__inner { max-width: 1100px; margin: 0 auto; }
-.steps h2 { font-size: 44px; font-weight: 300; margin-bottom: 8px; }
-.steps__sub { font-size: 14px; color: var(--stone-mid); margin-bottom: 56px; }
-.steps__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.step { display: flex; flex-direction: column; gap: 12px; }
-.step__num {
-  font-family: var(--font-serif);
-  font-size: 48px; font-weight: 300;
-  color: var(--terra); line-height: 1;
+/* Form */
+.form { width: 100%; max-width: 620px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px 24px; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field--full { grid-column: 1 / -1; }
+.field input, .field select, .field textarea {
+  font-family: var(--font-sans); font-size: 15px; color: var(--stone-dark);
+  background: transparent; border: none; border-bottom: 1px solid var(--stone-light);
+  padding: 10px 0 12px; outline: none; transition: border-color 0.2s ease;
+  width: 100%; border-radius: 0; -webkit-appearance: none; appearance: none;
 }
-.step h3 {
-  font-family: var(--font-serif);
-  font-size: 22px; font-weight: 400;
-  color: var(--stone-dark);
+.field input::placeholder, .field textarea::placeholder { color: #B8B4AB; font-style: italic; font-family: var(--font-serif); font-size: 17px; }
+.field input:focus, .field select:focus, .field textarea:focus { border-bottom-color: var(--terra); }
+.field input[type="date"] { color-scheme: light; font-family: var(--font-serif); font-style: italic; font-size: 18px; color: var(--stone-dark); }
+.field textarea { resize: vertical; min-height: 110px; border: 1px solid var(--stone-light); padding: 14px 16px; border-radius: 4px; background: rgba(255,255,255,0.5); line-height: 1.6; }
+.field textarea:focus { border-color: var(--terra); }
+.select-wrap { position: relative; }
+.select-wrap select { padding-right: 28px; cursor: pointer; font-family: var(--font-serif); font-style: italic; font-size: 18px; }
+.select-chev { position: absolute; right: 0; top: 50%; transform: translateY(-30%); color: var(--stone-mid); font-size: 14px; pointer-events: none; }
+
+/* Room tiles */
+.room-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 6px; }
+.room-tile {
+  position: relative; display: flex; flex-direction: column; text-align: left;
+  border: 1px solid var(--stone-light); border-radius: 7px; background: rgba(255,255,255,0.5);
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
 }
-.step p { font-size: 14px; color: var(--stone-mid); line-height: 1.75; }
+.room-tile:hover { border-color: #cfc9bd; background: rgba(255,255,255,0.9); transform: translateY(-1px); }
+.room-tile__body { padding: 15px 16px 16px; display: flex; flex-direction: column; gap: 4px; min-height: 48px; }
+.room-tile__type { font-family: var(--font-sans); font-size: 9.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--stone-mid); padding-right: 26px; }
+.room-tile__name { font-family: var(--font-serif); font-size: 22px; line-height: 1.05; color: var(--stone-dark); letter-spacing: -0.01em; }
+.room-tile--nopref, .room-tile--lodge { background: var(--cream-deep); }
+.room-tile--nopref:hover, .room-tile--lodge:hover { background: #efe9dc; }
+.room-tile--nopref .room-tile__name, .room-tile--lodge .room-tile__name { font-style: italic; }
+.room-tile__check { position: absolute; top: 13px; right: 13px; width: 19px; height: 19px; border-radius: 5px; border: 1.5px solid var(--stone-light); background: transparent; display: flex; align-items: center; justify-content: center; transition: background 0.18s ease, border-color 0.18s ease; }
+.room-tile__check::after { content: "✓"; color: var(--white); font-size: 11px; line-height: 1; opacity: 0; transform: scale(0.6); transition: opacity 0.18s ease, transform 0.18s ease; }
+.room-tile.is-selected { border-color: var(--terra); background: rgba(196,98,45,0.05); }
+.room-tile.is-selected .room-tile__check { background: var(--terra); border-color: var(--terra); }
+.room-tile.is-selected .room-tile__check::after { opacity: 1; transform: scale(1); }
+.room-hint { margin-top: 12px; font-family: var(--font-serif); font-style: italic; font-size: 14px; color: var(--stone-mid); }
+
+.form-divider { display: flex; align-items: center; gap: 14px; margin-top: 32px; margin-bottom: 4px; }
+.form-divider::before, .form-divider::after { content: ""; flex: 1; height: 1px; background: var(--stone-light); }
+.form-divider span { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
+
+.form-submit { margin-top: 48px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.btn-terra { background: var(--terra); color: var(--white); border-radius: 100px; padding: 16px 40px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; transition: background 0.2s ease, transform 0.2s ease; border: none; cursor: pointer; }
+.btn-terra:hover { background: #b1561f; transform: translateY(-1px); }
+.form-fineprint { font-size: 13px; color: var(--stone-mid); max-width: 480px; line-height: 1.6; }
+
+.form-success { max-width: 720px; margin: 60px auto 0; background: var(--white); border: 1px solid var(--stone-light); border-radius: 200px 200px 12px 12px; padding: 80px 60px 60px; text-align: center; }
+.form-success__inner .label { margin-bottom: 18px; }
+.form-success h3 { font-family: var(--font-serif); font-size: 32px; font-weight: 300; margin-bottom: 16px; line-height: 1.2; }
+.form-success p { color: var(--stone-mid); font-size: 15px; max-width: 440px; margin: 0 auto; }
+.form-success em { font-style: italic; color: var(--stone-dark); }
+
+/* ===== What happens next ===== */
+.next { background: var(--cream-deep); padding: 120px 40px; }
+.next__header { max-width: 1100px; margin: 0 auto 72px; text-align: center; }
+.next__header .label { margin-bottom: 18px; display: block; }
+.next__header h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; }
+.next__steps { max-width: 1100px; margin: 0 auto; list-style: none; display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr; align-items: start; }
+.next__step { padding: 0 20px; }
+.next__num { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 48px; color: var(--terra); margin-bottom: 24px; line-height: 1; }
+.next__step h3 { font-family: var(--font-serif); font-size: 24px; font-weight: 400; margin-bottom: 12px; }
+.next__step p { color: var(--stone-mid); font-size: 14px; line-height: 1.7; text-wrap: pretty; max-width: 280px; }
+.next__sep { align-self: center; height: 1px; background: var(--stone-light); margin-top: 36px; }
 
 /* ===== Guarantee ===== */
-.guarantee { background: var(--forest); padding: 100px 60px; }
-.guarantee__inner { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-.guarantee__label {
-  font-family: var(--font-sans);
-  font-size: 11px; font-weight: 500;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--terra);
-}
-.guarantee h2 {
-  font-family: var(--font-serif);
-  font-size: 44px; font-weight: 300;
-  color: var(--white);
-}
-.guarantee p { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.8; }
-.guarantee__perks {
-  display: flex; gap: 32px; flex-wrap: wrap;
-  font-family: var(--font-sans);
-  font-size: 12px; font-weight: 500;
-  letter-spacing: 0.06em;
-  color: rgba(255,255,255,0.7);
-  margin-top: 8px;
-}
+.guarantee { background: var(--forest); background-image: var(--grain); background-blend-mode: multiply; color: var(--white); padding: 100px 40px; }
+.guarantee__inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.guarantee__left .label { color: rgba(255,255,255,0.55); margin-bottom: 18px; display: block; }
+.guarantee h2 { font-family: var(--font-serif); color: var(--white); font-size: 48px; font-weight: 300; line-height: 1.1; }
+.guarantee h2 em { font-style: italic; color: #E8B89A; }
+.guarantee__right p { color: rgba(255,255,255,0.78); font-size: 16px; line-height: 1.75; margin-bottom: 28px; text-wrap: pretty; }
+.guarantee__list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.guarantee__list li { position: relative; padding-left: 24px; font-size: 14px; color: rgba(255,255,255,0.85); }
+.guarantee__list li::before { content: ""; position: absolute; left: 0; top: 9px; width: 12px; height: 1px; background: var(--terra); }
 
 /* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .form-aside h1 { font-size: 60px; }
+  .form-wrap { grid-template-columns: 1fr; gap: 48px; }
+  .form-aside { position: static; }
+  .form-section { padding-top: 108px; }
+  .form-section__arch { display: none; }
+  .next__steps { grid-template-columns: 1fr; gap: 40px; }
+  .next__sep { display: none; }
+  .guarantee__inner { grid-template-columns: 1fr; gap: 40px; }
+}
 @media (max-width: 768px) {
-  .book-hero { padding: 130px 24px 60px; min-height: auto; }
-  .book-hero__title { font-size: 48px; }
-  .book-form { padding: 60px 24px; }
-  .steps { padding: 60px 24px; }
-  .steps__grid { grid-template-columns: 1fr; gap: 32px; }
-  .guarantee { padding: 60px 24px; }
-  .guarantee h2 { font-size: 32px; }
-  .guarantee__perks { flex-direction: column; gap: 12px; }
+  .form-aside h1 { font-size: 48px; }
+  .form-aside__sub { font-size: 18px; }
+  .form-section { padding: 96px 24px 80px; }
+  .form-grid { grid-template-columns: 1fr; gap: 28px; }
+  .room-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .room-tile__name { font-size: 18px; }
+  .next { padding: 80px 24px; }
+  .guarantee { padding: 70px 24px; }
+  .guarantee h2 { font-size: 36px; }
 }
 </style>
+
+<script>
+// ===== Date coupling =====
+const ci = document.getElementById('checkin') as HTMLInputElement;
+const co = document.getElementById('checkout') as HTMLInputElement;
+if (ci && co) {
+  const today = new Date().toISOString().slice(0,10);
+  ci.min = today;
+  const sync = () => {
+    if (ci.value) co.min = ci.value;
+    if (co.value && ci.value && co.value <= ci.value) {
+      const d = new Date(ci.value); d.setDate(d.getDate() + 1);
+      co.value = d.toISOString().slice(0,10);
+    }
+  };
+  ci.addEventListener('change', sync);
+}
+
+// ===== Room tiles =====
+const roomInput = document.getElementById('roomValue') as HTMLInputElement;
+const roomHint  = document.getElementById('roomHint')!;
+const tiles     = Array.from(document.querySelectorAll<HTMLElement>('.room-tile'));
+const noPref    = document.querySelector<HTMLElement>('.room-tile--nopref')!;
+const lodge     = document.querySelector<HTMLElement>('.room-tile--lodge')!;
+const isSpecial = (t: HTMLElement) => t === noPref || t === lodge;
+
+function updateRoom() {
+  const selected = tiles.filter(t => !isSpecial(t) && t.classList.contains('is-selected'));
+  const vals = selected.map(t => t.dataset.value ?? '');
+  if (noPref.classList.contains('is-selected')) {
+    roomInput.value = '';
+    roomHint.textContent = "No preference — we'll choose the room that fits you best.";
+  } else if (lodge.classList.contains('is-selected')) {
+    roomInput.value = 'Whole lodge — exclusive use';
+    roomHint.textContent = 'The whole lodge — all seven rooms, exclusively yours.';
+  } else if (vals.length === 0) {
+    roomInput.value = '';
+    roomHint.textContent = 'Select one or more rooms, or take the whole lodge.';
+  } else {
+    roomInput.value = vals.join(', ');
+    roomHint.textContent = vals.length === 1 ? '1 room selected.' : `${vals.length} rooms selected.`;
+  }
+}
+
+tiles.forEach(tile => {
+  tile.addEventListener('click', () => {
+    if (isSpecial(tile)) {
+      tiles.forEach(t => t.classList.remove('is-selected'));
+      tile.classList.add('is-selected');
+    } else {
+      noPref.classList.remove('is-selected');
+      lodge.classList.remove('is-selected');
+      tile.classList.toggle('is-selected');
+      if (!tiles.some(t => !isSpecial(t) && t.classList.contains('is-selected'))) {
+        noPref.classList.add('is-selected');
+      }
+    }
+    updateRoom();
+  });
+});
+updateRoom();
+
+// ===== Form submit =====
+document.getElementById('bookingForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form   = e.target as HTMLFormElement;
+  const btn    = document.getElementById('submitBtn') as HTMLButtonElement;
+  const success = document.getElementById('formSuccess') as HTMLElement;
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    const res = await fetch('/api/enquiry', { method: 'POST', body: new FormData(form) });
+    if (res.ok) {
+      form.style.opacity = '0.35';
+      form.style.pointerEvents = 'none';
+      success.hidden = false;
+      success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else throw new Error();
+  } catch {
+    btn.disabled = false;
+    btn.textContent = 'Send Request';
+    alert('Something went wrong. Please email us at hola@lacuevademiravet.com');
+  }
+});
+</script>
