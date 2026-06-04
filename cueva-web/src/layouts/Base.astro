@@ -51,7 +51,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     import { inView, animate, stagger } from 'motion';
 
     // Individual scroll-in elements
-    inView('[data-animate]', ({ target }) => {
+    inView('[data-animate]', (target) => {
       animate(
         target,
         { opacity: [0, 1], y: [24, 0] },
@@ -60,7 +60,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     }, { amount: 0.12 });
 
     // Staggered grids — add data-stagger to any grid container
-    inView('[data-stagger]', ({ target }) => {
+    inView('[data-stagger]', (target) => {
       const children = Array.from(target.children) as HTMLElement[];
       if (children.length === 0) return;
       animate(
