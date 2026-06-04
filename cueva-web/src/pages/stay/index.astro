@@ -25,9 +25,9 @@ const displayRooms = wireframe.map((wf, i) => {
   const sanity = rooms.find((r: any) => r.slug?.current === wf.slug) ?? rooms[i];
   return {
     slug: sanity?.slug?.current ?? wf.slug,
-    type: (sanity?.tagline ? loc(sanity.tagline, lang) : null) ?? wf.type,
+    type: (sanity?.suiteType ? loc(sanity.suiteType, lang) : null) ?? wf.type,
     name: (sanity?.name ? loc(sanity.name, lang) : null) ?? wf.name,
-    feature: (sanity?.bedConfig ? loc(sanity.bedConfig, lang) : null) ?? wf.feature,
+    feature: (sanity?.tagline ? loc(sanity.tagline, lang) : null) ?? wf.feature,
     price: sanity?.priceFrom ?? wf.price,
     color: sanity?.swatchColor ?? wf.color,
   };
@@ -60,7 +60,7 @@ const displayRooms = wireframe.map((wf, i) => {
       <p class="meta">Rates are per room, per night.<br/>Breakfast and the mountain are included.</p>
     </div>
 
-    <div class="rooms__grid" data-animate>
+    <div class="rooms__grid" data-stagger>
       {displayRooms.map((room) => (
         <article class="room-card">
           <a href={`${p}/stay/${room.slug}`} class="room-card__img-wrap">

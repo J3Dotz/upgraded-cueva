@@ -1,0 +1,172 @@
+---
+export const prerender = true;
+import Base from '../../../layouts/Base.astro';
+import { client, urlFor } from '../../../lib/sanity';
+import { journalPostsQuery } from '../../../queries/journal';
+import { loc, formatDate, prefix } from '../../../i18n/utils';
+
+const lang  = 'es';
+const p     = prefix(lang);
+const posts = await client.fetch(journalPostsQuery);
+const featured = posts[0] ?? null;
+const archive  = posts.slice(1);
+
+const placeholders = [
+  { cat: 'Propiedad',           title: 'La Cueva al amanecer: cómo es la montaña antes de que se despierte nadie',     excerpt: 'La hora antes de que el sol asome por la cresta, cuando el valle se vuelve del color del pan sin hornear.', date: 'Mayo 2026',        read: '8 min', color: '#7C5E3F' },
+  { cat: 'Detrás de cámaras',  title: 'Por qué elegimos la energía solar: cuatro años de decisiones fuera de la red', excerpt: 'Un balance honesto de lo que funciona, lo que no, y lo que haríamos diferente.',                          date: 'Abril 2026',      read: '12 min', color: '#4A5E45' },
+  { cat: 'Zona local',          title: 'Desert de les Palmes: una guía de senderismo desde el límite de la finca',      excerpt: 'Tres rutas, todas comenzando desde la puerta trasera. Alcornoques, ruinas del monasterio, una vista.',       date: 'Marzo 2026',      read: '10 min', color: '#8B9A7A' },
+  { cat: 'Zona local',          title: 'Dónde comer bien en la Costa Azahar',                                            excerpt: 'Siete lugares a los que enviamos a los huéspedes, dos que no mencionamos, y uno que debes reservar antes.', date: 'Febrero 2026',    read: '9 min', color: '#A88766' },
+  { cat: 'Propiedad',           title: 'La restauración: qué conservamos, qué reconstruimos y por qué',                 excerpt: 'Dos años de trabajo lento, viga a viga. Notas sobre lo que la vieja casa quería que hiciéramos.',           date: 'Enero 2026',      read: '15 min', color: '#5C4838' },
+  { cat: 'Estacional',          title: 'Llegar en otoño: el mejor momento que más huéspedes pasan por alto',            excerpt: 'La luz dura más, las multitudes se han ido, la cocina tiene más con qué trabajar. Un pequeño alegato por octubre.', date: 'Noviembre 2025', read: '6 min', color: '#B8855B' },
+];
+---
+
+<Base title="El Diario — La Cueva de Miravet" description="Notas desde la montaña. Historias, actualizaciones estacionales, guías de la zona y notas del propietario." onCream={true} activePage="journal" lang={lang}>
+
+  <section class="hero">
+    <div class="hero__topo" aria-hidden="true">
+      <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#C4622D" stroke-width="0.8">
+        <path d="M-20 460 Q 200 420 420 450 T 820 430"/><path d="M-20 420 Q 220 380 440 410 T 820 390"/>
+        <path d="M-20 380 Q 240 340 460 370 T 820 350"/><path d="M-20 340 Q 260 300 480 330 T 820 310"/>
+      </svg>
+    </div>
+    <div class="hero__inner">
+      <div class="hero__crumb" data-animate><span class="dot"></span><span>El Diario</span></div>
+      <h1 data-animate>Curado</h1>
+      <p class="hero__sub" data-animate>Notas desde la montaña.</p>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="featured__inner">
+      {featured ? (
+        <>
+          <div class="featured__img" style={featured.coverImage ? `background-image: url(${urlFor(featured.coverImage).width(900).height(1000).auto('format').url()})` : ''} data-animate></div>
+          <div class="featured__body" data-animate>
+            <div class="featured__tag"><span class="rule"></span><span>{featured.category ?? 'Propiedad'} · Destacado</span></div>
+            <h2 class="featured__title">{loc(featured.title, lang)}</h2>
+            {featured.excerpt && <p class="featured__excerpt">{loc(featured.excerpt, lang)}</p>}
+            <div class="featured__byline"><span class="avatar" aria-hidden="true"></span><span class="who">Por {featured.author ?? 'Javier'}</span><span class="sep">·</span><span class="when">{formatDate(featured.publishedAt, lang)}</span></div>
+            <a href={`${p}/journal/${featured.slug.current}`} class="terra-link">Leer artículo</a>
+          </div>
+        </>
+      ) : (
+        <>
+          <div class="featured__img" data-animate></div>
+          <div class="featured__body" data-animate>
+            <div class="featured__tag"><span class="rule"></span><span>Propiedad · Destacado</span></div>
+            <h2 class="featured__title">La Cueva al amanecer: <span class="italic">cómo es la montaña antes de que se despierte nadie.</span></h2>
+            <p class="featured__excerpt">Hay una hora particular, veinte minutos antes de que el sol asome por la cresta, en que el valle bajo la masía se vuelve del color del pan sin hornear.</p>
+            <div class="featured__byline"><span class="avatar" aria-hidden="true"></span><span class="who">Por Javier</span><span class="sep">·</span><span class="when">Mayo 2026</span><span class="sep">·</span><span class="when">8 min de lectura</span></div>
+            <a href={`${p}/journal`} class="terra-link">Leer artículo</a>
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+
+  <section class="archive">
+    <div class="archive__header" data-animate>
+      <p class="archive__title"><span class="roman">Del archivo.</span> Historias, estaciones y las cosas que merecen escribirse.</p>
+      <span class="archive__count"><strong>{posts.length > 0 ? posts.length : 24}</strong> entradas · desde 2022</span>
+    </div>
+    <nav class="filter" aria-label="Filtrar por categoría" data-animate>
+      <span class="filter__label"><span class="rule-sm"></span>Filtrar</span>
+      <div class="filter__list">
+        <button class="filter__item active">Todo</button>
+        <button class="filter__item">Propiedad</button>
+        <button class="filter__item">Zona local</button>
+        <button class="filter__item">Estacional</button>
+        <button class="filter__item">Detrás de cámaras</button>
+      </div>
+    </nav>
+    <div class="grid" data-stagger>
+      {archive.length > 0 ? archive.map((post: any) => {
+        const imgSrc = post.coverImage ? urlFor(post.coverImage).width(640).height(430).auto('format').url() : null;
+        return (
+          <a href={`${p}/journal/${post.slug.current}`} class="article">
+            <div class="article__img-wrap">{imgSrc ? <img src={imgSrc} alt={loc(post.title, lang)} loading="lazy" /> : <div class="article__img" style="background-color:#7C5E3F;"></div>}</div>
+            <div class="article__body"><span class="article__cat">{post.category}</span><h3 class="article__title">{loc(post.title, lang)}</h3>{post.excerpt && <p class="article__excerpt">{loc(post.excerpt, lang)}</p>}<div class="article__meta"><span class="date">{formatDate(post.publishedAt, lang)}</span>{post.readingMinutes && <span class="read">{post.readingMinutes} min</span>}</div></div>
+          </a>
+        );
+      }) : placeholders.map(a => (
+        <article class="article">
+          <div class="article__img-wrap"><div class="article__img" style={`background-color: ${a.color};`}></div></div>
+          <div class="article__body"><span class="article__cat">{a.cat}</span><h3 class="article__title">{a.title}</h3><p class="article__excerpt">{a.excerpt}</p><div class="article__meta"><span class="date">{a.date}</span><span class="read">{a.read}</span></div></div>
+        </article>
+      ))}
+    </div>
+    <div class="archive__more" data-animate><a href="#" class="pill-btn">Cargar entradas anteriores</a></div>
+  </section>
+
+</Base>
+
+<style>
+.italic { font-style: italic; } .roman { font-style: normal; }
+.hero { position: relative; height: 40vh; min-height: 380px; background: var(--cream); color: var(--stone-dark); display: flex; align-items: flex-end; padding: 0 40px 64px; overflow: hidden; }
+.hero__inner { position: relative; z-index: 2; max-width: 1280px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; }
+.hero__crumb { display: flex; align-items: center; gap: 12px; color: var(--stone-mid); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 36px; }
+.dot { width: 4px; height: 4px; background: var(--terra); border-radius: 50%; display: inline-block; }
+.hero h1 { font-family: var(--font-serif); font-size: 144px; font-weight: 300; letter-spacing: -0.03em; line-height: 0.92; color: var(--stone-dark); margin-bottom: 14px; }
+.hero__sub { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 26px; color: var(--stone-mid); line-height: 1.3; }
+.hero__topo { position: absolute; top: 0; right: 0; width: 50%; height: 100%; pointer-events: none; opacity: 0.5; }
+.hero__topo svg { width: 100%; height: 100%; }
+.featured { background: var(--stone-dark); background-image: var(--grain); background-blend-mode: multiply; color: var(--white); position: relative; overflow: hidden; }
+.featured::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 60% at 80% 30%, rgba(196,98,45,0.08) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 10% 90%, rgba(74,94,69,0.18) 0%, transparent 70%); pointer-events: none; }
+.featured__inner { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; }
+.featured__img { aspect-ratio: 4/5; min-height: 560px; background-color: #6B5544; background-image: var(--grain); background-blend-mode: multiply; background-size: cover; background-position: center; }
+.featured__body { padding: 100px 80px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; max-width: 680px; }
+.featured__tag { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; color: var(--terra); display: inline-flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+.rule { width: 28px; height: 1px; background: var(--terra); display: inline-block; }
+.featured__title { font-family: var(--font-serif); font-weight: 300; font-size: 52px; line-height: 1.08; letter-spacing: -0.01em; color: var(--white); margin-bottom: 28px; text-wrap: balance; }
+.featured__title .italic { color: rgba(255,255,255,0.78); }
+.featured__excerpt { font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.7); margin-bottom: 36px; max-width: 520px; }
+.featured__byline { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 12px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #8a7359 0%, #5a4a3b 70%); flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+.who { color: var(--white); font-style: italic; font-family: var(--font-serif); font-size: 16px; }
+.when { color: rgba(255,255,255,0.45); } .sep { color: rgba(255,255,255,0.25); }
+.terra-link { font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--terra); display: inline-flex; align-items: center; gap: 10px; }
+.terra-link::after { content: "→"; display: inline-block; transition: transform 0.3s ease; }
+.terra-link:hover::after { transform: translateX(4px); }
+.archive { background: var(--cream); padding: 120px 40px 140px; }
+.archive__header { max-width: 1280px; margin: 0 auto 56px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+.archive__title { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 32px; color: var(--stone-dark); line-height: 1.1; max-width: 480px; }
+.archive__count { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--stone-mid); padding-bottom: 6px; }
+.archive__count strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 18px; color: var(--stone-dark); text-transform: none; letter-spacing: 0; margin-right: 6px; }
+.filter { max-width: 1280px; margin: 0 auto 56px; display: flex; align-items: center; flex-wrap: wrap; padding-bottom: 22px; border-bottom: 1px solid var(--stone-light); }
+.filter__label { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--stone-mid); margin-right: 28px; display: inline-flex; align-items: center; gap: 12px; }
+.rule-sm { width: 20px; height: 1px; background: var(--stone-mid); display: inline-block; }
+.filter__list { display: flex; flex-wrap: wrap; }
+.filter__item { font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); padding: 6px 18px; transition: color 0.2s; position: relative; background: none; border: none; cursor: pointer; }
+.filter__item:hover { color: var(--stone-dark); } .filter__item.active { color: var(--terra); }
+.filter__item.active::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: -23px; height: 1px; background: var(--terra); }
+.filter__item + .filter__item::before { content: "·"; position: absolute; left: -3px; color: var(--stone-light); }
+.grid { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 64px 40px; }
+.article { display: flex; flex-direction: column; cursor: pointer; }
+.article__img-wrap { overflow: hidden; aspect-ratio: 3/2; background-color: var(--stone-light); position: relative; }
+.article__img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.4s ease; }
+.article:hover .article__img-wrap img { opacity: 0.92; }
+.article__img { width: 100%; height: 100%; background-image: var(--grain); background-blend-mode: multiply; }
+.article__body { padding: 22px 0 0; display: flex; flex-direction: column; }
+.article__cat { font-family: var(--font-sans); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; color: var(--terra); margin-bottom: 14px; }
+.article__title { font-family: var(--font-serif); font-weight: 400; font-size: 22px; line-height: 1.22; color: var(--stone-dark); margin-bottom: 10px; transition: color 0.2s; }
+.article:hover .article__title { color: var(--terra); }
+.article__excerpt { font-size: 13px; line-height: 1.6; color: var(--stone-mid); margin-bottom: 18px; }
+.article__meta { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--stone-light); display: flex; align-items: center; justify-content: space-between; font-family: var(--font-sans); font-size: 11px; color: var(--stone-mid); }
+.article__meta .date { font-style: italic; font-family: var(--font-serif); font-size: 14px; color: var(--stone-dark); }
+.article__meta .read { text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; }
+.archive__more { max-width: 1280px; margin: 88px auto 0; text-align: center; padding-top: 44px; border-top: 1px solid var(--stone-light); }
+.pill-btn { display: inline-block; border: 1px solid var(--terra); color: var(--terra); background: transparent; border-radius: 100px; padding: 14px 36px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; transition: background 0.25s ease, color 0.25s ease; }
+.pill-btn:hover { background: var(--terra); color: var(--white); }
+@media (max-width: 1100px) { .hero h1 { font-size: 96px; } .featured__inner { grid-template-columns: 1fr; } .featured__img { aspect-ratio: 16/11; min-height: 0; } .featured__body { padding: 72px 40px; max-width: none; } .featured__title { font-size: 40px; } .grid { grid-template-columns: 1fr 1fr; gap: 56px 32px; } }
+@media (max-width: 768px) { .hero { padding: 130px 24px 48px; height: auto; min-height: 0; } .hero h1 { font-size: 64px; } .hero__topo { display: none; } .featured__body { padding: 56px 24px; } .featured__title { font-size: 32px; } .archive { padding: 80px 24px 100px; } .grid { grid-template-columns: 1fr; gap: 56px; max-width: 420px; margin: 0 auto; } }
+</style>
+
+<script>
+document.querySelectorAll('.filter__item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.filter__item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>

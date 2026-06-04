@@ -80,7 +80,7 @@ const [rooms, posts] = await Promise.all([
       <p class="label">The Property</p>
       <h2>What the mountain provides.</h2>
     </div>
-    <div class="amenities__grid" data-animate>
+    <div class="amenities__grid" data-stagger>
 
       <div class="amenity">
         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -165,7 +165,7 @@ const [rooms, posts] = await Promise.all([
       <p class="body-sm">Every room opens onto something — a terrace, a view, a particular quality of silence. Book a single room or take the lodge exclusively.</p>
     </div>
 
-    <div class="rooms__grid" data-animate>
+    <div class="rooms__grid" data-stagger>
       {rooms.slice(0, 3).map((room: any) => (
         <RoomCard room={room} lang={lang} />
       ))}

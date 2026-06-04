@@ -1,50 +1,15 @@
 ---
+// /es/reservar is redirected to /es/book via astro.config.mjs redirects.
 export const prerender = true;
-import Base from '../../layouts/Base.astro';
-import EnquiryForm from '../../components/EnquiryForm.astro';
-import { client } from '../../lib/sanity';
-import { roomsQuery } from '../../queries/rooms';
-import { useTranslations } from '../../i18n/utils';
-
-const lang  = 'es';
-const t     = useTranslations(lang);
-const rooms = await client.fetch(roomsQuery);
 ---
-
-<Base
-  title="Reservar"
-  description="Reserva tu estancia en La Cueva de Miravet. Consulta directamente — confirmamos en 24 horas."
-  transparentNav={false}
-  activePage="book"
-  lang={lang}
->
-  <main class="book-page" id="form">
-    <div class="book-page__aside">
-      <p class="book-page__label">Reservar</p>
-      <h1 class="book-page__title">{t('book.hero.title')}</h1>
-      <p class="book-page__note">
-        Respondemos a cada consulta en 24 horas. Para solicitudes el mismo día,
-        escríbenos directamente a <a href="mailto:hola@lacuevademiravet.com">hola@lacuevademiravet.com</a>.
-      </p>
-    </div>
-    <div class="book-page__form">
-      <EnquiryForm lang={lang} rooms={rooms} />
-    </div>
-  </main>
-</Base>
-
-<style>
-.book-page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 80px; }
-.book-page__aside { background: var(--forest); color: var(--white); padding: 80px 60px; display: flex; flex-direction: column; justify-content: center; gap: 24px; }
-.book-page__label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra); }
-.book-page__title { font-family: var(--font-serif); font-size: 56px; font-weight: 300; line-height: 1.1; }
-.book-page__note { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; }
-.book-page__note a { color: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(255,255,255,0.3); }
-.book-page__form { background: var(--cream); padding: 80px 60px; display: flex; flex-direction: column; justify-content: center; }
-@media (max-width: 768px) {
-  .book-page { grid-template-columns: 1fr; }
-  .book-page__aside { padding: 80px 24px 48px; }
-  .book-page__title { font-size: 40px; }
-  .book-page__form { padding: 48px 24px 80px; }
-}
-</style>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0;url=/es/book" />
+    <link rel="canonical" href="/es/book" />
+    <title>Redirigiendo…</title>
+  </head>
+  <body>
+    <script>window.location.replace('/es/book');</script>
+  </body>
+</html>

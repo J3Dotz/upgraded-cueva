@@ -1,50 +1,134 @@
 ---
 export const prerender = true;
-// Spanish Stay page
 import Base from '../../../layouts/Base.astro';
-import RoomCard from '../../../components/RoomCard.astro';
 import { client } from '../../../lib/sanity';
 import { roomsQuery } from '../../../queries/rooms';
-import { useTranslations } from '../../../i18n/utils';
+import { loc, prefix } from '../../../i18n/utils';
 
 const lang  = 'es';
-const t     = useTranslations(lang);
+const p     = prefix(lang);
 const rooms = await client.fetch(roomsQuery);
+
+const wireframe = [
+  { slug: 'olivo',    type: 'Suite Olivo',     name: 'Olivo',    feature: 'Excavado en la roca natural. 16°C constantes, iluminado por vela y tragaluz.',                   price: 420, color: '#5C4838' },
+  { slug: 'lavanda',  type: 'Suite Lavanda',   name: 'Lavanda',  feature: 'Terraza privada con vistas al mar, cama de día y bañera exterior.',                              price: 380, color: '#8FA59A' },
+  { slug: 'laurel',   type: 'Suite Laurel',    name: 'Laurel',   feature: 'Ventanas de suelo a techo orientadas al sur. Montañas y Mediterráneo.',                          price: 340, color: '#B8A48A' },
+  { slug: 'tomillo',  type: 'Suite Tomillo',   name: 'Tomillo',  feature: 'Vigas originales del siglo XIX. Una cama doble bajo la ventana del pajar.',                     price: 310, color: '#7E6E58' },
+  { slug: 'almendro', type: 'Suite Almendro',  name: 'Almendro', feature: 'Abre directamente al jardín de hierbas amurallado. Ducha exterior entre el romero.',            price: 290, color: '#6F8366' },
+  { slug: 'roble',    type: 'Suite Roble',     name: 'Roble',    feature: 'Paredes de piedra caliza y una ventana arqueada sobre el valle.',                               price: 260, color: '#9A8A74' },
+  { slug: 'hinojo',   type: 'Suite Hinojo',    name: 'Hinojo',   feature: 'Techos abovedados de ladrillo, una sola ventana profunda. Fresco y silencioso todo el año.',    price: 240, color: '#4A3F35' },
+];
+
+const displayRooms = wireframe.map((wf, i) => {
+  const s = rooms.find((r: any) => r.slug?.current === wf.slug) ?? rooms[i];
+  return {
+    slug:    s?.slug?.current ?? wf.slug,
+    type:    (s?.suiteType ? loc(s.suiteType, lang) : null) ?? wf.type,
+    name:    (s?.name      ? loc(s.name, lang)      : null) ?? wf.name,
+    feature: (s?.tagline   ? loc(s.tagline, lang)   : null) ?? wf.feature,
+    price:   s?.priceFrom ?? wf.price,
+    color:   s?.swatchColor ?? wf.color,
+  };
+});
 ---
 
 <Base
-  title="Alojamiento"
-  description="Siete habitaciones nombradas por las plantas que crecen aquí — cada una distinta, cada una sin prisa."
+  title="Alojamiento — La Cueva de Miravet"
+  description="Siete habitaciones nombradas por las plantas que crecen aquí — cada una distinta, cada una con su propia vista del valle y el Mediterráneo."
   activePage="stay"
   lang={lang}
 >
+
   <section class="page-hero">
-    <div class="page-hero__inner">
-      <p class="page-hero__label">Alojamiento</p>
-      <h1 class="page-hero__title">{t('stay.hero.title')}</h1>
+    <div class="page-hero__inner" data-animate>
+      <p class="label">Siete habitaciones · Cabanes, Castellón</p>
+      <h1>Dónde <span class="italic">te alojas</span></h1>
+      <p class="page-hero__body">Cada habitación abre hacia algo — una terraza, el valle, un ángulo particular del Mediterráneo. Elige una, o quédate con toda la masía.</p>
     </div>
   </section>
 
   <section class="rooms">
-    <div class="rooms__grid">
-      {rooms.map((room: any) => (
-        <RoomCard room={room} lang={lang} />
+    <div class="rooms__header" data-animate>
+      <div class="left">
+        <p class="label">Las Habitaciones</p>
+        <h2>Siete mundos bajo un mismo techo.</h2>
+      </div>
+      <p class="meta">Precio por habitación y noche.<br/>El desayuno y la montaña están incluidos.</p>
+    </div>
+    <div class="rooms__grid" data-stagger>
+      {displayRooms.map((room) => (
+        <article class="room-card">
+          <a href={`${p}/stay/${room.slug}`} class="room-card__img-wrap">
+            <div class="room-card__img" style={`background-color: ${room.color};`}></div>
+          </a>
+          <div class="room-card__body">
+            <p class="room-card__type">{room.type}</p>
+            <h3 class="room-card__name">{room.name}</h3>
+            <p class="room-card__feature">{room.feature}</p>
+            <div class="room-card__divider"></div>
+            <div class="room-card__row">
+              <p class="room-card__price"><strong>€{room.price}</strong><span class="per">/ noche</span></p>
+              <a href={`${p}/stay/${room.slug}`} class="room-card__cta">Ver habitación</a>
+            </div>
+          </div>
+        </article>
       ))}
     </div>
   </section>
+
+  <section class="prompt">
+    <div class="prompt__inner" data-animate>
+      <p class="label">Una pequeña masía, atentamente atendida</p>
+      <h2>¿No sabes <span class="italic">qué habitación elegir?</span></h2>
+      <p>Cuéntanos un poco sobre tu viaje — quién viene, qué buscáis — y te escribiremos con la habitación que elegiríamos para vosotros. Sin bots, sin formularios disfrazados. Normalmente en menos de un día.</p>
+      <a href={`${p}/book`} class="prompt__cta">Pedir recomendación</a>
+      <p class="prompt__alt">o simplemente <a href={`${p}/book`}>reserva directo</a> y lo resolvemos a la llegada.</p>
+    </div>
+  </section>
+
 </Base>
 
 <style>
-.page-hero { background: var(--cream-deep); padding: 160px 40px 80px; }
-.page-hero__inner { max-width: 800px; margin: 0 auto; }
-.page-hero__label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra); margin-bottom: 16px; }
-.page-hero__title { font-family: var(--font-serif); font-size: 72px; font-weight: 300; color: var(--stone-dark); }
-.rooms { padding: 80px 40px 120px; }
-.rooms__grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-@media (max-width: 768px) {
-  .page-hero { padding: 130px 24px 60px; }
-  .page-hero__title { font-size: 48px; }
-  .rooms { padding: 60px 24px 80px; }
-  .rooms__grid { grid-template-columns: 1fr; }
-}
+.label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
+.italic { font-style: italic; }
+.page-hero { position: relative; height: 50vh; min-height: 440px; background-color: var(--forest); background-image: var(--grain); background-blend-mode: multiply; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 40px; color: var(--white); text-align: center; }
+.page-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.35) 100%); pointer-events: none; }
+.page-hero__inner { position: relative; z-index: 2; max-width: 760px; margin-top: 40px; }
+.page-hero .label { color: rgba(255,255,255,0.65); margin-bottom: 22px; }
+.page-hero h1 { font-family: var(--font-serif); font-size: 84px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.05; color: var(--white); margin-bottom: 22px; }
+.page-hero__body { max-width: 540px; margin: 0 auto; color: rgba(255,255,255,0.78); font-size: 15px; line-height: 1.75; }
+.rooms { background: var(--cream); padding: 140px 40px 80px; }
+.rooms__header { max-width: 1100px; margin: 0 auto 64px; display: flex; align-items: flex-end; justify-content: space-between; gap: 48px; }
+.rooms__header .left .label { margin-bottom: 18px; }
+.rooms__header .left h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; letter-spacing: -0.01em; }
+.rooms__header .meta { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-mid); max-width: 280px; line-height: 1.5; text-align: right; }
+.rooms__grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px 32px; }
+.rooms__grid > .room-card:nth-child(7) { grid-column: 2 / 3; }
+.room-card { display: flex; flex-direction: column; }
+.room-card__img-wrap { display: block; overflow: hidden; border-radius: 160px 160px 0 0; }
+.room-card__img { width: 100%; height: 360px; background-image: var(--grain); background-blend-mode: multiply; transition: transform 0.7s ease; }
+.room-card:hover .room-card__img { transform: scale(1.04); }
+.room-card__body { padding: 24px 4px 0; }
+.room-card__type { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terra); margin-bottom: 10px; }
+.room-card__name { font-family: var(--font-serif); font-size: 30px; font-weight: 300; color: var(--stone-dark); line-height: 1.1; }
+.room-card__feature { font-size: 13px; color: var(--stone-mid); margin-top: 12px; line-height: 1.55; }
+.room-card__divider { height: 1px; background: var(--stone-light); margin: 20px 0 16px; }
+.room-card__row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.room-card__price { font-size: 13px; color: var(--stone-dark); }
+.room-card__price strong { font-family: var(--font-serif); font-style: italic; font-size: 22px; margin-right: 4px; }
+.room-card__price .per { color: var(--stone-mid); font-size: 12px; }
+.room-card__cta { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terra); white-space: nowrap; }
+.room-card__cta::after { content: " →"; display: inline-block; transition: transform 0.25s ease; }
+.room-card:hover .room-card__cta::after { transform: translateX(4px); }
+.prompt { background: var(--forest); background-image: var(--grain); background-blend-mode: multiply; padding: 96px 40px 104px; color: var(--white); position: relative; text-align: center; overflow: hidden; }
+.prompt__inner { position: relative; z-index: 2; max-width: 620px; margin: 0 auto; }
+.prompt .label { color: rgba(255,255,255,0.55); margin-bottom: 18px; }
+.prompt h2 { font-family: var(--font-serif); font-size: 52px; font-weight: 300; color: var(--white); margin-bottom: 18px; }
+.prompt p { color: rgba(255,255,255,0.72); font-size: 15px; line-height: 1.75; max-width: 480px; margin: 0 auto 36px; }
+.prompt__cta { background: var(--terra); color: var(--white); border-radius: 100px; padding: 16px 36px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; transition: background 0.25s ease, transform 0.25s ease; display: inline-block; }
+.prompt__cta:hover { background: #b1561f; transform: translateY(-1px); }
+.prompt__alt { margin-top: 22px; font-family: var(--font-serif); font-style: italic; font-size: 14px; color: rgba(255,255,255,0.5); }
+.prompt__alt a { color: rgba(255,255,255,0.78); border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 1px; }
+@media (max-width: 1024px) { .page-hero h1 { font-size: 60px; } .rooms__header { flex-direction: column; align-items: flex-start; gap: 24px; } .rooms__header .meta { text-align: left; } .rooms__grid { grid-template-columns: repeat(2, 1fr); } .rooms__grid > .room-card:nth-child(7) { grid-column: auto; } }
+@media (max-width: 768px) { .page-hero { padding: 0 24px; padding-top: 140px; padding-bottom: 80px; height: auto; min-height: 380px; } .page-hero h1 { font-size: 44px; } .rooms { padding: 80px 24px; } .rooms__grid { grid-template-columns: 1fr; gap: 48px; max-width: 380px; margin: 0 auto; } .room-card__img { height: 320px; } .prompt { padding: 72px 24px 80px; } .prompt h2 { font-size: 32px; } }
 </style>

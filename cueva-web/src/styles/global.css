@@ -64,15 +64,17 @@ h1, h2, h3, h4, h5 {
    Utility classes
    ========================================== */
 
-/* Animate-in — triggered by IntersectionObserver in Base layout */
-[data-animate] {
+/* Animate-in — driven by Motion (motion.dev) in Base layout.
+   Initial hidden state set here; Motion handles the animation.
+   Reduced-motion: show immediately, no animation. */
+[data-animate],
+[data-stagger] > * {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  transform: translateY(24px);
 }
-[data-animate].visible {
-  opacity: 1;
-  transform: none;
+@media (prefers-reduced-motion: reduce) {
+  [data-animate],
+  [data-stagger] > * { opacity: 1 !important; transform: none !important; }
 }
 
 /* Terra text link with animated arrow */

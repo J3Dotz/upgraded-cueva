@@ -27,4 +27,13 @@ export default defineConfig({
       prefixDefaultLocale: false, // /stay not /en/stay
     },
   },
+
+  // Redirect old Spanish route names to the canonical EN-slug routes
+  redirects: {
+    '/es/experiencias':      '/es/experiences',
+    '/es/ubicacion':         '/es/location',
+    '/es/reservar':          '/es/book',
+    '/es/diario':            '/es/journal',
+    '/es/diario/[slug]':     '/es/journal/[slug]',
+  },
 });

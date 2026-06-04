@@ -1,0 +1,242 @@
+---
+export const prerender = true;
+import Base from '../../layouts/Base.astro';
+import { prefix } from '../../i18n/utils';
+const lang = 'es';
+const p    = prefix(lang);
+---
+<Base title="Ubicación — La Cueva de Miravet" description="Cómo llegar a La Cueva de Miravet — una masía del siglo XIX en la cima de una montaña en Cabanes, Castellón. En coche, tren o avión." activePage="location" lang={lang}>
+
+  <section class="hero">
+    <div class="hero__topo" aria-hidden="true">
+      <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" fill="none" stroke="rgba(196,98,45,0.18)" stroke-width="1">
+        <path d="M-40 600 Q 200 540 480 580 T 1000 540 T 1640 580"/><path d="M-40 560 Q 220 500 500 540 T 1020 500 T 1640 540"/>
+        <path d="M-40 520 Q 240 460 520 500 T 1040 460 T 1640 500"/><path d="M-40 480 Q 260 420 540 460 T 1060 420 T 1640 460"/>
+        <path d="M-40 440 Q 280 380 560 420 T 1080 380 T 1640 420"/><path d="M-40 400 Q 300 340 580 380 T 1100 340 T 1640 380"/>
+      </svg>
+    </div>
+    <div class="hero__inner">
+      <div data-animate>
+        <div class="label hero__label"><span class="pip"></span><span>La Propiedad · Cabanes · Castellón</span></div>
+        <h1>Encuéntranos.<br/><span class="italic">Te esperamos.</span></h1>
+      </div>
+      <div class="hero__coords" data-animate>
+        <div class="label-row"><span class="rule"></span><span>Coordenadas</span></div>
+        <div class="value">40°07'09.5"N &nbsp; 0°04'47.8"E</div>
+        <div class="label-row" style="margin-top: 18px;"><span class="rule"></span><span>Altitud</span></div>
+        <div class="elev"><strong>412 m</strong> sobre el Mediterráneo</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="address">
+    <div class="address__grid">
+      <div class="address__left" data-animate>
+        <span class="label">La Dirección</span>
+        <h2>Al final del camino.<br/><span class="italic">Un poco más allá.</span></h2>
+        <p class="address__addr">La Cueva de Miravet<br/>La Ferradura, Cabanes<br/>Castellón, España — 12595</p>
+        <p class="address__addr-sub">40°07'09.5"N · 0°04'47.8"E</p>
+        <div class="address__stats">
+          <div class="address__stat"><span class="k">Parque natural</span><span class="v">15 min<small>Desert de les Palmes</small></span></div>
+          <div class="address__stat"><span class="k">Valencia</span><span class="v">1 h 15<small>En coche, CV-10</small></span></div>
+          <div class="address__stat"><span class="k">Barcelona</span><span class="v">3 hrs<small>En coche</small></span></div>
+          <div class="address__stat"><span class="k">Oropesa del Mar</span><span class="v">20 min<small>Estación de tren más cercana</small></span></div>
+        </div>
+        <div class="notice">
+          <div class="heading">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2 L14.5 13 L1.5 13 Z"/><path d="M8 6.5 V9.5"/><circle cx="8" cy="11.4" r="0.6" fill="currentColor"/></svg>
+            Importante antes de salir
+          </div>
+          <p>Google Maps no ofrece la ruta correcta a nuestra ubicación. Por favor utiliza una de las rutas de confianza que aparecen más abajo.</p>
+        </div>
+        <div class="routes">
+          <a class="route" href="https://goo.gl/maps/xEuPsaEcBqyGasYk7" target="_blank" rel="noopener">
+            <div class="route__left"><span class="route__from">Desde</span><span class="route__name">AP-7 <em>Autopista del Mediterráneo</em></span></div>
+            <span class="route__arrow">Abrir ruta <svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5 H17"/><path d="M12 1 L17 5 L12 9"/></svg></span>
+          </a>
+          <a class="route" href="https://www.google.com/maps/dir/?api=1&destination=La+Cueva+de+Miravet,+12595+Cabanes" target="_blank" rel="noopener">
+            <div class="route__left"><span class="route__from">Desde</span><span class="route__name">CV-10 <em>Ruta interior</em></span></div>
+            <span class="route__arrow">Abrir ruta <svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5 H17"/><path d="M12 1 L17 5 L12 9"/></svg></span>
+          </a>
+        </div>
+      </div>
+      <div class="map" data-animate aria-label="Mapa de La Cueva de Miravet">
+        <div class="map__bg"></div>
+        <div class="map__pin">
+          <svg class="map__pin-marker" viewBox="0 0 22 28" fill="currentColor"><path d="M11 0 C 4.9 0 0 4.9 0 11 C 0 19 11 28 11 28 C 11 28 22 19 22 11 C 22 4.9 17.1 0 11 0 Z"/><circle cx="11" cy="11" r="4.2" fill="#FDFCF8"/></svg>
+          <span class="map__pin-ring"></span>
+          <span class="map__pin-label">La Cueva de Miravet</span>
+        </div>
+        <div class="map__legend"><strong>40°07'N · 0°04'E</strong><span>La Propiedad</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="arrive">
+    <div class="arrive__header" data-animate>
+      <div><span class="label">Cómo llegar</span><h2>Tres formas de llegar a la montaña.<span class="italic"> Todas tranquilas al final.</span></h2></div>
+      <p class="note">Sin importar cómo vengas, los últimos quince minutos parecen el comienzo del viaje. Olivos, luego un camino de tierra, luego cielo abierto.</p>
+    </div>
+    <div class="arrive__grid">
+      <article class="mode" data-animate>
+        <span class="mode__num">I.</span>
+        <h3 class="mode__name">En coche<span class="italic"> By car</span></h3>
+        <p class="mode__sub">La opción recomendada</p>
+        <p class="mode__body">Salida 45 de la autopista AP-7 hacia Cabanes. El tramo final es un camino de montaña de un carril — lento, estrecho, que vale la pena. Parking gratuito en la finca.</p>
+        <ul class="mode__details">
+          <li><span>Desde Valencia</span><strong>1 h 15</strong></li>
+          <li><span>Desde Barcelona</span><strong>3 hrs</strong></li>
+          <li><span>Desde Madrid</span><strong>4 h 30</strong></li>
+        </ul>
+      </article>
+      <article class="mode" data-animate>
+        <span class="mode__num">II.</span>
+        <h3 class="mode__name">En tren<span class="italic"> By train</span></h3>
+        <p class="mode__sub">Luego un corto taxi</p>
+        <p class="mode__body">Renfe conecta Madrid, Barcelona y Valencia con Benicàssim. Gestionamos el taxi de veinte minutos hasta la masía — escríbenos con tu horario de tren al reservar.</p>
+        <ul class="mode__details">
+          <li><span>Estación más cercana</span><strong>Benicàssim</strong></li>
+          <li><span>Hasta la masía</span><strong>20 min en taxi</strong></li>
+          <li><span>Desde Valencia</span><strong>1 h 10</strong></li>
+        </ul>
+      </article>
+      <article class="mode" data-animate>
+        <span class="mode__num">III.</span>
+        <h3 class="mode__name">En avión<span class="italic"> By air</span></h3>
+        <p class="mode__sub">Valencia o Castellón</p>
+        <p class="mode__body">El Aeropuerto de Valencia (VLC) tiene la agenda más amplia y está a noventa minutos en coche. Castellón Costa Azahar (CDT) es más cercano — cuarenta minutos — con rutas de temporada.</p>
+        <ul class="mode__details">
+          <li><span>Valencia (VLC)</span><strong>90 min</strong></li>
+          <li><span>Castellón (CDT)</span><strong>40 min</strong></li>
+          <li><span>Barcelona (BCN)</span><strong>3 hrs</strong></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="nearby">
+    <div class="nearby__header" data-animate>
+      <div class="left"><span class="label">Mientras estás aquí</span><h2>Los vecinos.<span class="italic"> Vale medio día cada uno.</span></h2></div>
+      <p class="right">Cuatro lugares que recomendamos a los huéspedes cuando preguntan "¿Adónde podemos ir esta tarde?"</p>
+    </div>
+    <div class="nearby__grid" data-stagger>
+      <div class="place"><div class="place__img-wrap"><span class="place__chip">Ciudad costera</span><div class="place__img" style="background-color:#7A8FA0;"></div></div><div class="place__body"><span class="place__name">Peñíscola</span><span class="place__sub">La ciudad amurallada junto al mar</span><div class="place__meta"><span class="place__distance"><strong>45 min</strong>en coche · 38 km</span><span class="place__arrow">Norte →</span></div></div></div>
+      <div class="place"><div class="place__img-wrap"><span class="place__chip">Playa y tren</span><div class="place__img" style="background-color:#C4A878;"></div></div><div class="place__body"><span class="place__name">Benicàssim</span><span class="place__sub">Belle Époque frente al mar</span><div class="place__meta"><span class="place__distance"><strong>20 min</strong>en coche · 16 km</span><span class="place__arrow">Este →</span></div></div></div>
+      <div class="place"><div class="place__img-wrap"><span class="place__chip">Capital</span><div class="place__img" style="background-color:#9A8A6E;"></div></div><div class="place__body"><span class="place__name">Castellón</span><span class="place__sub">La capital provincial</span><div class="place__meta"><span class="place__distance"><strong>30 min</strong>en coche · 28 km</span><span class="place__arrow">Sur →</span></div></div></div>
+      <div class="place"><div class="place__img-wrap"><span class="place__chip">Parque natural</span><div class="place__img" style="background-color:#5E6F4F;"></div></div><div class="place__body"><span class="place__name">Desert de les Palmes</span><span class="place__sub">La montaña a la puerta</span><div class="place__meta"><span class="place__distance"><strong>15 min</strong>en coche · 10 km</span><span class="place__arrow">Oeste →</span></div></div></div>
+    </div>
+  </section>
+
+  <section class="ready">
+    <div class="ready__inner" data-animate>
+      <h2>Ya conoces el camino.<span class="italic"> Elige una habitación.</span></h2>
+      <div class="ready__cta">
+        <a href={`${p}/book`} class="btn">Comprobar disponibilidad</a>
+        <span class="note">Mejor precio garantizado — reserva directo.</span>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+.label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--stone-mid); }
+.italic { font-style: italic; }
+.hero { position: relative; min-height: 88vh; background-color: var(--stone-dark); background-image: var(--grain); background-blend-mode: multiply; overflow: hidden; color: var(--white); display: flex; flex-direction: column; justify-content: center; padding: 160px 40px 80px; }
+.hero__topo { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; }
+.hero__topo svg { width: 100%; height: 100%; }
+.hero__inner { position: relative; z-index: 2; max-width: 1400px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 80px; }
+.hero__label { color: rgba(255,255,255,0.6); margin-bottom: 28px; display: flex; align-items: center; gap: 16px; }
+.pip { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; display: inline-block; }
+.hero h1 { font-family: var(--font-serif); font-size: 132px; font-weight: 300; letter-spacing: -0.03em; line-height: 0.95; color: var(--white); }
+.hero h1 .italic { color: rgba(255,255,255,0.55); }
+.hero__coords { display: flex; flex-direction: column; gap: 14px; padding-bottom: 14px; min-width: 360px; }
+.label-row { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; }
+.rule { width: 28px; height: 1px; background: rgba(255,255,255,0.35); display: inline-block; }
+.value { font-family: var(--font-sans); font-size: 18px; font-weight: 400; letter-spacing: 0.04em; color: var(--white); }
+.elev { font-family: var(--font-serif); font-style: italic; font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.elev strong { font-family: var(--font-sans); font-style: normal; font-weight: 400; color: var(--white); }
+.address { background: var(--cream); padding: 140px 40px; }
+.address__grid { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.05fr; gap: 100px; align-items: start; }
+.address__left .label { margin-bottom: 22px; display: block; }
+.address__left h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; margin-bottom: 28px; max-width: 480px; }
+.address__addr { font-family: var(--font-serif); font-style: italic; font-size: 24px; color: var(--stone-dark); line-height: 1.4; margin-bottom: 8px; font-weight: 300; }
+.address__addr-sub { font-family: var(--font-sans); font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); margin-bottom: 40px; }
+.address__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; margin-bottom: 48px; padding-bottom: 40px; border-bottom: 1px solid var(--stone-light); }
+.address__stat { display: flex; flex-direction: column; gap: 6px; }
+.address__stat .k { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
+.address__stat .v { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 28px; line-height: 1.1; color: var(--stone-dark); }
+.address__stat .v small { font-family: var(--font-sans); font-style: normal; font-size: 13px; color: var(--stone-mid); display: block; margin-top: 2px; }
+.notice { background: rgba(196,98,45,0.07); border-left: 2px solid var(--terra); padding: 22px 24px; margin-bottom: 32px; }
+.notice .heading { display: flex; align-items: center; gap: 10px; color: var(--terra); font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+.notice p { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-dark); line-height: 1.55; font-weight: 300; }
+.routes { display: flex; flex-direction: column; }
+.route { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 4px; border-bottom: 1px solid var(--stone-light); transition: border-color 0.4s ease; }
+.route:hover { border-color: var(--terra); }
+.route__left { display: flex; align-items: center; gap: 18px; transition: transform 0.45s ease; }
+.route:hover .route__left { transform: translateX(6px); }
+.route__from { font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--stone-mid); }
+.route__name { font-family: var(--font-serif); font-size: 22px; color: var(--stone-dark); line-height: 1; font-weight: 400; }
+.route__name em { font-style: italic; color: var(--stone-mid); font-weight: 300; font-size: 18px; margin-left: 6px; }
+.route__arrow { color: var(--terra); font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.route__arrow svg { width: 16px; height: 10px; transition: transform 0.45s ease; }
+.route:hover .route__arrow svg { transform: translateX(5px); }
+.map { position: relative; background: var(--forest-deep); aspect-ratio: 1/1.08; overflow: hidden; background-image: var(--grain); background-blend-mode: multiply; }
+.map__bg { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(74,94,69,0.3) 0%, rgba(36,58,48,0.8) 100%); }
+.map__pin { position: absolute; top: 36%; left: 58%; transform: translate(-50%, -100%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.map__pin-marker { width: 22px; height: 28px; color: var(--terra); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+.map__pin-ring { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 18px; height: 6px; border-radius: 50%; background: radial-gradient(ellipse, rgba(196,98,45,0.5) 0%, transparent 70%); animation: pulseRing 2.4s ease-in-out infinite; }
+@keyframes pulseRing { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; } 50% { transform: translateX(-50%) scale(1.6); opacity: 0.25; } }
+.map__pin-label { margin-top: 36px; font-family: var(--font-serif); font-style: italic; font-size: 16px; color: var(--white); background: rgba(36,58,48,0.85); padding: 6px 14px; border-radius: 100px; backdrop-filter: blur(8px); white-space: nowrap; border: 1px solid rgba(255,255,255,0.12); }
+.map__legend { position: absolute; bottom: 22px; right: 22px; color: rgba(255,255,255,0.7); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; z-index: 3; text-align: right; line-height: 1.6; }
+.map__legend strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 14px; color: var(--white); text-transform: none; letter-spacing: 0; display: block; }
+.arrive { background: var(--forest); color: var(--white); padding: 140px 40px; position: relative; overflow: hidden; }
+.arrive::before { content: ""; position: absolute; inset: 0; background: var(--grain); opacity: 0.4; pointer-events: none; }
+.arrive__header { position: relative; max-width: 1240px; margin: 0 auto 80px; display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 80px; }
+.arrive__header .label { color: rgba(255,255,255,0.55); margin-bottom: 18px; display: block; }
+.arrive__header h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; color: var(--white); }
+.arrive__header h2 .italic { color: rgba(255,255,255,0.55); display: block; }
+.note { font-family: var(--font-serif); font-style: italic; font-size: 18px; font-weight: 300; color: rgba(255,255,255,0.75); max-width: 420px; line-height: 1.55; }
+.arrive__grid { position: relative; max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255,255,255,0.15); }
+.mode { padding: 56px 40px 8px; border-right: 1px solid rgba(255,255,255,0.15); display: flex; flex-direction: column; color: var(--white); }
+.mode:last-child { border-right: none; }
+.mode__num { font-family: var(--font-serif); font-style: italic; font-size: 14px; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
+.mode__name { font-family: var(--font-serif); font-size: 32px; font-weight: 300; line-height: 1.1; margin-bottom: 6px; color: var(--white); }
+.mode__name .italic { display: block; color: rgba(255,255,255,0.55); font-size: 22px; margin-top: 2px; }
+.mode__sub { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.55); margin-bottom: 28px; }
+.mode__body { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.8); max-width: 320px; margin-bottom: 28px; }
+.mode__details { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.12); }
+.mode__details li { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.08em; gap: 16px; }
+.mode__details li strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 16px; color: var(--white); text-transform: none; letter-spacing: 0; }
+.nearby { background: var(--cream); padding: 140px 40px; }
+.nearby__header { max-width: 1240px; margin: 0 auto 64px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; }
+.nearby__header .left { max-width: 560px; }
+.nearby__header .label { margin-bottom: 18px; display: block; }
+.nearby__header h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; }
+.nearby__header h2 .italic { color: var(--stone-mid); display: block; }
+.nearby__header .right { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-mid); max-width: 320px; line-height: 1.5; }
+.nearby__grid { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.place { display: flex; flex-direction: column; }
+.place__img-wrap { overflow: hidden; border-radius: 200px 200px 0 0; position: relative; }
+.place__img { width: 100%; aspect-ratio: 3/4; background-image: var(--grain); background-blend-mode: multiply; transition: transform 0.7s ease; }
+.place:hover .place__img { transform: scale(1.06); }
+.place__img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(0,0,0,0.25) 100%); }
+.place__chip { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: rgba(253,252,248,0.92); backdrop-filter: blur(8px); color: var(--stone-dark); font-family: var(--font-sans); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; padding: 6px 14px; border-radius: 100px; z-index: 2; white-space: nowrap; }
+.place__body { padding: 22px 6px 0; display: flex; flex-direction: column; gap: 6px; }
+.place__name { font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--stone-dark); line-height: 1.1; }
+.place__sub { font-family: var(--font-serif); font-style: italic; font-size: 16px; color: var(--stone-mid); font-weight: 300; }
+.place__meta { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid var(--stone-light); }
+.place__distance { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
+.place__distance strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 16px; color: var(--stone-dark); letter-spacing: 0; text-transform: none; margin-right: 4px; }
+.place__arrow { color: var(--terra); font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; }
+.ready { background: var(--cream); padding: 0 40px 140px; }
+.ready__inner { max-width: 1240px; margin: 0 auto; background: var(--stone-dark); background-image: var(--grain); background-blend-mode: multiply; color: var(--white); padding: 88px 64px; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+.ready h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; color: var(--white); max-width: 560px; }
+.ready h2 .italic { color: rgba(255,255,255,0.55); display: block; }
+.ready__cta { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+.btn { background: var(--terra); color: var(--white); border-radius: 100px; padding: 18px 40px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; transition: background 0.2s ease, transform 0.2s ease; }
+.btn:hover { background: #b1561f; transform: translateY(-1px); }
+.ready__cta .note { font-family: var(--font-serif); font-style: italic; font-size: 14px; color: rgba(255,255,255,0.55); }
+@media (max-width: 1100px) { .hero h1 { font-size: 88px; } .hero__inner { grid-template-columns: 1fr; gap: 56px; } .address__grid { grid-template-columns: 1fr; gap: 56px; } .arrive__header { grid-template-columns: 1fr; gap: 32px; } .arrive__grid { grid-template-columns: 1fr; } .mode { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15); padding: 48px 32px; } .mode:last-child { border-bottom: none; } .nearby__grid { grid-template-columns: 1fr 1fr; gap: 32px; } .nearby__header { flex-direction: column; align-items: flex-start; } .ready__inner { flex-direction: column; align-items: flex-start; padding: 56px 36px; } .ready__cta { align-items: flex-start; } }
+@media (max-width: 768px) { .hero { padding: 130px 24px 64px; min-height: 76vh; } .hero h1 { font-size: 64px; } .address { padding: 80px 24px; } .address__stats { grid-template-columns: 1fr; } .arrive { padding: 80px 24px; } .nearby { padding: 80px 24px; } .nearby__grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; } .ready { padding: 0 24px 80px; } .ready__inner { padding: 48px 28px; } }
+</style>

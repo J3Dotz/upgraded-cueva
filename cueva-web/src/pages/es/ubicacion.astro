@@ -1,96 +1,15 @@
 ---
+// /es/ubicacion is redirected to /es/location via astro.config.mjs redirects.
 export const prerender = true;
-import Base from '../../layouts/Base.astro';
-import { useTranslations } from '../../i18n/utils';
-
-const lang = 'es';
-const t    = useTranslations(lang);
 ---
-
-<Base
-  title="Ubicación"
-  description="La Cueva de Miravet — Carretera de Benissanet km 2, 43747 Miravet, Tarragona, Catalunya."
-  activePage="location"
-  lang={lang}
->
-  <section class="loc-hero">
-    <div class="loc-hero__inner">
-      <p class="loc-hero__label">Ubicación</p>
-      <h1 class="loc-hero__title">{t('loc.hero.title')}</h1>
-      <p class="loc-hero__coords">40°07′09.5″N · 0°29′36.1″E · 412m</p>
-    </div>
-  </section>
-
-  <section class="address">
-    <div class="address__inner">
-      <div class="address__text">
-        <h2>Encuéntranos</h2>
-        <p>Carretera de Benissanet km 2<br />43747 Miravet<br />Tarragona, Catalunya</p>
-        <a href="https://maps.google.com/?q=La+Cueva+de+Miravet,+Tarragona" target="_blank" rel="noopener" class="terra-link" style="margin-top: 24px;">
-          Abrir en Google Maps
-        </a>
-      </div>
-      <div class="address__map">
-        <div class="map-placeholder"><p>Mapa</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="arrive">
-    <div class="arrive__inner">
-      <h2>{t('loc.directions')}</h2>
-      <div class="arrive__grid">
-        <div class="arrive-mode">
-          <h3>En coche</h3>
-          <p>Desde Barcelona (2h): A-7 hacia Tarragona, salida 35 Móra d'Ebre. C-12 por Riba-roja d'Ebre hasta Miravet. Desde Valencia (2,5h): A-7 norte hasta la misma salida.</p>
-        </div>
-        <div class="arrive-mode">
-          <h3>En tren</h3>
-          <p>Renfe hasta Móra la Nova (vía Reus o Lleida). Organizamos traslados desde la estación — indícanos tu hora de llegada al reservar.</p>
-        </div>
-        <div class="arrive-mode">
-          <h3>En avión</h3>
-          <p>Aeropuertos más cercanos: Reus (1h), Barcelona El Prat (2h), Valencia (2,5h). Alquiler de coche desde cualquier aeropuerto; también podemos organizar traslados privados.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="loc-cta">
-    <div class="loc-cta__inner">
-      <h2>Ya sabes cómo llegar. Elige tu habitación.</h2>
-      <a href="/es/stay" class="btn-terra">Ver habitaciones</a>
-    </div>
-  </section>
-</Base>
-
-<style>
-.loc-hero { background: var(--forest); min-height: 65vh; display: flex; align-items: flex-end; padding: 0 60px 80px; }
-.loc-hero__inner { max-width: 1000px; }
-.loc-hero__label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra); margin-bottom: 16px; }
-.loc-hero__title { font-family: var(--font-serif); font-size: 80px; font-weight: 300; color: var(--white); }
-.loc-hero__coords { font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.1em; color: rgba(255,255,255,0.45); margin-top: 16px; }
-.address { padding: 100px 60px; }
-.address__inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-.address__text h2 { font-size: 40px; margin-bottom: 24px; }
-.address__text p { font-size: 15px; color: var(--stone-mid); line-height: 1.7; }
-.map-placeholder { background: var(--cream-deep); border-radius: 4px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; color: var(--stone-light); font-style: italic; }
-.arrive { background: var(--forest); padding: 100px 60px; }
-.arrive__inner { max-width: 1100px; margin: 0 auto; }
-.arrive h2 { font-size: 48px; font-weight: 300; color: var(--white); margin-bottom: 60px; }
-.arrive__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.arrive-mode h3 { font-family: var(--font-serif); font-size: 24px; color: var(--white); margin-bottom: 12px; }
-.arrive-mode p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.75; }
-.loc-cta { padding: 120px 60px; text-align: center; }
-.loc-cta__inner h2 { font-size: 56px; font-weight: 300; margin-bottom: 40px; }
-@media (max-width: 768px) {
-  .loc-hero { padding: 0 24px 60px; }
-  .loc-hero__title { font-size: 52px; }
-  .address { padding: 60px 24px; }
-  .address__inner { grid-template-columns: 1fr; }
-  .arrive { padding: 60px 24px; }
-  .arrive__grid { grid-template-columns: 1fr; }
-  .loc-cta { padding: 80px 24px; }
-  .loc-cta__inner h2 { font-size: 36px; }
-}
-</style>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0;url=/es/location" />
+    <link rel="canonical" href="/es/location" />
+    <title>Redirigiendo…</title>
+  </head>
+  <body>
+    <script>window.location.replace('/es/location');</script>
+  </body>
+</html>

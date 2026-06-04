@@ -1,0 +1,156 @@
+---
+export const prerender = true;
+import Base from '../../layouts/Base.astro';
+import { prefix } from '../../i18n/utils';
+const lang = 'es';
+const p    = prefix(lang);
+---
+<Base title="Experiencias — La Cueva de Miravet" description="Lo que haces aquí. Un pequeño conjunto de experiencias tranquilas en La Cueva de Miravet — cueva, valle, montaña y mesa." activePage="experiences" lang={lang}>
+
+  <section class="hero">
+    <div class="hero__inner">
+      <div data-animate>
+        <div class="label hero__label"><span class="rule"></span><span>Experiencias</span></div>
+        <h1><span class="italic">Lo que haces</span> <span class="italic dim">aquí.</span></h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="featured__inner">
+      <div class="featured__img-wrap" data-animate><div class="featured__img" role="img" aria-label="La cueva natural en los terrenos de la propiedad"></div></div>
+      <div class="featured__body" data-animate>
+        <div class="label featured__label"><span class="rule"></span><span>La experiencia signature</span></div>
+        <h2>Exploración de la cueva<span class="italic"> — la original.</span></h2>
+        <p class="desc">Acceso guiado a la cueva natural en los terrenos de la propiedad. Se encuentra a un corto paseo por el jardín trasero, en su propio rincón de la montaña. Vamos en grupos pequeños, con linternas, a la hora en que la luz es más amable.</p>
+        <ul class="featured__meta">
+          <li><span class="k">Duración</span><span class="v">90 min</span></li>
+          <li><span class="k">Grupo</span><span class="v">Hasta 6</span></li>
+          <li><span class="k">Desde</span><span class="v">€45 pp</span></li>
+        </ul>
+        <a href={`${p}/book`} class="terra-link">Consultar o reservar</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="exp-grid-wrap">
+    <div class="exp-grid-header" data-animate>
+      <div class="left"><span class="label">Más por descubrir</span><h2>En el valle<span class="italic"> y alrededores.</span></h2></div>
+      <p class="right">Algunas las organizamos nosotros, otras las recomendamos, y otras las gestionamos por encargo. Nada en esta página es obligatorio.</p>
+    </div>
+    <div class="exp-grid" data-stagger>
+      <article class="exp">
+        <div class="exp__img-wrap"><span class="exp__tag">Cata</span><div class="exp__img" style="background-color:#7C5A3C;" role="img"></div></div>
+        <div class="exp__body">
+          <h3 class="exp__name">Cata de vino y aceite<span class="italic"> / Tasting</span></h3>
+          <p class="exp__desc">Productores locales de los valles bajo Cabanes. Cinco vinos, tres aceites, una larga mesa y el tipo de conversación que hace desaparecer la tarde.</p>
+          <div class="exp__meta"><div class="exp__details"><span><strong>2 hrs</strong>Duración</span><span><strong>€55</strong>Por persona</span></div><a href={`${p}/book`} class="exp__arrow">Reservar →</a></div>
+        </div>
+      </article>
+      <article class="exp">
+        <div class="exp__img-wrap"><span class="exp__tag">Naturaleza</span><div class="exp__img" style="background-color:#4A5E45;" role="img"></div></div>
+        <div class="exp__body">
+          <h3 class="exp__name">Senderismo Desert de les Palmes<span class="italic"> / Parque Natural</span></h3>
+          <p class="exp__desc">Un paseo guiado por el parque natural a nuestra puerta. Alcornoques, las ruinas del antiguo monasterio y una ruta que termina con vistas a la costa.</p>
+          <div class="exp__meta"><div class="exp__details"><span><strong>3 hrs</strong>Duración</span><span><strong>€35</strong>Por persona</span></div><a href={`${p}/book`} class="exp__arrow">Reservar →</a></div>
+        </div>
+      </article>
+      <article class="exp">
+        <div class="exp__img-wrap"><span class="exp__tag">Movimiento</span><div class="exp__img" style="background-color:#8E7860;" role="img"></div></div>
+        <div class="exp__body">
+          <h3 class="exp__name">Yoga al amanecer<span class="italic"> / Al amanecer</span></h3>
+          <p class="exp__desc">Una práctica lenta en la terraza superior mientras el sol asoma por detrás de las montañas. Para todos los niveles. Café y tarta de almendra después, sin prisas.</p>
+          <div class="exp__meta"><div class="exp__details"><span><strong>60 min</strong>Duración</span><span><strong>€25</strong>Por persona</span></div><a href={`${p}/book`} class="exp__arrow">Reservar →</a></div>
+        </div>
+      </article>
+      <article class="exp">
+        <div class="exp__img-wrap"><span class="exp__tag">Mesa</span><div class="exp__img" style="background-color:#6B5544;" role="img"></div></div>
+        <div class="exp__body">
+          <h3 class="exp__name">Cena privada en la terraza<span class="italic"> / A solas</span></h3>
+          <p class="exp__desc">Una mesa puesta solo para vosotros en la terraza sur, velas bajas, cuatro platos de nuestra cocina. Reservada el día anterior, con producto de la mañana.</p>
+          <div class="exp__meta"><div class="exp__details"><span><strong>4 platos</strong>Menú</span><span><strong>€95</strong>Por persona</span></div><a href={`${p}/book`} class="exp__arrow">Reservar →</a></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="bespoke">
+    <div class="bespoke__inner" data-animate>
+      <div class="label bespoke__label"><span class="rule"></span><span>A medida</span><span class="rule"></span></div>
+      <p class="bespoke__quote"><span class="italic">"Si quieres algo que no hemos pensado,</span><span class="roman italic"> — dinos. Veremos qué puede hacer el valle."</span></p>
+      <p class="bespoke__sub">Aniversarios, retiros tranquilos, aquella comida que recuerdas de otro lugar, una visita a un productor del valle. Escríbenos una semana antes de llegar.</p>
+      <div class="bespoke__cta-row">
+        <a href="mailto:hola@lacuevademiravet.com" class="btn-terra">Dinos qué necesitas</a>
+        <span class="bespoke__or">o</span>
+        <a href="mailto:hola@lacuevademiravet.com" class="bespoke__email">hola@lacuevademiravet.com</a>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+.label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--stone-mid); }
+.italic { font-style: italic; }
+.hero { position: relative; height: 50vh; min-height: 460px; background-color: var(--forest); background-image: radial-gradient(ellipse 80% 60% at 70% 30%, rgba(74,94,69,0.55) 0%, transparent 70%), radial-gradient(ellipse 90% 70% at 20% 80%, rgba(36,58,48,0.6) 0%, transparent 65%), var(--grain); background-blend-mode: normal, normal, multiply; color: var(--white); display: flex; align-items: flex-end; padding: 0 40px 88px; overflow: hidden; }
+.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--terra); z-index: 4; }
+.hero__inner { position: relative; z-index: 2; max-width: 1280px; width: 100%; margin: 0 auto; }
+.hero__label { color: rgba(255,255,255,0.55); margin-bottom: 22px; display: flex; align-items: center; gap: 14px; }
+.rule { width: 36px; height: 1px; background: rgba(255,255,255,0.4); display: inline-block; }
+.hero h1 { font-family: var(--font-serif); font-size: 108px; font-weight: 300; letter-spacing: -0.02em; line-height: 0.95; color: var(--white); }
+.hero h1 .dim { color: rgba(255,255,255,0.7); }
+.featured { background: var(--cream); }
+.featured__inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 60% 40%; align-items: end; padding: 120px 40px 0; }
+.featured__img-wrap { overflow: hidden; border-radius: 220px 220px 0 0; height: 78vh; min-height: 640px; max-height: 880px; background-color: #5C4838; }
+.featured__img { width: 100%; height: 100%; background-image: var(--grain); background-blend-mode: multiply; background-color: #5C4838; }
+.featured__body { padding: 0 0 80px 80px; align-self: flex-end; }
+.featured__label { color: var(--stone-mid); margin-bottom: 22px; display: flex; align-items: center; gap: 14px; }
+.featured__label .rule { background: var(--terra); width: 28px; }
+.featured__body h2 { font-family: var(--font-serif); font-size: 56px; font-weight: 300; letter-spacing: -0.01em; line-height: 1.05; margin-bottom: 24px; }
+.featured__body h2 .italic { display: block; color: var(--stone-mid); }
+.desc { font-size: 16px; line-height: 1.8; color: var(--stone-dark); margin-bottom: 28px; max-width: 420px; }
+.featured__meta { list-style: none; margin: 0 0 32px; padding: 22px 0; max-width: 420px; border-top: 1px solid var(--stone-light); border-bottom: 1px solid var(--stone-light); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.featured__meta li { display: flex; flex-direction: column; gap: 4px; }
+.featured__meta .k { font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
+.featured__meta .v { font-family: var(--font-serif); font-style: italic; font-size: 18px; color: var(--stone-dark); line-height: 1; }
+.terra-link { font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terra); display: inline-flex; align-items: center; gap: 10px; }
+.terra-link::after { content: "→"; display: inline-block; transition: transform 0.3s ease; }
+.terra-link:hover::after { transform: translateX(4px); }
+.exp-grid-wrap { background: var(--cream); padding: 140px 40px 120px; }
+.exp-grid-header { max-width: 1280px; margin: 0 auto 64px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+.exp-grid-header .left { max-width: 560px; }
+.exp-grid-header .label { margin-bottom: 16px; display: block; }
+.exp-grid-header h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; }
+.exp-grid-header h2 .italic { display: block; color: var(--stone-mid); }
+.exp-grid-header .right { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-mid); max-width: 320px; line-height: 1.5; }
+.exp-grid { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px 56px; }
+.exp { display: flex; flex-direction: column; cursor: pointer; }
+.exp__img-wrap { overflow: hidden; aspect-ratio: 5/3; position: relative; background-color: var(--stone-light); }
+.exp__img { width: 100%; height: 100%; background-image: var(--grain); background-blend-mode: multiply; background-size: cover; position: relative; }
+.exp__img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(0,0,0,0.2) 100%); }
+.exp__tag { position: absolute; top: 18px; left: 18px; background: rgba(253,252,248,0.92); backdrop-filter: blur(8px); color: var(--stone-dark); font-family: var(--font-sans); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; padding: 6px 12px; border-radius: 100px; z-index: 2; }
+.exp__body { padding: 24px 0 0; }
+.exp__name { font-family: var(--font-serif); font-size: 30px; font-weight: 400; color: var(--stone-dark); line-height: 1.15; margin-bottom: 10px; transition: color 0.2s ease; }
+.exp__name .italic { color: var(--stone-mid); font-size: 22px; margin-left: 6px; }
+.exp:hover .exp__name { color: var(--terra); }
+.exp__desc { font-size: 14px; color: var(--stone-mid); line-height: 1.7; max-width: 460px; margin-bottom: 18px; }
+.exp__meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid var(--stone-light); }
+.exp__details { display: flex; gap: 22px; font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--stone-mid); }
+.exp__details strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 15px; color: var(--stone-dark); text-transform: none; letter-spacing: 0; margin-right: 6px; }
+.exp__arrow { color: var(--terra); font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; }
+.bespoke { background: var(--stone-dark); background-image: var(--grain); background-blend-mode: multiply; color: var(--white); padding: 140px 40px; position: relative; overflow: hidden; }
+.bespoke__inner { position: relative; z-index: 2; max-width: 980px; margin: 0 auto; text-align: center; }
+.bespoke__label { color: rgba(255,255,255,0.55); margin-bottom: 28px; display: inline-flex; align-items: center; gap: 14px; }
+.bespoke__label .rule { background: var(--terra); width: 28px; }
+.bespoke__quote { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 56px; line-height: 1.15; color: var(--white); margin-bottom: 36px; }
+.bespoke__quote .roman { font-style: normal; color: rgba(255,255,255,0.6); }
+.bespoke__sub { font-size: 15px; color: rgba(255,255,255,0.7); max-width: 520px; margin: 0 auto 44px; line-height: 1.7; }
+.bespoke__cta-row { display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.btn-terra { background: var(--terra); color: var(--white); border-radius: 100px; padding: 16px 36px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; transition: background 0.2s ease, transform 0.2s ease; display: inline-block; }
+.btn-terra:hover { background: #b1561f; transform: translateY(-1px); }
+.bespoke__or { font-family: var(--font-serif); font-style: italic; font-size: 16px; color: rgba(255,255,255,0.45); }
+.bespoke__email { font-size: 13px; color: rgba(255,255,255,0.85); border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 2px; }
+.bespoke__email:hover { color: var(--white); border-color: var(--terra); }
+@media (max-width: 1100px) { .hero h1 { font-size: 72px; } .featured__inner { grid-template-columns: 1fr; gap: 48px; padding: 80px 32px 0; } .featured__img-wrap { height: 60vh; min-height: 480px; } .featured__body { padding: 0 0 80px 0; } .exp-grid-wrap { padding: 100px 32px 80px; } .exp-grid-header { flex-direction: column; align-items: flex-start; } .exp-grid { grid-template-columns: 1fr; gap: 56px; } .bespoke { padding: 100px 32px; } .bespoke__quote { font-size: 40px; } }
+@media (max-width: 768px) { .hero { padding: 0 24px 48px; height: auto; min-height: 380px; padding-top: 140px; } .hero h1 { font-size: 52px; } .exp-grid-wrap { padding: 80px 24px 64px; } .bespoke { padding: 80px 24px; } .bespoke__quote { font-size: 30px; } }
+</style>

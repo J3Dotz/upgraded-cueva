@@ -13,6 +13,9 @@ dist/
 # Astro cache
 .astro/
 
+# Sanity runtime (generated, not source)
+.sanity/
+
 # OS
 .DS_Store
 Thumbs.db

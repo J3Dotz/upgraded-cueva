@@ -46,20 +46,29 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
   <slot />
   <Footer lang={lang} activePage={activePage} />
 
-  <!-- Scroll-in animation observer -->
+  <!-- Motion animations -->
   <script>
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-    document.querySelectorAll('[data-animate]').forEach((el) => observer.observe(el));
+    import { inView, animate, stagger } from 'motion';
+
+    // Individual scroll-in elements
+    inView('[data-animate]', ({ target }) => {
+      animate(
+        target,
+        { opacity: [0, 1], y: [24, 0] },
+        { duration: 0.7, easing: [0.22, 0.61, 0.36, 1] }
+      );
+    }, { amount: 0.12 });
+
+    // Staggered grids — add data-stagger to any grid container
+    inView('[data-stagger]', ({ target }) => {
+      const children = Array.from(target.children) as HTMLElement[];
+      if (children.length === 0) return;
+      animate(
+        children,
+        { opacity: [0, 1], y: [32, 0] },
+        { duration: 0.6, delay: stagger(0.1, { start: 0.05 }), easing: [0.22, 0.61, 0.36, 1] }
+      );
+    }, { amount: 0.1 });
   </script>
 </body>
 </html>
