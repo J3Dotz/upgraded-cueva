@@ -40,15 +40,23 @@ const wireframeData: Record<string, {
 const wf = wireframeData[slug as keyof typeof wireframeData] ?? wireframeData.almendro;
 
 // Resolve values — Sanity first, wireframe fallback
-const roomName    = room?.name       ?? wf.name;
-const roomSub     = room?.subtitle   ?? wf.subtitle;
-const roomTagline = room?.tagline    ?? wf.tagline;
-const roomPrice   = room?.pricePerNight ?? wf.price;
-const roomBed     = room?.bedType    ?? wf.bedType;
-const roomDesc    = room?.description ?? wf.description.join('\n\n');
-const roomAmenities = room?.amenities ?? [];
-const heroImgUrl  = room?.imageUrl   ?? null;
-const gallery     = room?.gallery    ?? [];
+const roomName        = room?.name            ?? wf.name;
+const roomNameEn      = room?.nameTranslation ?? wf.nameEn;
+const roomSub         = room?.subtitle        ?? wf.subtitle;
+const roomTagline     = room?.tagline         ?? wf.tagline;
+const roomPrice       = room?.pricePerNight   ?? wf.price;
+const roomBed         = room?.bedType         ?? wf.bedType;
+const roomSleeps      = room?.sleeps          ?? null;
+const roomSize        = room?.size            ?? null;
+const roomView        = room?.view            ?? null;
+const roomBalcony     = room?.balcony         ?? null;
+const roomBathroom    = room?.bathroom        ?? null;
+const roomMaterials   = room?.materials       ?? null;
+const roomHeating     = room?.heating         ?? null;
+const roomDesc        = room?.description     ?? wf.description.join('\n\n');
+const roomAmenities   = room?.amenities       ?? [];
+const heroImgUrl      = room?.imageUrl        ?? null;
+const gallery         = room?.gallery         ?? [];
 
 // Adjacent rooms (exclude current, show up to 3)
 const swatchColors: Record<string, string> = {
@@ -95,7 +103,7 @@ const heroBgStyle = heroImgUrl
     <div class="img-hero__inner">
       <div class="img-hero__title-block">
         <span class="label img-hero__label">{roomSub}</span>
-        <h1>{roomName} <span class="italic-tag">/ {wf.nameEn}</span></h1>
+        <h1>{roomName} <span class="italic-tag">/ {roomNameEn}</span></h1>
         <p class="img-hero__sub">{roomTagline}</p>
       </div>
       <div class="img-hero__meta">
@@ -103,6 +111,18 @@ const heroBgStyle = heroImgUrl
           <span class="img-hero__meta-label">Bed</span>
           <span class="img-hero__meta-value">{roomBed}</span>
         </div>
+        {roomSize && (
+          <div class="img-hero__meta-item">
+            <span class="img-hero__meta-label">Size</span>
+            <span class="img-hero__meta-value">{roomSize}</span>
+          </div>
+        )}
+        {roomSleeps && (
+          <div class="img-hero__meta-item">
+            <span class="img-hero__meta-label">Sleeps</span>
+            <span class="img-hero__meta-value">{roomSleeps}</span>
+          </div>
+        )}
         <div class="img-hero__meta-item">
           <span class="img-hero__meta-label">From</span>
           <span class="img-hero__meta-value">€{roomPrice} / night</span>
@@ -125,20 +145,17 @@ const heroBgStyle = heroImgUrl
         <div class="features">
           <span class="label features__label">The Particulars</span>
           <ul class="features__list">
-            <li><span class="key">Bed</span><span class="val">{roomBed}</span></li>
-            {roomAmenities.length > 0
-              ? roomAmenities.slice(0, 7).map(a => (
-                  <li><span class="key">Included</span><span class="val">{a}</span></li>
-                ))
-              : (
-                  <>
-                    {/* TODO: wire to Sanity — fields: room.size, room.view, room.balcony, room.bathroom */}
-                    <li><span class="key">View</span><span class="val">—</span></li>
-                    <li><span class="key">Balcony</span><span class="val">—</span></li>
-                    <li><span class="key">Bathroom</span><span class="val">—</span></li>
-                  </>
-                )
-            }
+            {roomBed      && <li><span class="key">Bed</span>      <span class="val">{roomBed}</span></li>}
+            {roomSize     && <li><span class="key">Size</span>     <span class="val">{roomSize}</span></li>}
+            {roomSleeps   && <li><span class="key">Sleeps</span>   <span class="val">{roomSleeps}</span></li>}
+            {roomView     && <li><span class="key">View</span>     <span class="val">{roomView}</span></li>}
+            {roomBalcony  && <li><span class="key">Balcony</span>  <span class="val">{roomBalcony}</span></li>}
+            {roomBathroom && <li><span class="key">Bathroom</span> <span class="val">{roomBathroom}</span></li>}
+            {roomMaterials && <li><span class="key">Materials</span><span class="val">{roomMaterials}</span></li>}
+            {roomHeating  && <li><span class="key">Heating</span>  <span class="val">{roomHeating}</span></li>}
+            {roomAmenities.map(a => (
+              <li><span class="key">Includes</span><span class="val">{a}</span></li>
+            ))}
           </ul>
         </div>
       </div>

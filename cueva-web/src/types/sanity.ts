@@ -145,11 +145,19 @@ export interface GalleryImage {
 export interface Room {
   name: string | null;
   slug: SanitySlug;
+  nameTranslation: string | null;
   subtitle: string | null;
   tagline: string | null;
   description: string | null;
   pricePerNight: number | null;
   bedType: string | null;
+  sleeps: number | null;
+  size: string | null;
+  view: string | null;
+  balcony: string | null;
+  bathroom: string | null;
+  materials: string | null;
+  heating: string | null;
   amenities: string[] | null;
   imageUrl: string | null;
   imageAlt: string | null;
