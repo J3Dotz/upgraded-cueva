@@ -1,49 +1,38 @@
 ---
-import { urlFor } from '../lib/sanity';
-import { useTranslations, loc, prefix } from '../i18n/utils';
+import { prefix } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
+import type { RoomListItem } from '../types/sanity';
 
 interface Props {
-  room: {
-    name: { en?: string; es?: string };
-    slug: { current: string };
-    tagline?: { en?: string; es?: string };
-    swatchColor?: string;
-    bedConfig?: { en?: string; es?: string };
-    view?: { en?: string; es?: string };
-    priceFrom?: number;
-    images?: Array<{ asset: { _ref: string }; alt?: string }>;
-  };
+  room: RoomListItem;
   lang?: Lang;
 }
 
 const { room, lang = 'en' } = Astro.props;
-const t = useTranslations(lang);
 const p = prefix(lang);
 
-const imgSrc = room.images?.[0]
-  ? urlFor(room.images[0]).width(480).height(640).auto('format').url()
-  : null;
-
-const placeholderColor = room.swatchColor ?? '#C4A882';
+const slug  = room.slug?.current ?? '';
+// Per-slug swatch colours used when no image is available
+const swatchColors: Record<string, string> = {
+  olivo: '#5C4838', lavanda: '#8FA59A', laurel: '#B8A48A',
+  tomillo: '#7E6E58', almendro: '#6F8366', roble: '#9A8A74', hinojo: '#4A3F35',
+};
+const placeholderColor = swatchColors[slug] ?? '#C4A882';
 ---
 
 <article class="room-card">
-  <a href={`${p}/stay/${room.slug.current}`} class="room-card__img-wrap">
-    {imgSrc
-      ? <img src={imgSrc} alt={room.images?.[0]?.alt ?? loc(room.name, lang)} loading="lazy" decoding="async" />
+  <a href={`${p}/stay/${slug}`} class="room-card__img-wrap">
+    {room.imageUrl
+      ? <img src={room.imageUrl} alt={room.imageAlt ?? room.name ?? slug} loading="lazy" decoding="async" />
       : <div class="room-card__placeholder" style={`background-color: ${placeholderColor};`}></div>
     }
   </a>
   <div class="room-card__body">
-    <h3 class="room-card__name">
-      {loc(room.name, lang)}
-      {lang === 'en' && room.name?.es && <span class="room-card__es">{room.name.es}</span>}
-    </h3>
-    {room.bedConfig && <p class="room-card__feature">{loc(room.bedConfig, lang)}</p>}
-    {room.view && <p class="room-card__view">{loc(room.view, lang)}</p>}
-    {room.priceFrom && <p class="room-card__price">From €{room.priceFrom} / night</p>}
-    <a href={`${p}/stay/${room.slug.current}`} class="room-card__cta">{t('stay.view')} →</a>
+    {room.subtitle && <p class="room-card__type">{room.subtitle}</p>}
+    <h3 class="room-card__name">{room.name ?? slug}</h3>
+    {room.tagline && <p class="room-card__feature">{room.tagline}</p>}
+    {room.pricePerNight && <p class="room-card__price">From €{room.pricePerNight} / night</p>}
+    <a href={`${p}/stay/${slug}`} class="room-card__cta">View room →</a>
   </div>
 </article>
 
@@ -72,21 +61,20 @@ const placeholderColor = room.swatchColor ?? '#C4A882';
 
 .room-card__body { padding: 24px 8px; }
 
+.room-card__type {
+  font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--terra); margin-bottom: 6px;
+}
 .room-card__name {
   font-family: var(--font-serif);
   font-size: 22px; font-weight: 400;
   color: var(--stone-dark);
 }
-.room-card__es {
-  font-style: italic; font-weight: 300;
-  color: var(--stone-mid); font-size: 17px; margin-left: 6px;
-}
 .room-card__feature {
-  font-family: var(--font-sans); font-size: 12px;
-  color: var(--stone-mid); text-transform: uppercase;
-  letter-spacing: 0.08em; margin: 6px 0;
+  font-size: 13px; color: var(--stone-mid);
+  margin: 8px 0; line-height: 1.55;
 }
-.room-card__view { font-size: 13px; color: var(--stone-mid); }
 .room-card__price {
   font-size: 14px; color: var(--stone-dark);
   font-weight: 500; margin-top: 16px;

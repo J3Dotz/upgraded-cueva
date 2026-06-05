@@ -1,10 +1,14 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import { client } from '../lib/sanity';
+import { LOCATION_PAGE_QUERY } from '../lib/sanity/queries';
+import type { LocationPage, PortableTextBlock } from '../types/sanity';
 import { prefix } from '../i18n/utils';
 
-const lang = 'en';
-const p    = prefix(lang);
+const lang     = 'en';
+const p        = prefix(lang);
+const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 ---
 
 <Base
@@ -35,11 +39,11 @@ const p    = prefix(lang);
       <div data-animate>
         <div class="label hero__label">
           <span class="pip"></span>
-          <span>The Lodge · Cabanes · Castellón</span>
+          <!-- TODO: wire to Sanity — field: locationPage.subline -->
+          <span>{location?.subline ?? 'The Lodge · Cabanes · Castellón'}</span>
         </div>
         <h1>
-          Find us.<br/>
-          <span class="italic">We'll wait.</span>
+          {location?.headline ?? <>Find us.<br/><span class="italic">We'll wait.</span></>}
         </h1>
       </div>
 
@@ -108,6 +112,19 @@ const p    = prefix(lang);
           <p>Google Maps does not provide the correct route to our location. Please use one of the trusted routes below.</p>
         </div>
 
+        {location?.body && location.body.length > 0 && (
+          <div class="location-body">
+            {location.body.map((block: PortableTextBlock) => {
+              const b = block as any;
+              if (b._type === 'block') {
+                const text = (b.children ?? []).map((c: any) => c.text ?? '').join('');
+                return text ? <p>{text}</p> : null;
+              }
+              return null;
+            })}
+          </div>
+        )}
+
         <div class="routes">
           <a class="route" href="https://goo.gl/maps/xEuPsaEcBqyGasYk7" target="_blank" rel="noopener">
             <div class="route__left">
@@ -136,8 +153,18 @@ const p    = prefix(lang);
         </div>
       </div>
 
-      <!-- Map -->
+      <!-- Map — Sanity embed if provided, else decorative SVG -->
       <div class="map" data-animate aria-label="Map showing La Cueva de Miravet">
+        {location?.mapEmbedUrl && (
+          <iframe
+            src={location.mapEmbedUrl}
+            class="map__iframe"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Map showing La Cueva de Miravet"
+            aria-label="Google Maps embed"
+          ></iframe>
+        )}
         <svg class="map__svg" viewBox="0 0 600 650" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <defs>
             <linearGradient id="mapFade" x1="0" y1="0" x2="0" y2="1">
@@ -519,6 +546,17 @@ const p    = prefix(lang);
 .btn { background: var(--terra); color: var(--white); border-radius: 100px; padding: 18px 40px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; transition: background 0.2s ease, transform 0.2s ease; }
 .btn:hover { background: #b1561f; transform: translateY(-1px); }
 .ready__cta .note { font-family: var(--font-serif); font-style: italic; font-size: 14px; color: rgba(255,255,255,0.55); }
+
+/* Map iframe */
+.map__iframe {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  border: none; z-index: 2;
+}
+
+/* Location body (Portable Text) */
+.location-body { margin-bottom: 32px; }
+.location-body p { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-dark); line-height: 1.55; font-weight: 300; margin-bottom: 12px; }
 
 /* ===== Responsive ===== */
 @media (max-width: 1100px) {

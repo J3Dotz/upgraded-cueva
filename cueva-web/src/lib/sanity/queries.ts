@@ -50,7 +50,7 @@ export const ALL_ROOMS_QUERY = groq`
 
 export const ROOM_BY_SLUG_QUERY = groq`
   *[_type == "room" && slug.current == $slug && locale == $locale][0] {
-    name, slug, subtitle, description, pricePerNight, bedType,
+    name, slug, subtitle, tagline, description, pricePerNight, bedType,
     amenities,
     "imageUrl": image.asset->url,
     "imageAlt": image.alt,
@@ -88,7 +88,7 @@ export const JOURNAL_POSTS_QUERY = groq`
 export const JOURNAL_POST_BY_SLUG_QUERY = groq`
   *[_type == "journalPost" && slug.current == $slug
     && locale == $locale][0] {
-    title, category, body, author, publishedAt, readingMinutes,
+    title, category, excerpt, body, author, publishedAt, readingMinutes,
     "featuredImageUrl": featuredImage.asset->url
   }
 `;

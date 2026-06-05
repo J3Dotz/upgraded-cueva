@@ -1,10 +1,14 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import { client } from '../lib/sanity';
+import { BOOK_PAGE_QUERY } from '../lib/sanity/queries';
+import type { BookPage } from '../types/sanity';
 import { prefix } from '../i18n/utils';
 
-const lang = 'en';
-const p    = prefix(lang);
+const lang     = 'en';
+const p        = prefix(lang);
+const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
 ---
 
 <Base
@@ -24,10 +28,9 @@ const p    = prefix(lang);
       <div class="form-aside">
         <div class="label">Direct booking · No third parties</div>
         <h1>
-          Request
-          <span class="italic"> to book.</span>
+          {bookPage?.headline ?? <>Request<span class="italic"> to book.</span></>}
         </h1>
-        <p class="form-aside__sub">We'll confirm availability within a few hours.</p>
+        <p class="form-aside__sub">{bookPage?.subline ?? 'We\'ll confirm availability within a few hours.'}</p>
         <p class="form-aside__note">Each request is handled personally by our Manager Javier, and answered the same day. Nothing is charged until we confirm.</p>
         <div class="form-aside__rule"></div>
         <div class="form-aside__contact">
@@ -133,7 +136,7 @@ const p    = prefix(lang);
           <div class="form-success__inner">
             <div class="label">Received</div>
             <h3>Thank you. We'll be in touch within a few hours.</h3>
-            <p>A confirmation has been sent to your email. Look out for a reply from <em>hola@lacuevademiravet.com</em>.</p>
+            <p>{bookPage?.confirmationNote ?? 'A confirmation has been sent to your email. Look out for a reply from hola@lacuevademiravet.com.'}</p>
           </div>
         </div>
       </form>

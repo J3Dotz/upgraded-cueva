@@ -146,6 +146,7 @@ export interface Room {
   name: string | null;
   slug: SanitySlug;
   subtitle: string | null;
+  tagline: string | null;
   description: string | null;
   pricePerNight: number | null;
   bedType: string | null;
@@ -194,6 +195,7 @@ export interface JournalPostListItem {
 export interface JournalPost {
   title: string | null;
   category: string | null;
+  excerpt: string | null;
   body: PortableTextBlock[] | null;
   author: string | null;
   publishedAt: string;
