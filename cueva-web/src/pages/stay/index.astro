@@ -2,36 +2,33 @@
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
 import { client } from '../../lib/sanity';
-import { roomsQuery } from '../../queries/rooms';
-import { loc, prefix } from '../../i18n/utils';
+import { ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
+import type { RoomListItem } from '../../types/sanity';
+import { prefix } from '../../i18n/utils';
 
-const lang   = 'en';
-const p      = prefix(lang);
-const rooms  = await client.fetch(roomsQuery);
+const lang = 'en';
+const p    = prefix(lang);
 
-// Wireframe placeholder data — shown when Sanity fields are empty
-const wireframe = [
-  { slug: 'olivo',    type: 'Olive Suite',       name: 'Olivo',    feature: 'Carved into the natural rock face. Constant 16°C, lit by candle and skylight.',                             price: 420, color: '#5C4838' },
-  { slug: 'lavanda',  type: 'Lavender Suite',     name: 'Lavanda',  feature: 'Private sea-view terrace with day bed and outdoor bath.',                                                   price: 380, color: '#8FA59A' },
-  { slug: 'laurel',   type: 'Bay Laurel Suite',   name: 'Laurel',   feature: 'Floor-to-ceiling windows facing south. Mountains on one side, Mediterranean on the other.',                price: 340, color: '#B8A48A' },
-  { slug: 'tomillo',  type: 'Thyme Suite',        name: 'Tomillo',  feature: 'Original 19th-century beams. A double bed beneath the old hayloft window.',                                price: 310, color: '#7E6E58' },
-  { slug: 'almendro', type: 'Almond Suite',       name: 'Almendro', feature: 'Opens directly onto the walled herb garden. Outdoor shower among the rosemary.',                           price: 290, color: '#6F8366' },
-  { slug: 'roble',    type: 'Oak Suite',          name: 'Roble',    feature: 'Hand-cut limestone walls and a slim arched window onto the valley.',                                        price: 260, color: '#9A8A74' },
-  { slug: 'hinojo',   type: 'Fennel Suite',       name: 'Hinojo',   feature: 'Vaulted brick ceilings, a single deep window. Cool and quiet, year round.',                                price: 240, color: '#4A3F35' },
+const rooms = await client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang });
+
+// Wireframe fallback — shown while Sanity content is being populated
+const wireframe: RoomListItem[] = [
+  { _id: 'wf-1', slug: { current: 'olivo'    }, name: 'Olivo',    subtitle: 'Olive Suite',      tagline: 'Carved into the natural rock face. Constant 16°C, lit by candle and skylight.',       pricePerNight: 420, imageUrl: null, imageAlt: null },
+  { _id: 'wf-2', slug: { current: 'lavanda'  }, name: 'Lavanda',  subtitle: 'Lavender Suite',   tagline: 'Private sea-view terrace with day bed and outdoor bath.',                               pricePerNight: 380, imageUrl: null, imageAlt: null },
+  { _id: 'wf-3', slug: { current: 'laurel'   }, name: 'Laurel',   subtitle: 'Bay Laurel Suite',  tagline: 'Floor-to-ceiling windows facing south.',                                               pricePerNight: 340, imageUrl: null, imageAlt: null },
+  { _id: 'wf-4', slug: { current: 'tomillo'  }, name: 'Tomillo',  subtitle: 'Thyme Suite',      tagline: 'Original 19th-century beams. A double bed beneath the old hayloft window.',             pricePerNight: 310, imageUrl: null, imageAlt: null },
+  { _id: 'wf-5', slug: { current: 'almendro' }, name: 'Almendro', subtitle: 'Almond Suite',     tagline: 'Opens directly onto the walled herb garden.',                                           pricePerNight: 290, imageUrl: null, imageAlt: null },
+  { _id: 'wf-6', slug: { current: 'roble'    }, name: 'Roble',    subtitle: 'Oak Suite',        tagline: 'Hand-cut limestone walls and a slim arched window onto the valley.',                    pricePerNight: 260, imageUrl: null, imageAlt: null },
+  { _id: 'wf-7', slug: { current: 'hinojo'   }, name: 'Hinojo',   subtitle: 'Fennel Suite',     tagline: 'Vaulted brick ceilings, a single deep window. Cool and quiet, year round.',             pricePerNight: 240, imageUrl: null, imageAlt: null },
 ];
 
-// Merge Sanity rooms with wireframe fallbacks
-const displayRooms = wireframe.map((wf, i) => {
-  const sanity = rooms.find((r: any) => r.slug?.current === wf.slug) ?? rooms[i];
-  return {
-    slug: sanity?.slug?.current ?? wf.slug,
-    type: (sanity?.suiteType ? loc(sanity.suiteType, lang) : null) ?? wf.type,
-    name: (sanity?.name ? loc(sanity.name, lang) : null) ?? wf.name,
-    feature: (sanity?.tagline ? loc(sanity.tagline, lang) : null) ?? wf.feature,
-    price: sanity?.priceFrom ?? wf.price,
-    color: sanity?.swatchColor ?? wf.color,
-  };
-});
+// Swatch colours for image-less placeholders — keyed to room slug
+const swatchColors: Record<string, string> = {
+  olivo: '#5C4838', lavanda: '#8FA59A', laurel: '#B8A48A',
+  tomillo: '#7E6E58', almendro: '#6F8366', roble: '#9A8A74', hinojo: '#4A3F35',
+};
+
+const displayRooms = rooms.length > 0 ? rooms : wireframe;
 ---
 
 <Base
@@ -44,8 +41,10 @@ const displayRooms = wireframe.map((wf, i) => {
   <!-- ===== Page Hero ===== -->
   <section class="page-hero">
     <div class="page-hero__inner" data-animate>
+      <!-- TODO: wire to Sanity — field: homepage.roomsTeaser.sectionLabel -->
       <p class="label">Seven rooms · Cabanes, Castellón</p>
       <h1>Where <span class="italic">you stay</span></h1>
+      <!-- TODO: wire to Sanity — field: homepage.roomsTeaser.subline -->
       <p class="page-hero__body">Each room opens onto something — a terrace, the valley, a particular angle of the Mediterranean. Choose one, or take the lodge to yourselves.</p>
     </div>
   </section>
@@ -61,23 +60,33 @@ const displayRooms = wireframe.map((wf, i) => {
     </div>
 
     <div class="rooms__grid" data-stagger>
-      {displayRooms.map((room) => (
-        <article class="room-card">
-          <a href={`${p}/stay/${room.slug}`} class="room-card__img-wrap">
-            <div class="room-card__img" style={`background-color: ${room.color};`}></div>
-          </a>
-          <div class="room-card__body">
-            <p class="room-card__type">{room.type}</p>
-            <h3 class="room-card__name">{room.name}</h3>
-            <p class="room-card__feature">{room.feature}</p>
-            <div class="room-card__divider"></div>
-            <div class="room-card__row">
-              <p class="room-card__price"><strong>€{room.price}</strong><span class="per">/ night</span></p>
-              <a href={`${p}/stay/${room.slug}`} class="room-card__cta">View room</a>
+      {displayRooms.map((room) => {
+        const slug  = room.slug?.current ?? '';
+        const color = swatchColors[slug] ?? '#9A8A74';
+        return (
+          <article class="room-card">
+            <a href={`${p}/stay/${slug}`} class="room-card__img-wrap">
+              {room.imageUrl
+                ? <img src={room.imageUrl} alt={room.imageAlt ?? room.name ?? slug} loading="lazy" class="room-card__img-photo" />
+                : <div class="room-card__img" style={`background-color: ${color};`}></div>
+              }
+            </a>
+            <div class="room-card__body">
+              <p class="room-card__type">{room.subtitle ?? ''}</p>
+              <h3 class="room-card__name">{room.name ?? slug}</h3>
+              <p class="room-card__feature">{room.tagline ?? ''}</p>
+              <div class="room-card__divider"></div>
+              <div class="room-card__row">
+                <p class="room-card__price">
+                  <strong>€{room.pricePerNight ?? '—'}</strong>
+                  <span class="per">/ night</span>
+                </p>
+                <a href={`${p}/stay/${slug}`} class="room-card__cta">View room</a>
+              </div>
             </div>
-          </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
     </div>
   </section>
 
@@ -170,6 +179,10 @@ const displayRooms = wireframe.map((wf, i) => {
   display: block; overflow: hidden;
   border-radius: 160px 160px 0 0;
 }
+.room-card__img-photo {
+  width: 100%; height: 360px; object-fit: cover;
+  transition: transform 0.7s ease;
+}
 .room-card__img {
   width: 100%; height: 360px;
   background-image: var(--grain);
@@ -181,7 +194,8 @@ const displayRooms = wireframe.map((wf, i) => {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.18) 100%);
 }
-.room-card:hover .room-card__img { transform: scale(1.04); }
+.room-card:hover .room-card__img,
+.room-card:hover .room-card__img-photo { transform: scale(1.04); }
 
 .room-card__body { padding: 24px 4px 0; }
 .room-card__type {
@@ -277,7 +291,8 @@ const displayRooms = wireframe.map((wf, i) => {
   .page-hero h1 { font-size: 44px; }
   .rooms { padding: 80px 24px; }
   .rooms__grid { grid-template-columns: 1fr; gap: 48px; max-width: 380px; margin: 0 auto; }
-  .room-card__img { height: 320px; }
+  .room-card__img,
+  .room-card__img-photo { height: 320px; }
   .prompt { padding: 72px 24px 80px; }
   .prompt h2 { font-size: 32px; }
 }

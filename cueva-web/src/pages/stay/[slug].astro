@@ -1,15 +1,16 @@
 ---
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
-import { client, urlFor } from '../../lib/sanity';
-import { roomBySlugQuery, roomSlugsQuery, roomsQuery } from '../../queries/rooms';
-import { loc, prefix } from '../../i18n/utils';
+import { client } from '../../lib/sanity';
+import { ROOM_BY_SLUG_QUERY, ROOM_SLUGS_QUERY, ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
+import type { Room, RoomListItem, RoomSlug } from '../../types/sanity';
+import { prefix } from '../../i18n/utils';
 
 export async function getStaticPaths() {
-  const sanityRooms = await client.fetch<{ slug: string }[]>(roomSlugsQuery);
-  // Always include all 7 wireframe slugs so pages exist before Sanity content is added
+  const sanityRooms = await client.fetch<RoomSlug[]>(ROOM_SLUGS_QUERY);
+  // Always include wireframe slugs so pages exist before Sanity content is added
   const wireframeSlugs = ['olivo', 'lavanda', 'laurel', 'tomillo', 'almendro', 'roble', 'hinojo'];
-  const allSlugs = new Set([...sanityRooms.map((r: any) => r.slug), ...wireframeSlugs]);
+  const allSlugs = new Set([...sanityRooms.map((r) => r.slug), ...wireframeSlugs]);
   return Array.from(allSlugs).map(slug => ({ params: { slug } }));
 }
 
@@ -17,66 +18,61 @@ const { slug } = Astro.params;
 const lang = 'en';
 const p    = prefix(lang);
 
-const [room, allRooms] = await Promise.all([
-  client.fetch(roomBySlugQuery, { slug }),
-  client.fetch(roomsQuery),
+const [room, adjacentRooms] = await Promise.all([
+  client.fetch<Room | null>(ROOM_BY_SLUG_QUERY, { slug, locale: lang }),
+  client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
 ]);
 
-// Wireframe fallback data per room slug
+// Per-room wireframe fallbacks
 const wireframeData: Record<string, {
-  type: string; name: string; nameEs: string; tagline: string;
-  price: number; color: string; sleeps: string; size: string;
-  h2: string; body: string[]; bed: string; view: string;
-  balcony: string; bathroom: string; materials: string; heating: string;
+  subtitle: string; name: string; nameEn: string;
+  tagline: string; price: number; color: string;
+  description: string[]; bedType: string;
 }> = {
-  olivo:    { type: 'Olive Suite',     name: 'Olivo',    nameEs: 'The Olive Tree',  tagline: 'Carved into the natural rock face. Constant 16°C, lit by candle and skylight.',       price: 420, color: '#5C4838', sleeps: '2 guests', size: '28 m²',        h2: 'Rock, candlelight,',              body: ['Olivo sits inside the natural rock itself — the oldest room in the house by several thousand years. The walls are the mountain.', 'A double bed on a raised platform, linen undyed, a skylight above. No windows in the conventional sense. You arrive in darkness and leave having slept better than anywhere in years.'], bed: 'Double · linen', view: 'Skylight only', balcony: 'None', bathroom: 'Private ensuite', materials: 'Rock, limestone', heating: 'Underfloor' },
-  lavanda:  { type: 'Lavender Suite',  name: 'Lavanda',  nameEs: 'The Lavender',    tagline: 'Private sea-view terrace with day bed and outdoor bath.',                               price: 380, color: '#8FA59A', sleeps: '2 guests', size: '42 m² + terrace', h2: 'The terrace,',                    body: ['Lavanda opens west. A full-length sliding door onto a private terrace with a daybed, a stone outdoor bathtub, and an uninterrupted view over the valley to the Mediterranean.', 'Inside: pale walls, a king bed, and the particular quality of light that bounces off old whitewash at this elevation.'], bed: 'King · linen', view: 'Sea & valley terrace', balcony: 'Private terrace', bathroom: 'Indoor + outdoor tub', materials: 'Whitewash, stone', heating: 'Wood stove' },
-  laurel:   { type: 'Bay Laurel Suite',name: 'Laurel',   nameEs: 'The Bay Laurel',  tagline: 'Floor-to-ceiling windows facing south. Mountains on one side, Mediterranean on the other.', price: 340, color: '#B8A48A', sleeps: '2 guests', size: '38 m²',        h2: 'Mountains and sea,',              body: ['Laurel is the room most guests photograph from outside. Floor-to-ceiling south-facing glass, a king bed aligned to the view, and the kind of light that moves across the room all day.', 'The bathroom has a freestanding ceramic tub in the window. The mountain is the view from the bath.'], bed: 'King · linen', view: 'South: sea + mountain', balcony: 'Juliet balcony', bathroom: 'Freestanding tub', materials: 'Glass, plaster, tile', heating: 'Underfloor' },
-  tomillo:  { type: 'Thyme Suite',     name: 'Tomillo',  nameEs: 'The Thyme',       tagline: 'Original 19th-century beams. A double bed beneath the old hayloft window.',             price: 310, color: '#7E6E58', sleeps: '2 guests', size: '32 m²',        h2: 'Beams and hayloft light,',        body: ['Tomillo was the old hayloft. The original 19th-century beams are overhead, the hayloft window is still in the same position. A double bed in undyed linen beneath them.', 'It is a room of warm timber and muted afternoon light. Quieter than the rooms with sea views. People come back to it.'], bed: 'Double · linen', view: 'Garden + valley', balcony: 'None', bathroom: 'Private ensuite', materials: 'Oak beams, plaster', heating: 'Wood stove' },
-  almendro: { type: 'Almond Suite',    name: 'Almendro', nameEs: 'The Almond Tree', tagline: 'King bed, exposed beams, a private balcony, and the kind of light that makes you reset your day around it.', price: 290, color: '#6F8366', sleeps: '2 guests', size: '36 m² + balcony', h2: 'Linen, tile,',         body: ['Almendro is a room that pays attention. Original beams overhead, the tile floor cool underfoot, two tall windows and the kind of light that arrives slowly in the morning and stays late into the afternoon.', 'The bed is a king, dressed in undyed linen. A private balcony with a daybed under a linen shade and a small table that fits two for breakfast.'], bed: 'King · linen', view: 'South-facing balcony', balcony: 'Private', bathroom: 'Private ensuite', materials: 'Linen, tile, beams', heating: 'Wood stove' },
-  roble:    { type: 'Oak Suite',       name: 'Roble',    nameEs: 'The Oak',         tagline: 'Warm timber, a private terrace with sun-beds and a view of the Mediterranean.',         price: 260, color: '#9A8A74', sleeps: '2 guests', size: '40 m² + terrace', h2: 'Timber and open sky,',            body: ['Roble is the room with the most timber — original oak throughout, a beamed ceiling, and a private terrace with two sun-beds and an unrestricted view of the Mediterranean.', 'A king bed dressed in linen, a bathroom with rain shower and deep stone basin, and the particular warmth that old oak holds long into the evening.'], bed: 'King · linen', view: 'Mediterranean direct', balcony: 'Private terrace', bathroom: 'Stone basin, rain shower', materials: 'Oak, linen, stone', heating: 'Underfloor' },
-  hinojo:   { type: 'Fennel Suite',    name: 'Hinojo',   nameEs: 'The Fennel',      tagline: 'Vaulted brick ceilings, a single deep window. Cool and quiet, year round.',             price: 240, color: '#4A3F35', sleeps: '2 guests', size: '30 m²',        h2: 'Vault, stillness,',               body: ['Hinojo is the coolest room — vaulted brick overhead, a single deep window set into a metre of stone wall, and the temperature that old masias held before air conditioning made it unnecessary.', 'The quietest room at the lodge. A double bed, a reading chair, a bathroom with terracotta floor and rain shower. It gets its name from the fennel that grows below the window.'], bed: 'Double · linen', view: 'Garden (north)', balcony: 'None', bathroom: 'Terracotta floor', materials: 'Brick vault, stone', heating: 'Underfloor' },
+  olivo:    { subtitle: 'Olive Suite',      name: 'Olivo',    nameEn: 'The Olive Tree',  tagline: 'Carved into the natural rock face. Constant 16°C, lit by candle and skylight.',            price: 420, color: '#5C4838', description: ['Olivo sits inside the natural rock itself — the oldest room in the house by several thousand years. The walls are the mountain.', 'A double bed on a raised platform, linen undyed, a skylight above.'], bedType: 'Double · linen' },
+  lavanda:  { subtitle: 'Lavender Suite',   name: 'Lavanda',  nameEn: 'The Lavender',    tagline: 'Private sea-view terrace with day bed and outdoor bath.',                                   price: 380, color: '#8FA59A', description: ['Lavanda opens west. A full-length sliding door onto a private terrace with a daybed, a stone outdoor bathtub, and an uninterrupted view over the valley to the Mediterranean.'], bedType: 'King · linen' },
+  laurel:   { subtitle: 'Bay Laurel Suite', name: 'Laurel',   nameEn: 'The Bay Laurel',  tagline: 'Floor-to-ceiling windows facing south. Mountains on one side, Mediterranean on the other.', price: 340, color: '#B8A48A', description: ['Laurel is the room most guests photograph from outside. Floor-to-ceiling south-facing glass, a king bed aligned to the view.'], bedType: 'King · linen' },
+  tomillo:  { subtitle: 'Thyme Suite',      name: 'Tomillo',  nameEn: 'The Thyme',       tagline: 'Original 19th-century beams. A double bed beneath the old hayloft window.',                 price: 310, color: '#7E6E58', description: ['Tomillo was the old hayloft. The original 19th-century beams are overhead, the hayloft window is still in the same position.'], bedType: 'Double · linen' },
+  almendro: { subtitle: 'Almond Suite',     name: 'Almendro', nameEn: 'The Almond Tree', tagline: 'King bed, exposed beams, a private balcony.',                                                price: 290, color: '#6F8366', description: ['Almendro is a room that pays attention. Original beams overhead, the tile floor cool underfoot.'], bedType: 'King · linen' },
+  roble:    { subtitle: 'Oak Suite',        name: 'Roble',    nameEn: 'The Oak',         tagline: 'Warm timber, a private terrace with sun-beds and a view of the Mediterranean.',              price: 260, color: '#9A8A74', description: ['Roble is the room with the most timber — original oak throughout, a beamed ceiling, and a private terrace.'], bedType: 'King · linen' },
+  hinojo:   { subtitle: 'Fennel Suite',     name: 'Hinojo',   nameEn: 'The Fennel',      tagline: 'Vaulted brick ceilings, a single deep window. Cool and quiet, year round.',                  price: 240, color: '#4A3F35', description: ['Hinojo is the coolest room — vaulted brick overhead, a single deep window set into a metre of stone wall.'], bedType: 'Double · linen' },
 };
-
 const wf = wireframeData[slug as keyof typeof wireframeData] ?? wireframeData.almendro;
 
 // Resolve values — Sanity first, wireframe fallback
-const roomName            = (room?.name        ? loc(room.name, lang)        : null) ?? wf.name;
-const roomNameTranslation = room?.nameTranslation ?? wf.nameEs;
-const roomSuiteType       = (room?.suiteType   ? loc(room.suiteType, lang)   : null) ?? wf.type;
-const roomTagline         = (room?.tagline      ? loc(room.tagline, lang)     : null) ?? wf.tagline;
-const roomPrice           = room?.priceFrom ?? wf.price;
-const roomColor           = room?.swatchColor ?? wf.color;
-const roomBed             = (room?.bedConfig   ? loc(room.bedConfig, lang)   : null) ?? wf.bed;
-const roomView            = (room?.view        ? loc(room.view, lang)        : null) ?? wf.view;
-const roomBalcony         = (room?.balcony     ? loc(room.balcony, lang)     : null) ?? wf.balcony;
-const roomBathroom        = (room?.bathroom    ? loc(room.bathroom, lang)    : null) ?? wf.bathroom;
-const roomMaterials       = (room?.materials   ? loc(room.materials, lang)   : null) ?? wf.materials;
-const roomHeating         = (room?.heating     ? loc(room.heating, lang)     : null) ?? wf.heating;
-const roomSleeps          = room?.sleeps ? `${room.sleeps} guests` : wf.sleeps;
-const roomSize            = room?.size ?? wf.size;
+const roomName    = room?.name       ?? wf.name;
+const roomSub     = room?.subtitle   ?? wf.subtitle;
+const roomTagline = room?.tagline    ?? wf.tagline;
+const roomPrice   = room?.pricePerNight ?? wf.price;
+const roomBed     = room?.bedType    ?? wf.bedType;
+const roomDesc    = room?.description ?? wf.description.join('\n\n');
+const roomAmenities = room?.amenities ?? [];
+const heroImgUrl  = room?.imageUrl   ?? null;
+const gallery     = room?.gallery    ?? [];
 
-const heroImgSrc = room?.images?.[0]
-  ? urlFor(room.images[0]).width(1600).height(900).auto('format').url()
-  : null;
-const cardImgSrc = room?.images?.[1] ?? room?.images?.[0]
-  ? urlFor((room?.images?.[1] ?? room?.images?.[0])).width(640).height(860).auto('format').url()
-  : null;
-const galleryImages = room?.images?.slice(1, 4) ?? [];
-
-// Other rooms for adjacent section
-const otherRooms = allRooms.length > 0
-  ? allRooms.filter((r: any) => r.slug?.current !== slug).slice(0, 3)
+// Adjacent rooms (exclude current, show up to 3)
+const swatchColors: Record<string, string> = {
+  olivo: '#5C4838', lavanda: '#8FA59A', laurel: '#B8A48A',
+  tomillo: '#7E6E58', almendro: '#6F8366', roble: '#9A8A74', hinojo: '#4A3F35',
+};
+const others = adjacentRooms.length > 0
+  ? adjacentRooms.filter(r => r.slug?.current !== slug).slice(0, 3)
   : Object.entries(wireframeData)
       .filter(([s]) => s !== slug)
       .slice(0, 3)
-      .map(([s, d]) => ({ slug: { current: s }, ...d }));
+      .map(([s, d]) => ({ _id: s, slug: { current: s }, name: d.name, subtitle: d.subtitle, tagline: d.tagline, pricePerNight: d.price, imageUrl: null, imageAlt: null })) as RoomListItem[];
 
 const galleryPlaceholders = [
-  { color: '#C8B89E', caption: 'The bed, the beams.' },
-  { color: '#8B9A7A', caption: 'The balcony.' },
-  { color: '#A88A6B', caption: 'The bathroom.' },
+  { url: null, alt: 'The bed, the beams.', color: '#C8B89E' },
+  { url: null, alt: 'The balcony.',        color: '#8B9A7A' },
+  { url: null, alt: 'The bathroom.',       color: '#A88A6B' },
 ];
+const galleryItems = gallery.length > 0 ? gallery : galleryPlaceholders;
+
+// Hero background style
+const heroBgStyle = heroImgUrl
+  ? `background-color: ${wf.color}; background-image: radial-gradient(ellipse at 70% 30%,rgba(232,206,178,.35) 0%,transparent 55%),radial-gradient(ellipse at 30% 80%,rgba(74,94,69,.2) 0%,transparent 60%),linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.1) 35%,rgba(0,0,0,.65) 100%),var(--grain),url('${heroImgUrl}'); background-size: cover; background-position: center;`
+  : `background-color: ${wf.color}; background-image: radial-gradient(ellipse at 70% 30%,rgba(232,206,178,.35) 0%,transparent 55%),radial-gradient(ellipse at 30% 80%,rgba(74,94,69,.2) 0%,transparent 60%),linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.1) 35%,rgba(0,0,0,.65) 100%),var(--grain)`;
 ---
 
 <Base
@@ -87,12 +83,7 @@ const galleryPlaceholders = [
 >
 
   <!-- ===== Image hero ===== -->
-  <section
-    class="img-hero"
-    style={heroImgSrc
-      ? `background-color: ${roomColor}; background-image: radial-gradient(ellipse at 70% 30%, rgba(232,206,178,0.35) 0%, transparent 55%), radial-gradient(ellipse at 30% 80%, rgba(74,94,69,0.2) 0%, transparent 60%), linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 35%, rgba(0,0,0,0.65) 100%), var(--grain), url('${heroImgSrc}')`
-      : `background-color: ${roomColor}; background-image: radial-gradient(ellipse at 70% 30%, rgba(232,206,178,0.35) 0%, transparent 55%), radial-gradient(ellipse at 30% 80%, rgba(74,94,69,0.2) 0%, transparent 60%), linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 35%, rgba(0,0,0,0.65) 100%), var(--grain)`}
-  >
+  <section class="img-hero" style={heroBgStyle}>
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span class="sep">/</span>
@@ -103,18 +94,14 @@ const galleryPlaceholders = [
 
     <div class="img-hero__inner">
       <div class="img-hero__title-block">
-        <span class="label img-hero__label">{roomSuiteType}</span>
-        <h1>{roomName} <span class="italic-tag">/ {roomNameTranslation}</span></h1>
+        <span class="label img-hero__label">{roomSub}</span>
+        <h1>{roomName} <span class="italic-tag">/ {wf.nameEn}</span></h1>
         <p class="img-hero__sub">{roomTagline}</p>
       </div>
       <div class="img-hero__meta">
         <div class="img-hero__meta-item">
-          <span class="img-hero__meta-label">Sleeps</span>
-          <span class="img-hero__meta-value">{roomSleeps}</span>
-        </div>
-        <div class="img-hero__meta-item">
-          <span class="img-hero__meta-label">Size</span>
-          <span class="img-hero__meta-value">{roomSize}</span>
+          <span class="img-hero__meta-label">Bed</span>
+          <span class="img-hero__meta-value">{roomBed}</span>
         </div>
         <div class="img-hero__meta-item">
           <span class="img-hero__meta-label">From</span>
@@ -129,9 +116,8 @@ const galleryPlaceholders = [
     <div class="intro__grid">
 
       <div class="intro__left" data-animate>
-        <h2>{wf.h2}<span class="italic"> and very little else.</span></h2>
         <div class="intro__body">
-          {wf.body.map((para, i) => (
+          {roomDesc.split('\n\n').map((para, i) => (
             <p class={i === 0 ? 'dropcap' : ''}>{para}</p>
           ))}
         </div>
@@ -140,22 +126,28 @@ const galleryPlaceholders = [
           <span class="label features__label">The Particulars</span>
           <ul class="features__list">
             <li><span class="key">Bed</span><span class="val">{roomBed}</span></li>
-            <li><span class="key">Size</span><span class="val">{roomSize}</span></li>
-            <li><span class="key">View</span><span class="val">{roomView}</span></li>
-            <li><span class="key">Balcony</span><span class="val">{roomBalcony}</span></li>
-            <li><span class="key">Bathroom</span><span class="val">{roomBathroom}</span></li>
-            <li><span class="key">Materials</span><span class="val">{roomMaterials}</span></li>
-            <li><span class="key">Sleeps</span><span class="val">{roomSleeps}</span></li>
-            <li><span class="key">Heating</span><span class="val">{roomHeating}</span></li>
+            {roomAmenities.length > 0
+              ? roomAmenities.slice(0, 7).map(a => (
+                  <li><span class="key">Included</span><span class="val">{a}</span></li>
+                ))
+              : (
+                  <>
+                    {/* TODO: wire to Sanity — fields: room.size, room.view, room.balcony, room.bathroom */}
+                    <li><span class="key">View</span><span class="val">—</span></li>
+                    <li><span class="key">Balcony</span><span class="val">—</span></li>
+                    <li><span class="key">Bathroom</span><span class="val">—</span></li>
+                  </>
+                )
+            }
           </ul>
         </div>
       </div>
 
       <aside class="booking-card" data-animate>
         <div class="booking-card__img-wrap">
-          {cardImgSrc
-            ? <img src={cardImgSrc} alt={roomName} loading="lazy" />
-            : <div class="booking-card__img" style={`background-color: ${roomColor};`}></div>
+          {heroImgUrl
+            ? <img src={heroImgUrl} alt={room?.imageAlt ?? roomName} loading="lazy" />
+            : <div class="booking-card__img" style={`background-color: ${wf.color};`}></div>
           }
         </div>
         <div class="booking-card__body">
@@ -182,18 +174,15 @@ const galleryPlaceholders = [
   <!-- ===== Gallery ===== -->
   <section class="gallery" aria-label={`${roomName} gallery`}>
     <div class="gallery__grid">
-      {galleryImages.length > 0
-        ? galleryImages.map((img: any, i: number) => (
-            <div class="gallery__img" style={`background-image: url('${urlFor(img).width(900).height(675).auto('format').url()}')`} role="img" aria-label={img.alt ?? roomName}>
-              {img.caption && <span class="gallery__caption">{img.caption}</span>}
+      {galleryItems.map((img) => (
+        img.url
+          ? <div class="gallery__img" style={`background-image: url('${img.url}'); background-size: cover; background-position: center;`} role="img" aria-label={img.alt ?? roomName}>
+              {img.alt && <span class="gallery__caption">{img.alt}</span>}
             </div>
-          ))
-        : galleryPlaceholders.map(ph => (
-            <div class="gallery__img" style={`background-color: ${ph.color};`} role="img">
-              <span class="gallery__caption">{ph.caption}</span>
+          : <div class="gallery__img" style={`background-color: ${(img as any).color ?? '#C8B89E'};`} role="img" aria-label={img.alt ?? roomName}>
+              {img.alt && <span class="gallery__caption">{img.alt}</span>}
             </div>
-          ))
-      }
+      ))}
     </div>
   </section>
 
@@ -212,7 +201,7 @@ const galleryPlaceholders = [
       </div>
       <div class="amenity">
         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22 H29"/><path d="M3 26 H29"/><path d="M6 22 Q16 8 26 22"/></svg>
-        <span class="amenity__label">{wf.balcony !== 'None' ? wf.balcony : 'Mountain Terrace'}</span>
+        <span class="amenity__label">Mountain Terrace</span>
       </div>
       <div class="amenity">
         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="10" r="4"/><path d="M22 14 V28"/><path d="M14 28 H30"/><path d="M4 18 H12 V28 H4 Z"/></svg>
@@ -258,32 +247,25 @@ const galleryPlaceholders = [
     </div>
 
     <div class="adjacent__grid" data-animate>
-      {otherRooms.map((r: any) => {
-        const rSlug  = r.slug?.current ?? r.slug ?? '';
+      {others.map((r) => {
+        const rSlug  = r.slug?.current ?? '';
         const rWf    = wireframeData[rSlug] ?? wireframeData.olivo;
-        const rName  = (r.name ? loc(r.name, lang) : null) ?? rWf.name;
-        const rType  = (r.tagline ? loc(r.tagline, lang) : null) ?? rWf.type;
-        const rFeat  = (r.bedConfig ? loc(r.bedConfig, lang) : null) ?? rWf.body[0].substring(0, 80) + '…';
-        const rPrice = r.priceFrom ?? rWf.price;
-        const rColor = r.swatchColor ?? rWf.color;
-        const rImg   = r.images?.[0]
-          ? urlFor(r.images[0]).width(480).height(640).auto('format').url()
-          : null;
+        const rColor = swatchColors[rSlug] ?? '#9A8A74';
         return (
           <a href={`${p}/stay/${rSlug}`} class="room-card">
             <div class="room-card__img-wrap">
-              {rImg
-                ? <img src={rImg} alt={rName} loading="lazy" />
+              {r.imageUrl
+                ? <img src={r.imageUrl} alt={r.imageAlt ?? r.name ?? rSlug} loading="lazy" />
                 : <div class="room-card__img" style={`background-color: ${rColor};`}></div>
               }
             </div>
             <div class="room-card__body">
-              <p class="room-card__type">{rType}</p>
-              <h3 class="room-card__name">{rName}</h3>
-              <p class="room-card__feature">{rFeat}</p>
+              <p class="room-card__type">{r.subtitle ?? rWf.subtitle}</p>
+              <h3 class="room-card__name">{r.name ?? rWf.name}</h3>
+              <p class="room-card__feature">{r.tagline ?? rWf.tagline}</p>
               <div class="room-card__divider"></div>
               <div class="room-card__row">
-                <p class="room-card__price"><strong>€{rPrice}</strong><span class="per">/ night</span></p>
+                <p class="room-card__price"><strong>€{r.pricePerNight ?? rWf.price}</strong><span class="per">/ night</span></p>
                 <span class="room-card__cta">View room</span>
               </div>
             </div>
@@ -350,8 +332,6 @@ const galleryPlaceholders = [
 /* ===== Intro ===== */
 .intro { background: var(--cream); padding: 120px 40px; }
 .intro__grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.45fr 1fr; gap: 120px; align-items: start; }
-.intro__left h2 { font-family: var(--font-serif); font-size: 44px; font-weight: 300; margin-bottom: 36px; max-width: 520px; line-height: 1.1; }
-.intro__left h2 .italic { display: block; color: var(--stone-mid); }
 .intro__body { font-size: 16px; line-height: 1.85; color: var(--stone-dark); max-width: 520px; text-wrap: pretty; }
 .intro__body p + p { margin-top: 18px; }
 .intro__body .dropcap::first-letter { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 72px; line-height: 0.85; float: left; padding: 6px 14px 0 0; color: var(--terra); }
