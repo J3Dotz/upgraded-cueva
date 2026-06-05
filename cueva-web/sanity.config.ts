@@ -15,6 +15,7 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
+            // ── Singletons ────────────────────────────────────────────────────
             S.listItem()
               .title('Site Settings')
               .id('siteSettings')
@@ -23,7 +24,32 @@ export default defineConfig({
                   .schemaType('siteSettings')
                   .documentId('siteSettings')
               ),
+            S.listItem()
+              .title('Home Page')
+              .id('homepage')
+              .child(
+                S.document()
+                  .schemaType('homepage')
+                  .documentId('homepage')
+              ),
+            S.listItem()
+              .title('Location Page')
+              .id('locationPage')
+              .child(
+                S.document()
+                  .schemaType('locationPage')
+                  .documentId('locationPage')
+              ),
+            S.listItem()
+              .title('Book Page')
+              .id('bookPage')
+              .child(
+                S.document()
+                  .schemaType('bookPage')
+                  .documentId('bookPage')
+              ),
             S.divider(),
+            // ── Content collections ───────────────────────────────────────────
             S.documentTypeListItem('room').title('Rooms'),
             S.documentTypeListItem('experience').title('Experiences'),
             S.documentTypeListItem('journalPost').title('Journal Posts'),

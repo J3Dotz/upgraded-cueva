@@ -8,20 +8,14 @@ export const journalPost = defineType({
     defineField({
       name: 'title',
       title: 'Title',
-      type: 'localeString',
+      type: 'string',
       validation: (R) => R.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: { source: 'title.en', maxLength: 96 },
-      validation: (R) => R.required(),
-    }),
-    defineField({
-      name: 'publishedAt',
-      title: 'Published at',
-      type: 'datetime',
+      options: { source: 'title', maxLength: 96 },
       validation: (R) => R.required(),
     }),
     defineField({
@@ -30,10 +24,10 @@ export const journalPost = defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Land & Season', value: 'land-season' },
-          { title: 'Food & Craft', value: 'food-craft' },
-          { title: 'Stories', value: 'stories' },
-          { title: 'Guide', value: 'guide' },
+          { title: 'Property',           value: 'Property'           },
+          { title: 'Local Area',         value: 'Local Area'         },
+          { title: 'Seasonal',           value: 'Seasonal'           },
+          { title: 'Behind the Scenes',  value: 'Behind the Scenes'  },
         ],
         layout: 'radio',
       },
@@ -41,24 +35,26 @@ export const journalPost = defineType({
     defineField({
       name: 'excerpt',
       title: 'Excerpt',
-      type: 'localeText',
+      description: 'Two to three sentence summary shown on listing cards.',
+      type: 'text',
+      rows: 4,
     }),
     defineField({
       name: 'body',
       title: 'Body',
-      type: 'localeBlock',
-    }),
-    defineField({
-      name: 'coverImage',
-      title: 'Cover image',
-      type: 'image',
-      options: { hotspot: true },
-      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
-    }),
-    defineField({
-      name: 'readingMinutes',
-      title: 'Reading time (minutes)',
-      type: 'number',
+      description: 'Full article content.',
+      type: 'array',
+      of: [
+        { type: 'block' },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            { name: 'alt',     title: 'Alt text', type: 'string' },
+            { name: 'caption', title: 'Caption',  type: 'string' },
+          ],
+        },
+      ],
     }),
     defineField({
       name: 'author',
@@ -66,18 +62,70 @@ export const journalPost = defineType({
       type: 'string',
       initialValue: 'La Cueva de Miravet',
     }),
+    defineField({
+      name: 'publishedAt',
+      title: 'Published at',
+      type: 'datetime',
+      validation: (R) => R.required(),
+    }),
+    defineField({
+      name: 'readingMinutes',
+      title: 'Reading time (minutes)',
+      type: 'number',
+    }),
+    defineField({
+      name: 'featuredImage',
+      title: 'Featured image',
+      description: 'Cover image shown on listing cards and the article hero.',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [
+        { name: 'alt', title: 'Alt text', type: 'string' },
+      ],
+    }),
+    defineField({
+      name: 'featured',
+      title: 'Featured (hero on journal index)',
+      description: 'If true, this post is shown as the large hero article at the top of the Journal page. Only one should be marked featured.',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'locale',
+      title: 'Language',
+      description: 'Create separate documents for EN and ES content.',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'English', value: 'en' },
+          { title: 'Español', value: 'es' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'en',
+      validation: (R) => R.required(),
+    }),
   ],
+
   preview: {
     select: {
-      title: 'title.en',
+      title: 'title',
       subtitle: 'publishedAt',
-      media: 'coverImage',
+      media: 'featuredImage',
+      locale: 'locale',
     },
-    prepare({ title, subtitle, media }) {
-      const date = subtitle ? new Date(subtitle).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-      return { title, subtitle: date, media };
+    prepare({ title, subtitle, media, locale }) {
+      const date = subtitle
+        ? new Date(subtitle).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '';
+      return {
+        title: title ? `${title} (${locale ?? 'en'})` : 'Untitled',
+        subtitle: date,
+        media,
+      };
     },
   },
+
   orderings: [
     {
       title: 'Published date, newest first',

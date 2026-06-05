@@ -5,9 +5,7 @@ import { room } from './room';
 import { experience } from './experience';
 import { journalPost } from './journalPost';
 import { siteSettings } from './siteSettings';
-import { homePage } from './homePage';
-import { stayPage } from './stayPage';
-import { experiencesPage } from './experiencesPage';
+import { homepage } from './homepage';
 import { locationPage } from './locationPage';
 import { bookPage } from './bookPage';
 
@@ -21,9 +19,7 @@ export const schemaTypes = [
   experience,
   journalPost,
   // Page singletons
-  homePage,
-  stayPage,
-  experiencesPage,
+  homepage,
   locationPage,
   bookPage,
   // Global settings
