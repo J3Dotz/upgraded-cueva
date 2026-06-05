@@ -2,21 +2,21 @@
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
 import { client } from '../../lib/sanity';
-import { roomsQuery } from '../../queries/rooms';
-import { journalPostsQuery } from '../../queries/journal';
-import { loc, formatDate, prefix } from '../../i18n/utils';
+import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
+import type { Homepage, RoomListItem } from '../../types/sanity';
+import { prefix } from '../../i18n/utils';
 
 const lang = 'es';
 const p    = prefix(lang);
-const [rooms, posts] = await Promise.all([
-  client.fetch(roomsQuery),
-  client.fetch(journalPostsQuery),
+const [homepage, rooms] = await Promise.all([
+  client.fetch<Homepage>(HOMEPAGE_QUERY),
+  client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
 ]);
 
-const wireframeRooms = [
-  { slug: 'olivo',    name: 'Olivo',    type: 'Suite Olivo',   color: '#5C4838', price: 420 },
-  { slug: 'lavanda',  name: 'Lavanda',  type: 'Suite Lavanda', color: '#8FA59A', price: 380 },
-  { slug: 'almendro', name: 'Almendro', type: 'Suite Almendro',color: '#6F8366', price: 290 },
+const wireframeRooms: RoomListItem[] = [
+  { _id: 'wf-1', slug: { current: 'olivo'    }, name: 'Olivo',    subtitle: 'Suite Olivo',    tagline: 'Excavado en la roca natural. 16°C constantes.', pricePerNight: 420, imageUrl: null, imageAlt: null },
+  { _id: 'wf-2', slug: { current: 'lavanda'  }, name: 'Lavanda',  subtitle: 'Suite Lavanda',  tagline: 'Terraza privada con vistas al mar y bañera exterior.', pricePerNight: 380, imageUrl: null, imageAlt: null },
+  { _id: 'wf-3', slug: { current: 'almendro' }, name: 'Almendro', subtitle: 'Suite Almendro', tagline: 'Abre directamente al jardín de hierbas amurallado.', pricePerNight: 290, imageUrl: null, imageAlt: null },
 ];
 ---
 
@@ -128,23 +128,24 @@ const wireframeRooms = [
       <p class="body-sm">Cada habitación abre hacia algo — una terraza, una vista, una calidad particular del silencio.</p>
     </div>
     <div class="rooms__grid" data-stagger>
-      {(rooms.length > 0 ? rooms.slice(0, 3) : wireframeRooms).map((r: any) => {
-        const name  = r.name ? loc(r.name, lang) : r.name;
-        const type  = r.suiteType ? loc(r.suiteType, lang) : r.type;
-        const price = r.priceFrom ?? r.price;
-        const color = r.swatchColor ?? r.color;
-        const slug  = r.slug?.current ?? r.slug;
+      {(rooms.length > 0 ? rooms.slice(0, 3) : wireframeRooms).map((r) => {
+        const swatches: Record<string,string> = { olivo:'#5C4838', lavanda:'#8FA59A', laurel:'#B8A48A', tomillo:'#7E6E58', almendro:'#6F8366', roble:'#9A8A74', hinojo:'#4A3F35' };
+        const slug  = r.slug?.current ?? '';
+        const color = swatches[slug] ?? '#9A8A74';
         return (
           <article class="room-card">
             <a href={`${p}/stay/${slug}`} class="room-card__img-wrap">
-              <div class="room-card__img" style={`background-color: ${color};`}></div>
+              {r.imageUrl
+                ? <img src={r.imageUrl} alt={r.imageAlt ?? r.name ?? slug} loading="lazy" class="room-card__img-photo" />
+                : <div class="room-card__img" style={`background-color: ${color};`}></div>
+              }
             </a>
             <div class="room-card__body">
-              <p class="room-card__type">{type}</p>
-              <h3 class="room-card__name">{name}</h3>
+              <p class="room-card__type">{r.subtitle ?? ''}</p>
+              <h3 class="room-card__name">{r.name ?? slug}</h3>
               <div class="room-card__divider"></div>
               <div class="room-card__row">
-                <p class="room-card__price">Desde <strong>€{price}</strong><span class="per">/ noche</span></p>
+                <p class="room-card__price">Desde <strong>€{r.pricePerNight ?? '—'}</strong><span class="per">/ noche</span></p>
                 <a href={`${p}/stay/${slug}`} class="room-card__cta">Ver habitación</a>
               </div>
             </div>

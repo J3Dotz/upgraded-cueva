@@ -1,9 +1,15 @@
 ---
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
+import { client } from '../../lib/sanity';
+import { ALL_EXPERIENCES_QUERY } from '../../lib/sanity/queries';
+import type { ExperienceListItem } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
-const lang = 'es';
-const p    = prefix(lang);
+
+const lang        = 'es';
+const p           = prefix(lang);
+const experiences = await client.fetch<ExperienceListItem[]>(ALL_EXPERIENCES_QUERY, { locale: lang });
+// Sanity data is available but page content remains as Spanish fallback until editors add ES documents
 ---
 <Base title="Experiencias — La Cueva de Miravet" description="Lo que haces aquí. Un pequeño conjunto de experiencias tranquilas en La Cueva de Miravet — cueva, valle, montaña y mesa." activePage="experiences" lang={lang}>
 

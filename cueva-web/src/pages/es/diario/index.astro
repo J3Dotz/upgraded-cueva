@@ -1,15 +1,16 @@
 ---
 export const prerender = true;
 import Base from '../../../layouts/Base.astro';
-import { client, urlFor } from '../../../lib/sanity';
-import { journalPostsQuery } from '../../../queries/journal';
-import { loc, formatDate, useTranslations } from '../../../i18n/utils';
+import { client } from '../../../lib/sanity';
+import { JOURNAL_POSTS_QUERY } from '../../../lib/sanity/queries';
+import type { JournalPostListItem } from '../../../types/sanity';
+import { formatDate, useTranslations } from '../../../i18n/utils';
 
 const lang  = 'es';
 const t     = useTranslations(lang);
-const posts = await client.fetch(journalPostsQuery);
-const featured = posts[0];
-const archive  = posts.slice(1);
+const posts = await client.fetch<JournalPostListItem[]>(JOURNAL_POSTS_QUERY, { locale: lang });
+const featured = posts.find(p => p.featured) ?? posts[0] ?? null;
+const archive  = posts.filter(p => p !== featured);
 ---
 
 <Base
@@ -20,50 +21,40 @@ const archive  = posts.slice(1);
   lang={lang}
 >
 
-  {featured && (() => {
-    const imgSrc = featured.coverImage
-      ? urlFor(featured.coverImage).width(1200).height(700).auto('format').url()
-      : null;
-    return (
-      <section class="featured">
-        {imgSrc && (
-          <div class="featured__img-wrap">
-            <img src={imgSrc} alt={featured.coverImage?.alt ?? loc(featured.title, lang)} loading="eager" />
-          </div>
-        )}
-        <div class="featured__body">
-          <p class="featured__label">{t('journal.hero.title')}</p>
-          <h1 class="featured__title">{loc(featured.title, lang)}</h1>
-          {featured.excerpt && <p class="featured__excerpt">{loc(featured.excerpt, lang)}</p>}
-          <a href={`/es/diario/${featured.slug.current}`} class="terra-link">{t('journal.read')}</a>
+  {featured && (
+    <section class="featured">
+      {featured.featuredImageUrl && (
+        <div class="featured__img-wrap">
+          <img src={featured.featuredImageUrl} alt={featured.title ?? ''} loading="eager" />
         </div>
-      </section>
-    );
-  })()}
+      )}
+      <div class="featured__body">
+        <p class="featured__label">{t('journal.hero.title')}</p>
+        <h1 class="featured__title">{featured.title}</h1>
+        {featured.excerpt && <p class="featured__excerpt">{featured.excerpt}</p>}
+        <a href={`/es/diario/${featured.slug.current}`} class="terra-link">{t('journal.read')}</a>
+      </div>
+    </section>
+  )}
 
   {archive.length > 0 && (
     <section class="archive">
       <div class="archive__inner">
         <div class="archive__grid">
-          {archive.map((post: any) => {
-            const img = post.coverImage
-              ? urlFor(post.coverImage).width(640).height(420).auto('format').url()
-              : null;
-            return (
+          {archive.map((post) => (
               <article class="article-card" data-animate>
-                {img && (
+                {post.featuredImageUrl && (
                   <a href={`/es/diario/${post.slug.current}`} class="article-card__img">
-                    <img src={img} alt={loc(post.title, lang)} loading="lazy" />
+                    <img src={post.featuredImageUrl} alt={post.title ?? ''} loading="lazy" />
                   </a>
                 )}
                 <div class="article-card__body">
-                  <h3><a href={`/es/diario/${post.slug.current}`}>{loc(post.title, lang)}</a></h3>
+                  <h3><a href={`/es/diario/${post.slug.current}`}>{post.title}</a></h3>
                   <span class="article-card__date">{formatDate(post.publishedAt, lang)}</span>
                   <a href={`/es/diario/${post.slug.current}`} class="terra-link">{t('journal.read')}</a>
                 </div>
               </article>
-            );
-          })}
+            ))}
         </div>
       </div>
     </section>

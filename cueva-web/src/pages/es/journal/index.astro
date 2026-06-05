@@ -1,15 +1,16 @@
 ---
 export const prerender = true;
 import Base from '../../../layouts/Base.astro';
-import { client, urlFor } from '../../../lib/sanity';
-import { journalPostsQuery } from '../../../queries/journal';
-import { loc, formatDate, prefix } from '../../../i18n/utils';
+import { client } from '../../../lib/sanity';
+import { JOURNAL_POSTS_QUERY } from '../../../lib/sanity/queries';
+import type { JournalPostListItem } from '../../../types/sanity';
+import { formatDate, prefix } from '../../../i18n/utils';
 
 const lang  = 'es';
 const p     = prefix(lang);
-const posts = await client.fetch(journalPostsQuery);
-const featured = posts[0] ?? null;
-const archive  = posts.slice(1);
+const posts = await client.fetch<JournalPostListItem[]>(JOURNAL_POSTS_QUERY, { locale: lang });
+const featured = posts.find(post => post.featured) ?? posts[0] ?? null;
+const archive  = posts.filter(post => post !== featured);
 
 const placeholders = [
   { cat: 'Propiedad',           title: 'La Cueva al amanecer: cómo es la montaña antes de que se despierte nadie',     excerpt: 'La hora antes de que el sol asome por la cresta, cuando el valle se vuelve del color del pan sin hornear.', date: 'Mayo 2026',        read: '8 min', color: '#7C5E3F' },
@@ -41,11 +42,11 @@ const placeholders = [
     <div class="featured__inner">
       {featured ? (
         <>
-          <div class="featured__img" style={featured.coverImage ? `background-image: url(${urlFor(featured.coverImage).width(900).height(1000).auto('format').url()})` : ''} data-animate></div>
+          <div class="featured__img" style={featured.featuredImageUrl ? `background-image: url('${featured.featuredImageUrl}'); background-size: cover; background-position: center;` : ''} data-animate></div>
           <div class="featured__body" data-animate>
             <div class="featured__tag"><span class="rule"></span><span>{featured.category ?? 'Propiedad'} · Destacado</span></div>
-            <h2 class="featured__title">{loc(featured.title, lang)}</h2>
-            {featured.excerpt && <p class="featured__excerpt">{loc(featured.excerpt, lang)}</p>}
+            <h2 class="featured__title">{featured.title}</h2>
+            {featured.excerpt && <p class="featured__excerpt">{featured.excerpt}</p>}
             <div class="featured__byline"><span class="avatar" aria-hidden="true"></span><span class="who">Por {featured.author ?? 'Javier'}</span><span class="sep">·</span><span class="when">{formatDate(featured.publishedAt, lang)}</span></div>
             <a href={`${p}/journal/${featured.slug.current}`} class="terra-link">Leer artículo</a>
           </div>
@@ -81,15 +82,12 @@ const placeholders = [
       </div>
     </nav>
     <div class="grid" data-stagger>
-      {archive.length > 0 ? archive.map((post: any) => {
-        const imgSrc = post.coverImage ? urlFor(post.coverImage).width(640).height(430).auto('format').url() : null;
-        return (
+      {archive.length > 0 ? archive.map((post) => (
           <a href={`${p}/journal/${post.slug.current}`} class="article">
-            <div class="article__img-wrap">{imgSrc ? <img src={imgSrc} alt={loc(post.title, lang)} loading="lazy" /> : <div class="article__img" style="background-color:#7C5E3F;"></div>}</div>
-            <div class="article__body"><span class="article__cat">{post.category}</span><h3 class="article__title">{loc(post.title, lang)}</h3>{post.excerpt && <p class="article__excerpt">{loc(post.excerpt, lang)}</p>}<div class="article__meta"><span class="date">{formatDate(post.publishedAt, lang)}</span>{post.readingMinutes && <span class="read">{post.readingMinutes} min</span>}</div></div>
+            <div class="article__img-wrap">{post.featuredImageUrl ? <img src={post.featuredImageUrl} alt={post.title ?? ''} loading="lazy" /> : <div class="article__img" style="background-color:#7C5E3F;"></div>}</div>
+            <div class="article__body"><span class="article__cat">{post.category}</span><h3 class="article__title">{post.title}</h3>{post.excerpt && <p class="article__excerpt">{post.excerpt}</p>}<div class="article__meta"><span class="date">{formatDate(post.publishedAt, lang)}</span>{post.readingMinutes && <span class="read">{post.readingMinutes} min</span>}</div></div>
           </a>
-        );
-      }) : placeholders.map(a => (
+        )) : placeholders.map(a => (
         <article class="article">
           <div class="article__img-wrap"><div class="article__img" style={`background-color: ${a.color};`}></div></div>
           <div class="article__body"><span class="article__cat">{a.cat}</span><h3 class="article__title">{a.title}</h3><p class="article__excerpt">{a.excerpt}</p><div class="article__meta"><span class="date">{a.date}</span><span class="read">{a.read}</span></div></div>

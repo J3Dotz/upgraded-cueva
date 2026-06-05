@@ -2,14 +2,15 @@
 export const prerender = true;
 // Spanish room detail — mirrors /stay/[slug].astro with lang='es'
 import Base from '../../../layouts/Base.astro';
-import { client, urlFor } from '../../../lib/sanity';
-import { roomBySlugQuery, roomSlugsQuery, roomsQuery } from '../../../queries/rooms';
-import { loc, prefix } from '../../../i18n/utils';
+import { client } from '../../../lib/sanity';
+import { ROOM_BY_SLUG_QUERY, ROOM_SLUGS_QUERY, ALL_ROOMS_QUERY } from '../../../lib/sanity/queries';
+import type { Room, RoomListItem, RoomSlug } from '../../../types/sanity';
+import { prefix } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
-  const sanityRooms = await client.fetch<{ slug: string }[]>(roomSlugsQuery);
+  const sanityRooms = await client.fetch<RoomSlug[]>(ROOM_SLUGS_QUERY);
   const wireframeSlugs = ['olivo', 'lavanda', 'laurel', 'tomillo', 'almendro', 'roble', 'hinojo'];
-  const allSlugs = new Set([...sanityRooms.map((r: any) => r.slug), ...wireframeSlugs]);
+  const allSlugs = new Set([...sanityRooms.map((r) => r.slug), ...wireframeSlugs]);
   return Array.from(allSlugs).map(slug => ({ params: { slug } }));
 }
 
@@ -18,25 +19,25 @@ const lang = 'es';
 const p    = prefix(lang);
 
 const [room, allRooms] = await Promise.all([
-  client.fetch(roomBySlugQuery, { slug }),
-  client.fetch(roomsQuery),
+  client.fetch<Room | null>(ROOM_BY_SLUG_QUERY, { slug, locale: lang }),
+  client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
 ]);
 
-const wireframeData: Record<string, any> = {
-  olivo:    { type: 'Suite Olivo',     name: 'Olivo',    nameEn: 'The Olive Tree',  tagline: 'Excavado en la roca natural. 16°C constantes, iluminado por vela y tragaluz.',          price: 420, color: '#5C4838' },
-  lavanda:  { type: 'Suite Lavanda',   name: 'Lavanda',  nameEn: 'The Lavender',    tagline: 'Terraza privada con vistas al mar, cama de día y bañera exterior.',                     price: 380, color: '#8FA59A' },
-  laurel:   { type: 'Suite Laurel',    name: 'Laurel',   nameEn: 'The Bay Laurel',  tagline: 'Ventanas de suelo a techo orientadas al sur. Montañas y Mediterráneo.',              price: 340, color: '#B8A48A' },
-  tomillo:  { type: 'Suite Tomillo',   name: 'Tomillo',  nameEn: 'The Thyme',       tagline: 'Vigas originales del siglo XIX. Una cama doble bajo la ventana del pajar.',            price: 310, color: '#7E6E58' },
-  almendro: { type: 'Suite Almendro',  name: 'Almendro', nameEn: 'The Almond Tree', tagline: 'Cama de matrimonio, vigas expuestas, balcón privado y una luz que reencuadra el día.', price: 290, color: '#6F8366' },
-  roble:    { type: 'Suite Roble',     name: 'Roble',    nameEn: 'The Oak',         tagline: 'Madera cálida, terraza privada con hamacas y vistas al Mediterráneo.',                 price: 260, color: '#9A8A74' },
-  hinojo:   { type: 'Suite Hinojo',    name: 'Hinojo',   nameEn: 'The Fennel',      tagline: 'Techos abovedados de ladrillo, una ventana profunda. Fresco y silencioso todo el año.', price: 240, color: '#4A3F35' },
+const wireframeData: Record<string, { subtitle: string; name: string; nameEn: string; tagline: string; price: number; color: string }> = {
+  olivo:    { subtitle: 'Suite Olivo',     name: 'Olivo',    nameEn: 'The Olive Tree',  tagline: 'Excavado en la roca natural. 16°C constantes.',                    price: 420, color: '#5C4838' },
+  lavanda:  { subtitle: 'Suite Lavanda',   name: 'Lavanda',  nameEn: 'The Lavender',    tagline: 'Terraza privada con vistas al mar, cama de día y bañera exterior.', price: 380, color: '#8FA59A' },
+  laurel:   { subtitle: 'Suite Laurel',    name: 'Laurel',   nameEn: 'The Bay Laurel',  tagline: 'Ventanas de suelo a techo orientadas al sur.',                     price: 340, color: '#B8A48A' },
+  tomillo:  { subtitle: 'Suite Tomillo',   name: 'Tomillo',  nameEn: 'The Thyme',       tagline: 'Vigas originales del siglo XIX. Una cama doble bajo el pajar.',   price: 310, color: '#7E6E58' },
+  almendro: { subtitle: 'Suite Almendro',  name: 'Almendro', nameEn: 'The Almond Tree', tagline: 'Cama de matrimonio, vigas expuestas, balcón privado.',             price: 290, color: '#6F8366' },
+  roble:    { subtitle: 'Suite Roble',     name: 'Roble',    nameEn: 'The Oak',         tagline: 'Madera cálida, terraza privada con hamacas y vistas al Mediterráneo.', price: 260, color: '#9A8A74' },
+  hinojo:   { subtitle: 'Suite Hinojo',    name: 'Hinojo',   nameEn: 'The Fennel',      tagline: 'Techos abovedados. Fresco y silencioso todo el año.',              price: 240, color: '#4A3F35' },
 };
 
-const wf = wireframeData[slug as string] ?? wireframeData.almendro;
-const roomName  = (room?.name ? loc(room.name, lang) : null) ?? wf.name;
-const roomType  = (room?.tagline ? loc(room.tagline, lang) : null) ?? wf.type;
-const roomPrice = room?.priceFrom ?? wf.price;
-const roomColor = room?.swatchColor ?? wf.color;
+const wf        = wireframeData[slug as string] ?? wireframeData.almendro;
+const roomName  = room?.name       ?? wf.name;
+const roomType  = room?.subtitle   ?? wf.subtitle;
+const roomPrice = room?.pricePerNight ?? wf.price;
+const roomColor = wf.color;
 
 const heroImgSrc = room?.images?.[0]
   ? urlFor(room.images[0]).width(1600).height(900).auto('format').url()

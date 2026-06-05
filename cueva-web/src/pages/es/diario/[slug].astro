@@ -1,32 +1,31 @@
 ---
 export const prerender = true;
 import Base from '../../../layouts/Base.astro';
-import { client, urlFor } from '../../../lib/sanity';
-import { journalPostBySlugQuery, journalSlugQuery } from '../../../queries/journal';
-import { loc, formatDate, useTranslations } from '../../../i18n/utils';
+import { client } from '../../../lib/sanity';
+import { JOURNAL_POST_BY_SLUG_QUERY, JOURNAL_SLUGS_QUERY } from '../../../lib/sanity/queries';
+import type { JournalPost, JournalSlug, PortableTextBlock } from '../../../types/sanity';
+import { formatDate, useTranslations } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
-  const slugs = await client.fetch<{ slug: string }[]>(journalSlugQuery);
+  const slugs = await client.fetch<JournalSlug[]>(JOURNAL_SLUGS_QUERY);
   return slugs.map(({ slug }) => ({ params: { slug } }));
 }
 
 const { slug } = Astro.params;
 const lang     = 'es';
 const t        = useTranslations(lang);
-const post     = await client.fetch(journalPostBySlugQuery, { slug });
+const post     = await client.fetch<JournalPost | null>(JOURNAL_POST_BY_SLUG_QUERY, { slug, locale: lang });
 
 if (!post) return Astro.redirect('/es/diario');
 
-const title  = loc(post.title, lang);
-const heroSrc = post.coverImage
-  ? urlFor(post.coverImage).width(1600).height(800).auto('format').url()
-  : null;
+const title   = post.title   ?? '';
+const excerpt = post.excerpt ?? '';
 ---
 
 <Base title={title} onCream={true} activePage="journal" lang={lang}>
 
-  {heroSrc && (
-    <section class="art-hero" style={`background-image: url('${heroSrc}')`}>
+  {post.featuredImageUrl && (
+    <section class="art-hero" style={`background-image: url('${post.featuredImageUrl}')`}>
       <div class="art-hero__inner">
         <p class="breadcrumb"><a href="/es/diario">Diario</a> / {title}</p>
         <h1 class="art-hero__title">{title}</h1>
@@ -40,13 +39,24 @@ const heroSrc = post.coverImage
         <span>{formatDate(post.publishedAt, lang)}</span>
         {post.readingMinutes && <span>{post.readingMinutes} {t('journal.min')}</span>}
       </div>
-      {post.excerpt && <p class="art-intro__lede">{loc(post.excerpt, lang)}</p>}
+      {excerpt && <p class="art-intro__lede">{excerpt}</p>}
     </div>
   </section>
 
+  <!-- TODO: replace with @portabletext/astro for full mark/list/heading support -->
   <section class="art-body">
     <div class="art-body__inner">
-      <!-- Render locArr(post.body, lang) with @portabletext/astro -->
+      {post.body?.map((block: PortableTextBlock) => {
+        const b = block as any;
+        if (b._type === 'block') {
+          const text = (b.children ?? []).map((c: any) => c.text ?? '').join('');
+          return text ? <p>{text}</p> : null;
+        }
+        if (b._type === 'image' && b.asset?.url) {
+          return <figure><img src={b.asset.url} alt={b.alt ?? ''} loading="lazy" /></figure>;
+        }
+        return null;
+      })}
     </div>
   </section>
 </Base>
@@ -64,6 +74,9 @@ const heroSrc = post.coverImage
 .art-intro__lede { font-family: var(--font-serif); font-size: 22px; font-weight: 300; line-height: 1.5; }
 .art-body { padding: 60px; }
 .art-body__inner { max-width: 720px; margin: 0 auto; font-size: 16px; line-height: 1.8; }
+.art-body__inner p + p { margin-top: 1.5em; }
+.art-body__inner figure { margin: 2em 0; }
+.art-body__inner figure img { width: 100%; height: auto; }
 @media (max-width: 768px) {
   .art-hero__inner { padding: 0 24px 40px; }
   .art-hero__title { font-size: 36px; }

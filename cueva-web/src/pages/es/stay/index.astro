@@ -2,34 +2,26 @@
 export const prerender = true;
 import Base from '../../../layouts/Base.astro';
 import { client } from '../../../lib/sanity';
-import { roomsQuery } from '../../../queries/rooms';
-import { loc, prefix } from '../../../i18n/utils';
+import { ALL_ROOMS_QUERY } from '../../../lib/sanity/queries';
+import type { RoomListItem } from '../../../types/sanity';
+import { prefix } from '../../../i18n/utils';
 
 const lang  = 'es';
 const p     = prefix(lang);
-const rooms = await client.fetch(roomsQuery);
+const rooms = await client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang });
 
-const wireframe = [
-  { slug: 'olivo',    type: 'Suite Olivo',     name: 'Olivo',    feature: 'Excavado en la roca natural. 16°C constantes, iluminado por vela y tragaluz.',                   price: 420, color: '#5C4838' },
-  { slug: 'lavanda',  type: 'Suite Lavanda',   name: 'Lavanda',  feature: 'Terraza privada con vistas al mar, cama de día y bañera exterior.',                              price: 380, color: '#8FA59A' },
-  { slug: 'laurel',   type: 'Suite Laurel',    name: 'Laurel',   feature: 'Ventanas de suelo a techo orientadas al sur. Montañas y Mediterráneo.',                          price: 340, color: '#B8A48A' },
-  { slug: 'tomillo',  type: 'Suite Tomillo',   name: 'Tomillo',  feature: 'Vigas originales del siglo XIX. Una cama doble bajo la ventana del pajar.',                     price: 310, color: '#7E6E58' },
-  { slug: 'almendro', type: 'Suite Almendro',  name: 'Almendro', feature: 'Abre directamente al jardín de hierbas amurallado. Ducha exterior entre el romero.',            price: 290, color: '#6F8366' },
-  { slug: 'roble',    type: 'Suite Roble',     name: 'Roble',    feature: 'Paredes de piedra caliza y una ventana arqueada sobre el valle.',                               price: 260, color: '#9A8A74' },
-  { slug: 'hinojo',   type: 'Suite Hinojo',    name: 'Hinojo',   feature: 'Techos abovedados de ladrillo, una sola ventana profunda. Fresco y silencioso todo el año.',    price: 240, color: '#4A3F35' },
+const wireframe: RoomListItem[] = [
+  { _id:'wf-1', slug:{current:'olivo'   }, name:'Olivo',    subtitle:'Suite Olivo',    tagline:'Excavado en la roca natural. 16°C constantes.',                    pricePerNight:420, imageUrl:null, imageAlt:null },
+  { _id:'wf-2', slug:{current:'lavanda' }, name:'Lavanda',  subtitle:'Suite Lavanda',  tagline:'Terraza privada con vistas al mar, cama de día y bañera exterior.',pricePerNight:380, imageUrl:null, imageAlt:null },
+  { _id:'wf-3', slug:{current:'laurel'  }, name:'Laurel',   subtitle:'Suite Laurel',   tagline:'Ventanas de suelo a techo orientadas al sur.',                     pricePerNight:340, imageUrl:null, imageAlt:null },
+  { _id:'wf-4', slug:{current:'tomillo' }, name:'Tomillo',  subtitle:'Suite Tomillo',  tagline:'Vigas originales del siglo XIX. Una cama doble bajo el pajar.',   pricePerNight:310, imageUrl:null, imageAlt:null },
+  { _id:'wf-5', slug:{current:'almendro'}, name:'Almendro', subtitle:'Suite Almendro', tagline:'Abre directamente al jardín de hierbas amurallado.',               pricePerNight:290, imageUrl:null, imageAlt:null },
+  { _id:'wf-6', slug:{current:'roble'   }, name:'Roble',    subtitle:'Suite Roble',    tagline:'Paredes de piedra caliza y ventana arqueada sobre el valle.',       pricePerNight:260, imageUrl:null, imageAlt:null },
+  { _id:'wf-7', slug:{current:'hinojo'  }, name:'Hinojo',   subtitle:'Suite Hinojo',   tagline:'Techos abovedados. Fresco y silencioso todo el año.',              pricePerNight:240, imageUrl:null, imageAlt:null },
 ];
 
-const displayRooms = wireframe.map((wf, i) => {
-  const s = rooms.find((r: any) => r.slug?.current === wf.slug) ?? rooms[i];
-  return {
-    slug:    s?.slug?.current ?? wf.slug,
-    type:    (s?.suiteType ? loc(s.suiteType, lang) : null) ?? wf.type,
-    name:    (s?.name      ? loc(s.name, lang)      : null) ?? wf.name,
-    feature: (s?.tagline   ? loc(s.tagline, lang)   : null) ?? wf.feature,
-    price:   s?.priceFrom ?? wf.price,
-    color:   s?.swatchColor ?? wf.color,
-  };
-});
+const displayRooms = rooms.length > 0 ? rooms : wireframe;
+const swatchColors: Record<string,string> = { olivo:'#5C4838', lavanda:'#8FA59A', laurel:'#B8A48A', tomillo:'#7E6E58', almendro:'#6F8366', roble:'#9A8A74', hinojo:'#4A3F35' };
 ---
 
 <Base
@@ -56,23 +48,30 @@ const displayRooms = wireframe.map((wf, i) => {
       <p class="meta">Precio por habitación y noche.<br/>El desayuno y la montaña están incluidos.</p>
     </div>
     <div class="rooms__grid" data-stagger>
-      {displayRooms.map((room) => (
-        <article class="room-card">
-          <a href={`${p}/stay/${room.slug}`} class="room-card__img-wrap">
-            <div class="room-card__img" style={`background-color: ${room.color};`}></div>
-          </a>
-          <div class="room-card__body">
-            <p class="room-card__type">{room.type}</p>
-            <h3 class="room-card__name">{room.name}</h3>
-            <p class="room-card__feature">{room.feature}</p>
-            <div class="room-card__divider"></div>
-            <div class="room-card__row">
-              <p class="room-card__price"><strong>€{room.price}</strong><span class="per">/ noche</span></p>
-              <a href={`${p}/stay/${room.slug}`} class="room-card__cta">Ver habitación</a>
+      {displayRooms.map((room) => {
+        const slug  = room.slug?.current ?? '';
+        const color = swatchColors[slug] ?? '#9A8A74';
+        return (
+          <article class="room-card">
+            <a href={`${p}/stay/${slug}`} class="room-card__img-wrap">
+              {room.imageUrl
+                ? <img src={room.imageUrl} alt={room.imageAlt ?? room.name ?? slug} loading="lazy" class="room-card__img-photo" />
+                : <div class="room-card__img" style={`background-color: ${color};`}></div>
+              }
+            </a>
+            <div class="room-card__body">
+              <p class="room-card__type">{room.subtitle ?? ''}</p>
+              <h3 class="room-card__name">{room.name ?? slug}</h3>
+              <p class="room-card__feature">{room.tagline ?? ''}</p>
+              <div class="room-card__divider"></div>
+              <div class="room-card__row">
+                <p class="room-card__price"><strong>€{room.pricePerNight ?? '—'}</strong><span class="per">/ noche</span></p>
+                <a href={`${p}/stay/${slug}`} class="room-card__cta">Ver habitación</a>
+              </div>
             </div>
-          </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
     </div>
   </section>
 
