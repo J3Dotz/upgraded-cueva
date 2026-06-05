@@ -1,10 +1,41 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import { client } from '../lib/sanity';
+import { ALL_EXPERIENCES_QUERY } from '../lib/sanity/queries';
+import type { ExperienceListItem } from '../types/sanity';
 import { prefix } from '../i18n/utils';
 
 const lang = 'en';
 const p    = prefix(lang);
+
+const experiences = await client.fetch<ExperienceListItem[]>(ALL_EXPERIENCES_QUERY, { locale: lang });
+
+const featured = experiences.find(e => e.featured) ?? experiences[0] ?? null;
+const others   = experiences.filter(e => e !== featured);
+
+// Fallback data shown while Sanity content is being populated
+const fallbackFeatured = {
+  title: 'Cave Exploration',
+  tagline: 'Guided access into the natural cave on the property grounds. It sits a short walk through the back garden, in its own pocket of the mountain. We go in small groups, by lantern, at the hour the light is kindest.',
+  duration: '90 min', groupSize: 'Up to 6', price: '€45 pp',
+  imageUrl: null, imageAlt: null, slug: { current: '' },
+};
+const fallbackOthers = [
+  { title: 'Wine & Olive Tasting', category: 'tasting',  tagline: 'Local producers from the valleys below Cabanes. Five wines, three oils, a long table.',       duration: '2 hrs',   price: '€55', imageUrl: null, imageAlt: null, slug: { current: '' } },
+  { title: 'Hiking Desert de les Palmes', category: 'outdoors', tagline: 'A guided walk into the natural park at our doorstep. Cork oaks, the old monastery ruins.', duration: '3 hrs',   price: '€35', imageUrl: null, imageAlt: null, slug: { current: '' } },
+  { title: 'Sunrise Yoga',          category: 'movement', tagline: 'A slow practice on the upper terrace as the sun comes up behind the mountains.',                  duration: '60 min',  price: '€25', imageUrl: null, imageAlt: null, slug: { current: '' } },
+  { title: 'Private Dining on the Terrace', category: 'table', tagline: 'A table set for you alone on the south terrace, candles low, four courses from our kitchen.',duration: '4 courses', price: '€95', imageUrl: null, imageAlt: null, slug: { current: '' } },
+];
+
+const displayFeatured = featured ?? fallbackFeatured;
+const displayOthers   = others.length > 0 ? others : fallbackOthers;
+
+// Background colours per category (used when image is absent)
+const catColors: Record<string, string> = {
+  signature: '#5C4838', tasting: '#7C5A3C', outdoors: '#4A5E45',
+  movement: '#8E7860', table: '#6B5544', bespoke: '#9A8A74', seasonal: '#B8A48A',
+};
 ---
 
 <Base
@@ -33,7 +64,10 @@ const p    = prefix(lang);
   <section class="featured">
     <div class="featured__inner">
       <div class="featured__img-wrap" data-animate>
-        <div class="featured__img" role="img" aria-label="The natural cave on the property grounds"></div>
+        {displayFeatured.imageUrl
+          ? <img src={displayFeatured.imageUrl} alt={displayFeatured.imageAlt ?? displayFeatured.title ?? ''} class="featured__img-photo" />
+          : <div class="featured__img" role="img" aria-label={displayFeatured.title ?? 'The signature experience'}></div>
+        }
       </div>
 
       <div class="featured__body" data-animate>
@@ -41,15 +75,13 @@ const p    = prefix(lang);
           <span class="rule"></span>
           <span>The signature experience</span>
         </div>
-        <h2>
-          Cave Exploration<span class="italic">&nbsp;— the original one.</span>
-        </h2>
-        <p class="desc">Guided access into the natural cave on the property grounds. It sits a short walk through the back garden, in its own pocket of the mountain. We go in small groups, by lantern, at the hour the light is kindest.</p>
+        <h2>{displayFeatured.title ?? 'Cave Exploration'}<span class="italic">&nbsp;— the original one.</span></h2>
+        <p class="desc">{displayFeatured.tagline ?? ''}</p>
 
         <ul class="featured__meta">
-          <li><span class="k">Duration</span><span class="v">90 min</span></li>
-          <li><span class="k">Group</span><span class="v">Up to 6</span></li>
-          <li><span class="k">From</span><span class="v">€45 pp</span></li>
+          {displayFeatured.duration  && <li><span class="k">Duration</span><span class="v">{displayFeatured.duration}</span></li>}
+          {displayFeatured.groupSize && <li><span class="k">Group</span><span class="v">{displayFeatured.groupSize}</span></li>}
+          {displayFeatured.price     && <li><span class="k">From</span><span class="v">{displayFeatured.price}</span></li>}
         </ul>
 
         <a href={`${p}/book`} class="terra-link">Enquire or book</a>
@@ -68,79 +100,31 @@ const p    = prefix(lang);
     </div>
 
     <div class="exp-grid" data-animate>
-
-      <article class="exp">
-        <div class="exp__img-wrap">
-          <span class="exp__tag">Tasting</span>
-          <div class="exp__img" style="background-color:#7C5A3C;" role="img" aria-label="Wine and olive tasting"></div>
-        </div>
-        <div class="exp__body">
-          <h3 class="exp__name">Wine &amp; Olive Tasting<span class="italic"> / Cata</span></h3>
-          <p class="exp__desc">Local producers from the valleys below Cabanes. Five wines, three oils, a long table, and the kind of conversation that makes the afternoon disappear.</p>
-          <div class="exp__meta">
-            <div class="exp__details">
-              <span><strong>2 hrs</strong>Duration</span>
-              <span><strong>€55</strong>Per guest</span>
+      {displayOthers.map((exp) => {
+        const color = catColors[(exp as any).category ?? ''] ?? '#8A7A65';
+        return (
+          <article class="exp">
+            <div class="exp__img-wrap">
+              <span class="exp__tag">{(exp as any).category ?? ''}</span>
+              {(exp as any).imageUrl
+                ? <img src={(exp as any).imageUrl} alt={(exp as any).imageAlt ?? exp.title ?? ''} class="exp__img-photo" />
+                : <div class="exp__img" style={`background-color:${color};`} role="img" aria-label={exp.title ?? ''}></div>
+              }
             </div>
-            <a href={`${p}/book`} class="exp__arrow">Book →</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="exp">
-        <div class="exp__img-wrap">
-          <span class="exp__tag">Outdoors</span>
-          <div class="exp__img" style="background-color:#4A5E45;" role="img" aria-label="Hiking the Desert de les Palmes"></div>
-        </div>
-        <div class="exp__body">
-          <h3 class="exp__name">Hiking Desert de les Palmes<span class="italic"> / Parque Natural</span></h3>
-          <p class="exp__desc">A guided walk into the natural park at our doorstep. Cork oaks, the old monastery ruins, and a route that ends at a viewpoint over the coast.</p>
-          <div class="exp__meta">
-            <div class="exp__details">
-              <span><strong>3 hrs</strong>Duration</span>
-              <span><strong>€35</strong>Per guest</span>
+            <div class="exp__body">
+              <h3 class="exp__name">{exp.title ?? ''}</h3>
+              <p class="exp__desc">{(exp as any).tagline ?? ''}</p>
+              <div class="exp__meta">
+                <div class="exp__details">
+                  {(exp as any).duration && <span><strong>{(exp as any).duration}</strong>Duration</span>}
+                  {(exp as any).price    && <span><strong>{(exp as any).price}</strong>Per guest</span>}
+                </div>
+                <a href={`${p}/book`} class="exp__arrow">Book →</a>
+              </div>
             </div>
-            <a href={`${p}/book`} class="exp__arrow">Book →</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="exp">
-        <div class="exp__img-wrap">
-          <span class="exp__tag">Movement</span>
-          <div class="exp__img" style="background-color:#8E7860;" role="img" aria-label="Sunrise yoga on the terrace"></div>
-        </div>
-        <div class="exp__body">
-          <h3 class="exp__name">Sunrise Yoga<span class="italic"> / Al amanecer</span></h3>
-          <p class="exp__desc">A slow practice on the upper terrace as the sun comes up behind the mountains. Open to all levels. Coffee and almond cake afterwards, no rush.</p>
-          <div class="exp__meta">
-            <div class="exp__details">
-              <span><strong>60 min</strong>Duration</span>
-              <span><strong>€25</strong>Per guest</span>
-            </div>
-            <a href={`${p}/book`} class="exp__arrow">Book →</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="exp">
-        <div class="exp__img-wrap">
-          <span class="exp__tag">Table</span>
-          <div class="exp__img" style="background-color:#6B5544;" role="img" aria-label="Private dining on the terrace"></div>
-        </div>
-        <div class="exp__body">
-          <h3 class="exp__name">Private Dining on the Terrace<span class="italic"> / A solas</span></h3>
-          <p class="exp__desc">A table set for you alone on the south terrace, candles low, four courses from our kitchen. Booked the day before, sourced the morning of.</p>
-          <div class="exp__meta">
-            <div class="exp__details">
-              <span><strong>4 courses</strong>Menu</span>
-              <span><strong>€95</strong>Per guest</span>
-            </div>
-            <a href={`${p}/book`} class="exp__arrow">Book →</a>
-          </div>
-        </div>
-      </article>
-
+          </article>
+        );
+      })}
     </div>
   </section>
 
@@ -158,6 +142,7 @@ const p    = prefix(lang);
       </p>
       <p class="bespoke__sub">Anniversaries, quiet retreats, a particular meal you remember from somewhere else, an introduction to a maker in the valley. Write to us a week before you come.</p>
       <div class="bespoke__cta-row">
+        <!-- TODO: wire to Sanity — field: siteSettings.email -->
         <a href="mailto:hola@lacuevademiravet.com" class="btn-terra">Tell us what you need</a>
         <span class="bespoke__or">or</span>
         <a href="mailto:hola@lacuevademiravet.com" class="bespoke__email">hola@lacuevademiravet.com</a>
@@ -224,6 +209,9 @@ const p    = prefix(lang);
   height: 78vh; min-height: 640px; max-height: 880px;
   background-color: #5C4838;
 }
+.featured__img-photo {
+  width: 100%; height: 100%; object-fit: cover;
+}
 .featured__img {
   width: 100%; height: 100%;
   background-image: var(--grain);
@@ -289,7 +277,6 @@ const p    = prefix(lang);
   font-size: 17px; color: var(--stone-mid);
   max-width: 320px; line-height: 1.5; padding-bottom: 6px;
 }
-
 .exp-grid {
   max-width: 1280px; margin: 0 auto;
   display: grid; grid-template-columns: 1fr 1fr; gap: 48px 56px;
@@ -299,6 +286,7 @@ const p    = prefix(lang);
   overflow: hidden; aspect-ratio: 5/3;
   position: relative; background-color: var(--stone-light);
 }
+.exp__img-photo { width: 100%; height: 100%; object-fit: cover; }
 .exp__img {
   width: 100%; height: 100%;
   background-image: var(--grain); background-blend-mode: multiply;
@@ -321,7 +309,6 @@ const p    = prefix(lang);
   color: var(--stone-dark); line-height: 1.15; margin-bottom: 10px;
   transition: color 0.2s ease;
 }
-.exp__name .italic { color: var(--stone-mid); font-size: 22px; margin-left: 6px; }
 .exp:hover .exp__name { color: var(--terra); }
 .exp__desc {
   font-size: 14px; color: var(--stone-mid); line-height: 1.7;

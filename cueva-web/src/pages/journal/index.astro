@@ -1,24 +1,25 @@
 ---
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
-import { client, urlFor } from '../../lib/sanity';
-import { journalPostsQuery } from '../../queries/journal';
-import { loc, formatDate } from '../../i18n/utils';
+import { client } from '../../lib/sanity';
+import { JOURNAL_POSTS_QUERY } from '../../lib/sanity/queries';
+import type { JournalPostListItem } from '../../types/sanity';
+import { formatDate } from '../../i18n/utils';
 
 const lang  = 'en';
-const posts = await client.fetch(journalPostsQuery);
+const posts = await client.fetch<JournalPostListItem[]>(JOURNAL_POSTS_QUERY, { locale: lang });
 
-const featured = posts[0] ?? null;
-const archive  = posts.slice(1);
+const featured = posts.find(p => p.featured) ?? posts[0] ?? null;
+const archive  = posts.filter(p => p !== featured);
 
-// Wireframe placeholder articles (shown when Sanity has no content)
+// Fallback articles shown while Sanity content is being populated
 const placeholderArticles = [
   { cat: 'Property',          title: 'La Cueva at dawn: what the mountain looks like before anyone else is awake',  excerpt: 'The hour before the sun comes over the ridge, when the valley turns the colour of unbaked bread.',       date: 'May 2026',      read: '8 min read',  color: '#7C5E3F' },
   { cat: 'Behind the Scenes', title: 'Why we chose solar: four years of off-grid decisions',                         excerpt: 'An honest accounting of what works, what doesn\'t, and what we\'d do differently.',                   date: 'April 2026',    read: '12 min read', color: '#4A5E45' },
   { cat: 'Local Area',        title: 'Desert de les Palmes: a walking guide from the property boundary',             excerpt: 'Three routes, all starting from the back gate. Cork oak, monastery ruins, a view at the end.',       date: 'March 2026',    read: '10 min read', color: '#8B9A7A' },
   { cat: 'Local Area',        title: 'Where to eat well in the Costa Azahar',                                        excerpt: 'Seven places we send guests, two we don\'t talk about, and one you should book before you arrive.',   date: 'February 2026', read: '9 min read',  color: '#A88766' },
   { cat: 'Property',          title: 'The restoration: what we kept, what we rebuilt, and why',                      excerpt: 'Two years of slow work, one beam at a time. Notes on what the old house wanted us to do.',           date: 'January 2026',  read: '15 min read', color: '#5C4838' },
-  { cat: 'Seasonal',          title: 'Arriving in autumn: the best time most guests overlook',                        excerpt: 'The light is longer, the crowds are gone, the kitchen has more to work with. A small case for October.', date: 'November 2025', read: '6 min read',  color: '#B8855B' },
+  { cat: 'Seasonal',          title: 'Arriving in autumn: the best time most guests overlook',                       excerpt: 'The light is longer, the crowds are gone, the kitchen has more to work with.',                       date: 'November 2025', read: '6 min read',  color: '#B8855B' },
 ];
 ---
 
@@ -43,7 +44,6 @@ const placeholderArticles = [
         <path d="M-20 220 Q 320 180 540 210 T 820 190"/>
       </svg>
     </div>
-
     <div class="hero__inner">
       <div class="hero__crumb" data-animate>
         <span class="dot"></span>
@@ -58,18 +58,23 @@ const placeholderArticles = [
   {featured ? (
     <section class="featured">
       <div class="featured__inner">
-        <div class="featured__img" role="img" style={featured.coverImage ? `background-image: url(${urlFor(featured.coverImage).width(900).height(1000).auto('format').url()})` : ''} data-animate></div>
-
+        <div
+          class="featured__img"
+          role="img"
+          aria-label={featured.title ?? 'Featured article'}
+          style={featured.featuredImageUrl ? `background-image: url('${featured.featuredImageUrl}'); background-size: cover; background-position: center;` : ''}
+          data-animate
+        ></div>
         <div class="featured__body" data-animate>
           <div class="featured__tag">
             <span class="rule"></span>
             <span>{featured.category ?? 'Property'} · Featured</span>
           </div>
-          <h2 class="featured__title">{loc(featured.title, lang)}</h2>
-          {featured.excerpt && <p class="featured__excerpt">{loc(featured.excerpt, lang)}</p>}
+          <h2 class="featured__title">{featured.title}</h2>
+          {featured.excerpt && <p class="featured__excerpt">{featured.excerpt}</p>}
           <div class="featured__byline">
             <span class="avatar" aria-hidden="true"></span>
-            <span class="who">By {featured.author ?? 'Javier'}</span>
+            <span class="who">By {featured.author ?? 'La Cueva de Miravet'}</span>
             <span class="sep">·</span>
             <span class="when">{formatDate(featured.publishedAt, lang)}</span>
             {featured.readingMinutes && <><span class="sep">·</span><span class="when">{featured.readingMinutes} min read</span></>}
@@ -108,7 +113,6 @@ const placeholderArticles = [
 
   <!-- ===== Archive ===== -->
   <section class="archive">
-
     <div class="archive__header" data-animate>
       <p class="archive__title">
         <span class="roman">From the archive.</span> Stories, seasons, and the things worth writing down.
@@ -130,30 +134,25 @@ const placeholderArticles = [
 
     <!-- Grid -->
     <div class="grid" data-animate>
-      {archive.length > 0 ? archive.map((post: any) => {
-        const imgSrc = post.coverImage
-          ? urlFor(post.coverImage).width(640).height(430).auto('format').url()
-          : null;
-        return (
-          <a href={`/journal/${post.slug.current}`} class="article">
-            <div class="article__img-wrap">
-              {imgSrc
-                ? <img src={imgSrc} alt={post.coverImage?.alt ?? loc(post.title, lang)} loading="lazy" />
-                : <div class="article__img" style="background-color: #7C5E3F;"></div>
-              }
+      {archive.length > 0 ? archive.map((post) => (
+        <a href={`/journal/${post.slug.current}`} class="article">
+          <div class="article__img-wrap">
+            {post.featuredImageUrl
+              ? <img src={post.featuredImageUrl} alt={post.title ?? ''} loading="lazy" />
+              : <div class="article__img" style="background-color: #7C5E3F;"></div>
+            }
+          </div>
+          <div class="article__body">
+            {post.category && <span class="article__cat">{post.category}</span>}
+            <h3 class="article__title">{post.title}</h3>
+            {post.excerpt && <p class="article__excerpt">{post.excerpt}</p>}
+            <div class="article__meta">
+              <span class="date">{formatDate(post.publishedAt, lang)}</span>
+              {post.readingMinutes && <span class="read">{post.readingMinutes} min read</span>}
             </div>
-            <div class="article__body">
-              {post.category && <span class="article__cat">{post.category}</span>}
-              <h3 class="article__title">{loc(post.title, lang)}</h3>
-              {post.excerpt && <p class="article__excerpt">{loc(post.excerpt, lang)}</p>}
-              <div class="article__meta">
-                <span class="date">{formatDate(post.publishedAt, lang)}</span>
-                {post.readingMinutes && <span class="read">{post.readingMinutes} min read</span>}
-              </div>
-            </div>
-          </a>
-        );
-      }) : placeholderArticles.map((a) => (
+          </div>
+        </a>
+      )) : placeholderArticles.map((a) => (
         <article class="article">
           <div class="article__img-wrap">
             <div class="article__img" style={`background-color: ${a.color};`}></div>
@@ -174,7 +173,6 @@ const placeholderArticles = [
     <div class="archive__more" data-animate>
       <a href="#" class="pill-btn">Load older entries</a>
     </div>
-
   </section>
 
 </Base>
@@ -294,7 +292,6 @@ const placeholderArticles = [
 .archive__title { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 32px; color: var(--stone-dark); line-height: 1.1; max-width: 480px; }
 .archive__count { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--stone-mid); padding-bottom: 6px; }
 .archive__count strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 18px; color: var(--stone-dark); text-transform: none; letter-spacing: 0; margin-right: 6px; }
-
 .filter { max-width: 1280px; margin: 0 auto 56px; display: flex; align-items: center; gap: 0; flex-wrap: wrap; padding-bottom: 22px; border-bottom: 1px solid var(--stone-light); }
 .filter__label { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--stone-mid); margin-right: 28px; display: inline-flex; align-items: center; gap: 12px; }
 .rule-sm { width: 20px; height: 1px; background: var(--stone-mid); display: inline-block; }
@@ -309,7 +306,6 @@ const placeholderArticles = [
 .filter__item.active { color: var(--terra); }
 .filter__item.active::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: -23px; height: 1px; background: var(--terra); }
 .filter__item + .filter__item::before { content: "·"; position: absolute; left: -3px; color: var(--stone-light); }
-
 .grid { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 64px 40px; }
 .article { display: flex; flex-direction: column; cursor: pointer; }
 .article__img-wrap { overflow: hidden; aspect-ratio: 3/2; background-color: var(--stone-light); position: relative; }
@@ -326,7 +322,6 @@ const placeholderArticles = [
 .article__meta { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--stone-light); display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--font-sans); font-size: 11px; color: var(--stone-mid); }
 .article__meta .date { font-style: italic; font-family: var(--font-serif); font-size: 14px; color: var(--stone-dark); }
 .article__meta .read { text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; }
-
 .archive__more { max-width: 1280px; margin: 88px auto 0; text-align: center; padding-top: 44px; border-top: 1px solid var(--stone-light); }
 .pill-btn {
   display: inline-block; border: 1px solid var(--terra); color: var(--terra);
@@ -361,7 +356,6 @@ const placeholderArticles = [
 </style>
 
 <script>
-// Filter UI (visual only — real filtering needs server/client routing)
 document.querySelectorAll('.filter__item').forEach(item => {
   item.addEventListener('click', () => {
     document.querySelectorAll('.filter__item').forEach(i => i.classList.remove('active'));
