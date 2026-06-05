@@ -79,6 +79,13 @@ export const room = defineType({
       group: 'copy',
     }),
     defineField({
+      name: 'introH2',
+      title: 'Intro heading (first part)',
+      description: 'Room-specific decorative headline on the detail page. e.g. "Rock, candlelight," — the phrase " and very little else." is appended automatically in the component.',
+      type: 'localeString',
+      group: 'copy',
+    }),
+    defineField({
       name: 'description',
       title: 'Room description',
       description: 'Two or three paragraphs for the room detail page. The first letter of the first paragraph gets a large drop-cap.',
