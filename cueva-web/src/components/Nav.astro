@@ -1,24 +1,30 @@
 ---
 import { useTranslations, prefix } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
+import type { SiteSettings } from '../types/sanity';
 
 interface Props {
   transparent?: boolean;
   onCream?: boolean;
   lang?: Lang;
   activePage?: string;
+  siteSettings?: SiteSettings | null;
 }
 
-const { transparent = true, onCream = false, lang = 'en', activePage } = Astro.props;
+const { transparent = true, onCream = false, lang = 'en', activePage, siteSettings } = Astro.props;
 const t = useTranslations(lang);
 const p = prefix(lang);
+
+const siteName  = siteSettings?.siteName  ?? 'La Cueva de Miravet';
+const ctaLabel  = siteSettings?.nav?.ctaLabel  ?? t('nav.book');
+const ctaHref   = siteSettings?.nav?.ctaHref   ?? `${p}/book`;
 ---
 
 <nav
   class:list={['nav', { 'nav--on-cream': onCream, 'nav--solid': !transparent }]}
   id="nav"
 >
-  <a href={`${p}/`} class="nav__logo">La Cueva de Miravet</a>
+  <a href={`${p}/`} class="nav__logo">{siteName}</a>
 
   <div class="nav__center">
     <a href={`${p}/stay`}        class:list={['nav__link', { active: activePage === 'stay'        }]}>{t('nav.stay')}</a>
@@ -28,7 +34,7 @@ const p = prefix(lang);
   </div>
 
   <div class="nav__right">
-    <a href={`${p}/book`} class="nav__book">{t('nav.book')}</a>
+    <a href={ctaHref} class="nav__book">{ctaLabel}</a>
     <div class="nav__lang">
       <a href="/"    class:list={['lang-btn', { active: lang === 'en' }]}>EN</a>
       <span class="divider">|</span>
@@ -45,8 +51,8 @@ const p = prefix(lang);
   <a href={`${p}/experiences`}>{t('nav.experiences')}</a>
   <a href={`${p}/location`}>{t('nav.location')}</a>
   <a href={`${p}/journal`}>{t('nav.journal')}</a>
-  <a href={`${p}/book`} class="nav__book" style="background: var(--terra); padding: 12px 28px;">
-    {t('nav.book')}
+  <a href={ctaHref} class="nav__book" style="background: var(--terra); padding: 12px 28px;">
+    {ctaLabel}
   </a>
 </div>
 

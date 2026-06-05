@@ -3,6 +3,9 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 import { type Lang } from '../i18n/ui';
+import { client } from '../lib/sanity';
+import { SITE_SETTINGS_QUERY } from '../lib/sanity/queries';
+import type { SiteSettings } from '../types/sanity';
 
 interface Props {
   title: string;
@@ -26,6 +29,7 @@ const {
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const siteSettings = await client.fetch<SiteSettings>(SITE_SETTINGS_QUERY);
 ---
 
 <!doctype html>
@@ -42,9 +46,9 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head>
 <body>
-  <Nav transparent={transparentNav} onCream={onCream} lang={lang} activePage={activePage} />
+  <Nav transparent={transparentNav} onCream={onCream} lang={lang} activePage={activePage} siteSettings={siteSettings} />
   <slot />
-  <Footer lang={lang} activePage={activePage} />
+  <Footer lang={lang} activePage={activePage} siteSettings={siteSettings} />
 
   <!-- Motion animations -->
   <script>
