@@ -20,6 +20,7 @@ export const room = defineType({
     defineField({
       name: 'slug',
       title: 'Slug',
+      description: 'This is the URL for this page. Do not change it after the page has been published.',
       type: 'slug',
       options: { source: 'name', maxLength: 96 },
       validation: (R) => R.required(),
@@ -93,7 +94,7 @@ export const room = defineType({
     defineField({
       name: 'locale',
       title: 'Language',
-      description: 'Create separate documents for EN and ES content.',
+      description: 'en for English, es for Spanish. Must match between language versions of the same content.',
       type: 'string',
       options: {
         list: [

@@ -14,6 +14,7 @@ export const journalPost = defineType({
     defineField({
       name: 'slug',
       title: 'Slug',
+      description: 'This is the URL for this page. Do not change it after the page has been published.',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
       validation: (R) => R.required(),
@@ -86,14 +87,14 @@ export const journalPost = defineType({
     defineField({
       name: 'featured',
       title: 'Featured (hero on journal index)',
-      description: 'If true, this post is shown as the large hero article at the top of the Journal page. Only one should be marked featured.',
+      description: 'Only one item should have this turned on at a time. Turn off the previous featured item first.',
       type: 'boolean',
       initialValue: false,
     }),
     defineField({
       name: 'locale',
       title: 'Language',
-      description: 'Create separate documents for EN and ES content.',
+      description: 'en for English, es for Spanish. Must match between language versions of the same content.',
       type: 'string',
       options: {
         list: [

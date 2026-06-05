@@ -70,6 +70,29 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
+      name: 'seo',
+      title: 'Default SEO',
+      description: 'Global meta fallbacks used when a page has no specific SEO override.',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Default page title',
+          description: 'Appears in browser tabs and search results. Keep under 60 characters.',
+          type: 'string',
+          validation: (R) => R.max(60),
+        }),
+        defineField({
+          name: 'description',
+          title: 'Default meta description',
+          description: 'Shown in search result snippets. 140–160 characters is ideal.',
+          type: 'text',
+          rows: 4,
+          validation: (R) => R.min(140).max(160),
+        }),
+      ],
+    }),
+    defineField({
       name: 'nav',
       title: 'Navigation',
       type: 'object',
