@@ -3,15 +3,82 @@ export const prerender = true;
 import Base from '../layouts/Base.astro';
 import RoomCard from '../components/RoomCard.astro';
 import { client } from '../lib/sanity';
-import { roomsQuery } from '../queries/rooms';
-import { journalPostsQuery } from '../queries/journal';
-import { loc, formatDate } from '../i18n/utils';
+import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../lib/sanity/queries';
+import type { Homepage, RoomListItem } from '../types/sanity';
 
 const lang = 'en';
-const [rooms, posts] = await Promise.all([
-  client.fetch(roomsQuery),
-  client.fetch(journalPostsQuery),
+
+const [homepage, rooms] = await Promise.all([
+  client.fetch<Homepage>(HOMEPAGE_QUERY),
+  client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
 ]);
+
+const hero               = homepage?.hero;
+const lodge              = homepage?.lodge;
+const propertyFeatures   = homepage?.propertyFeatures;
+const testimonials       = homepage?.testimonials ?? [];
+const roomsTeaser        = homepage?.roomsTeaser;
+const experiencesTeaser  = homepage?.experiencesTeaser;
+const closingQuote       = homepage?.closingQuote;
+
+// Hero media
+const heroImgUrl    = hero?.heroImage?.url   ?? null;
+const heroVideoUrl  = hero?.heroVideoUrl     ?? null;
+const heroPosterUrl = hero?.heroVideoPoster?.url ?? heroImgUrl;
+const showVideo     = hero?.mediaType === 'video' && heroVideoUrl;
+const showImage     = hero?.mediaType === 'image' && heroImgUrl;
+
+// Hero inline style (background image only; video renders as element)
+const heroBgStyle = showImage
+  ? `background-color:#3A3228; background-image: linear-gradient(180deg,rgba(58,50,40,.4) 0%,rgba(58,50,40,0) 30%,rgba(58,50,40,0) 70%,rgba(58,50,40,.6) 100%), var(--grain), url('${heroImgUrl}'); background-size: cover; background-position: center;`
+  : undefined;
+
+// Wireframe fallback rooms (shown if Sanity returns no rooms yet)
+const wireframeRooms = [
+  { slug: { current: 'olivo'    }, name: 'Olivo',    subtitle: 'Olive Suite',     tagline: 'Carved into the natural rock face.', pricePerNight: 420, imageUrl: null, imageAlt: null, _id: 'wf-1' },
+  { slug: { current: 'lavanda'  }, name: 'Lavanda',  subtitle: 'Lavender Suite',  tagline: 'Private sea-view terrace with day bed.', pricePerNight: 380, imageUrl: null, imageAlt: null, _id: 'wf-2' },
+  { slug: { current: 'laurel'   }, name: 'Laurel',   subtitle: 'Bay Laurel Suite', tagline: 'Floor-to-ceiling windows facing south.', pricePerNight: 340, imageUrl: null, imageAlt: null, _id: 'wf-3' },
+] as RoomListItem[];
+const displayRooms = rooms.length > 0 ? rooms.slice(0, 3) : wireframeRooms;
+
+// Icon map for property features
+const featureColors: Record<string, string> = {
+  cave: '#5C4838', pool: '#4A5E45', 'hot-tub': '#8A7A65',
+  solar: '#9A8A74', rooms: '#7E6E58', terrace: '#6F8366',
+};
+
+// Fallback amenities shown when Sanity propertyFeatures is empty
+const fallbackAmenities = [
+  { icon: 'cave',    label: 'Cave Access'       },
+  { icon: 'pool',    label: 'Swimming Pool'      },
+  { icon: 'hot-tub', label: 'Panoramic Hot Tub'  },
+  { icon: 'solar',   label: 'Off-Grid & Solar'   },
+  { icon: 'rooms',   label: '7 Rooms'            },
+  { icon: 'terrace', label: 'Mountain Terrace'   },
+];
+const amenities = propertyFeatures?.features?.length
+  ? propertyFeatures.features
+  : fallbackAmenities;
+
+// Fallback activities shown when Sanity experiencesTeaser is empty
+const fallbackActivities = [
+  { title: 'Cave Exploration',               description: 'Guided access into the natural cave on the property grounds.', href: '/experiences', color: '#6B5B4A' },
+  { title: 'Wine & Olive Tasting',           description: 'Local producers from the valleys below Cabanes.',               href: '/experiences', color: '#4A5E45' },
+  { title: 'Hiking Desert de les Palmes',    description: 'A national park at the edge of the estate.',                    href: '/experiences', color: '#8A7A65' },
+];
+const activities = experiencesTeaser?.items?.length
+  ? experiencesTeaser.items.map(i => ({ ...i, color: '#8A7A65' }))
+  : fallbackActivities;
+
+// Fallback testimonials
+const fallbackTestimonials = [
+  { quote: 'We came for a weekend. We talked about it for a year.',                              author: 'Maria K.',  country: 'Netherlands' },
+  { quote: 'There is no wifi strong enough to make you want to leave.',                          author: 'James T.',  country: 'United Kingdom' },
+  { quote: 'The cave at sunrise. We have no words for it.',                                      author: 'Sophie M.', country: 'Germany' },
+  { quote: 'Off-grid doesn\'t mean roughing it. It means something completely different here.', author: 'Lena R.',   country: 'France' },
+  { quote: 'La Cueva se queda contigo.',                                                         author: 'Carlos V.', country: 'España' },
+];
+const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 ---
 
 <Base
@@ -21,14 +88,28 @@ const [rooms, posts] = await Promise.all([
 >
 
   <!-- ===== Hero ===== -->
-  <section class="hero">
+  <section class="hero" style={heroBgStyle}>
+    {showVideo && (
+      <video
+        class="hero__video"
+        autoplay muted loop playsinline
+        poster={heroPosterUrl ?? undefined}
+        aria-hidden="true"
+      >
+        <source src={heroVideoUrl} type="video/mp4" />
+      </video>
+    )}
+
     <div class="hero__inner" data-animate>
-      <p class="label hero__label">Cabanes · Castellón · Spain</p>
+      <p class="label hero__label">
+        <!-- TODO: wire to Sanity — field: hero.eyebrow -->
+        {hero?.eyebrow ?? 'Cabanes · Castellón · Spain'}
+      </p>
       <h1>
-        Sustainable luxury
-        <span class="italic">in the Valencian mountains.</span>
+        <!-- TODO: wire to Sanity — field: hero.headline / hero.subline -->
+        {hero?.headline ?? <>Sustainable luxury<span class="italic"> in the Valencian mountains.</span></>}
       </h1>
-      <p class="hero__body">A 19th-century Masia. A natural cave. Seven rooms where the mountain meets the Mediterranean.</p>
+      <p class="hero__body">{hero?.subline ?? 'A 19th-century Masia. A natural cave. Seven rooms where the mountain meets the Mediterranean.'}</p>
     </div>
 
     <form class="availability" data-animate action="/book" method="get">
@@ -60,9 +141,10 @@ const [rooms, posts] = await Promise.all([
     <div class="intro__grid" data-animate>
       <div class="arch-img intro__img-left" role="img" aria-label="The Masia at dusk"></div>
       <div class="intro__center">
-        <p class="label">The Lodge</p>
-        <h2>A Masia that<br/>remembers everything.</h2>
-        <p>Built in the 19th century, restored without apology. La Cueva de Miravet sits on a mountaintop in Cabanes — off-grid, unhurried, and beside a natural cave that has been here considerably longer than we have.</p>
+        <p class="label">{lodge?.sectionLabel ?? 'The Lodge'}</p>
+        <h2>{lodge?.headline ?? 'A Masia that remembers everything.'}</h2>
+        <p>{lodge?.body ?? 'Built in the 19th century, restored without apology. La Cueva de Miravet sits on a mountaintop in Cabanes — off-grid, unhurried, and beside a natural cave that has been here considerably longer than we have.'}</p>
+        <!-- TODO: wire to Sanity — fields: siteSettings.bookingScore, siteSettings.bookingLabel -->
         <div class="review-badge">
           <span class="stars">8.7</span>
           <span class="dot"></span>
@@ -77,52 +159,51 @@ const [rooms, posts] = await Promise.all([
   <!-- ===== Amenities ===== -->
   <section class="amenities">
     <div class="amenities__header" data-animate>
-      <p class="label">The Property</p>
-      <h2>What the mountain provides.</h2>
+      <p class="label">{propertyFeatures?.sectionLabel ?? 'The Property'}</p>
+      <h2>{propertyFeatures?.headline ?? 'What the mountain provides.'}</h2>
     </div>
     <div class="amenities__grid" data-stagger>
 
-      <div class="amenity">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 28 V16 a10 10 0 0 1 20 0 V28"/><path d="M12 28 V20 a4 4 0 0 1 8 0 V28"/><path d="M2 28 H30"/>
-        </svg>
-        <span class="amenity__label">Cave Access</span>
-      </div>
-
-      <div class="amenity">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 13 q4 -4 8 0 t8 0 t8 0 t4 0"/><path d="M2 21 q4 -4 8 0 t8 0 t8 0 t4 0"/>
-        </svg>
-        <span class="amenity__label">Swimming Pool</span>
-      </div>
-
-      <div class="amenity">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="16" cy="22" r="7"/><path d="M10 9 q1.5 -2 3 0 t3 0"/><path d="M16 9 q1.5 -2 3 0 t3 0"/><path d="M13 5 q1 -1.5 2 0"/>
-        </svg>
-        <span class="amenity__label">Panoramic Hot Tub</span>
-      </div>
-
-      <div class="amenity">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="16" cy="16" r="6"/><path d="M16 4 V8"/><path d="M16 24 V28"/><path d="M4 16 H8"/><path d="M24 16 H28"/>
-        </svg>
-        <span class="amenity__label">Off-Grid &amp; Solar</span>
-      </div>
-
-      <div class="amenity">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 4 H23 V28 H9 Z"/><circle cx="20" cy="17" r="1"/>
-        </svg>
-        <span class="amenity__label">7 Rooms</span>
-      </div>
-
-      <div class="amenity">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 22 H29"/><path d="M3 26 H29"/><path d="M6 22 Q16 8 26 22"/>
-        </svg>
-        <span class="amenity__label">Mountain Terrace</span>
-      </div>
+      {amenities.map((a) => (
+        <div class="amenity">
+          {a.icon === 'cave' && (
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 28 V16 a10 10 0 0 1 20 0 V28"/><path d="M12 28 V20 a4 4 0 0 1 8 0 V28"/><path d="M2 28 H30"/>
+            </svg>
+          )}
+          {a.icon === 'pool' && (
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 13 q4 -4 8 0 t8 0 t8 0 t4 0"/><path d="M2 21 q4 -4 8 0 t8 0 t8 0 t4 0"/>
+            </svg>
+          )}
+          {a.icon === 'hot-tub' && (
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="16" cy="22" r="7"/><path d="M10 9 q1.5 -2 3 0 t3 0"/><path d="M16 9 q1.5 -2 3 0 t3 0"/><path d="M13 5 q1 -1.5 2 0"/>
+            </svg>
+          )}
+          {a.icon === 'solar' && (
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="16" cy="16" r="6"/><path d="M16 4 V8"/><path d="M16 24 V28"/><path d="M4 16 H8"/><path d="M24 16 H28"/>
+            </svg>
+          )}
+          {a.icon === 'rooms' && (
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 4 H23 V28 H9 Z"/><circle cx="20" cy="17" r="1"/>
+            </svg>
+          )}
+          {a.icon === 'terrace' && (
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 22 H29"/><path d="M3 26 H29"/><path d="M6 22 Q16 8 26 22"/>
+            </svg>
+          )}
+          {!['cave','pool','hot-tub','solar','rooms','terrace'].includes(a.icon ?? '') && (
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="16" cy="16" r="10"/>
+            </svg>
+          )}
+          <span class="amenity__label">{a.label}</span>
+        </div>
+      ))}
 
     </div>
   </section>
@@ -131,28 +212,26 @@ const [rooms, posts] = await Promise.all([
   <section class="reviews" aria-label="Guest reviews">
     <div class="marquee">
       <div class="marquee__set">
-        <div class="review"><p class="review__text">"We came for a weekend. We talked about it for a year."</p><p class="review__attr">Maria K. · Netherlands</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"There is no wifi strong enough to make you want to leave."</p><p class="review__attr">James T. · United Kingdom</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"The cave at sunrise. We have no words for it."</p><p class="review__attr">Sophie M. · Germany</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"Off-grid doesn't mean roughing it. It means something completely different here."</p><p class="review__attr">Lena R. · France</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"La Cueva se queda contigo."</p><p class="review__attr">Carlos V. · España</p></div>
-        <span class="marquee__sep">·</span>
+        {reviews.map((r) => (
+          <>
+            <div class="review">
+              <p class="review__text">"{r.quote}"</p>
+              <p class="review__attr">{r.author}{r.country ? ` · ${r.country}` : ''}</p>
+            </div>
+            <span class="marquee__sep">·</span>
+          </>
+        ))}
       </div>
       <div class="marquee__set" aria-hidden="true">
-        <div class="review"><p class="review__text">"We came for a weekend. We talked about it for a year."</p><p class="review__attr">Maria K. · Netherlands</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"There is no wifi strong enough to make you want to leave."</p><p class="review__attr">James T. · United Kingdom</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"The cave at sunrise. We have no words for it."</p><p class="review__attr">Sophie M. · Germany</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"Off-grid doesn't mean roughing it. It means something completely different here."</p><p class="review__attr">Lena R. · France</p></div>
-        <span class="marquee__sep">·</span>
-        <div class="review"><p class="review__text">"La Cueva se queda contigo."</p><p class="review__attr">Carlos V. · España</p></div>
-        <span class="marquee__sep">·</span>
+        {reviews.map((r) => (
+          <>
+            <div class="review">
+              <p class="review__text">"{r.quote}"</p>
+              <p class="review__attr">{r.author}{r.country ? ` · ${r.country}` : ''}</p>
+            </div>
+            <span class="marquee__sep">·</span>
+          </>
+        ))}
       </div>
     </div>
   </section>
@@ -160,13 +239,13 @@ const [rooms, posts] = await Promise.all([
   <!-- ===== Rooms ===== -->
   <section class="rooms-section" id="rooms">
     <div class="rooms__header" data-animate>
-      <p class="label">Where you sleep</p>
-      <h2>Seven rooms. Each one its own world.</h2>
-      <p class="body-sm">Every room opens onto something — a terrace, a view, a particular quality of silence. Book a single room or take the lodge exclusively.</p>
+      <p class="label">{roomsTeaser?.sectionLabel ?? 'Where you sleep'}</p>
+      <h2>{roomsTeaser?.headline ?? 'Seven rooms. Each one its own world.'}</h2>
+      <p class="body-sm">{roomsTeaser?.subline ?? 'Every room opens onto something — a terrace, a view, a particular quality of silence. Book a single room or take the lodge exclusively.'}</p>
     </div>
 
     <div class="rooms__grid" data-stagger>
-      {rooms.slice(0, 3).map((room: any) => (
+      {displayRooms.map((room) => (
         <RoomCard room={room} lang={lang} />
       ))}
     </div>
@@ -180,42 +259,24 @@ const [rooms, posts] = await Promise.all([
   <section class="activities">
     <div class="activities__header" data-animate>
       <div class="inner">
-        <p class="label">What you do</p>
-        <h2>The mountain has more to offer than the view.</h2>
+        <p class="label">{experiencesTeaser?.sectionLabel ?? 'What you do'}</p>
+        <h2>{experiencesTeaser?.headline ?? 'The mountain has more to offer than the view.'}</h2>
       </div>
     </div>
 
     <div class="activities__grid" data-animate>
-      <a href="/experiences" class="activity">
-        <div class="activity__img-wrap">
-          <div class="activity__img" style="background-color: #6B5B4A;"></div>
-        </div>
-        <div class="activity__label">
-          <p class="activity__name">Cave Exploration</p>
-          <p class="activity__desc">Guided access into the natural cave on the property grounds.</p>
-          <span class="activity__arrow">→</span>
-        </div>
-      </a>
-      <a href="/experiences" class="activity">
-        <div class="activity__img-wrap">
-          <div class="activity__img" style="background-color: #4A5E45;"></div>
-        </div>
-        <div class="activity__label">
-          <p class="activity__name">Wine &amp; Olive Tasting</p>
-          <p class="activity__desc">Local producers from the valleys below Cabanes.</p>
-          <span class="activity__arrow">→</span>
-        </div>
-      </a>
-      <a href="/experiences" class="activity">
-        <div class="activity__img-wrap">
-          <div class="activity__img" style="background-color: #8A7A65;"></div>
-        </div>
-        <div class="activity__label">
-          <p class="activity__name">Hiking Desert de les Palmes</p>
-          <p class="activity__desc">A national park at the edge of the estate.</p>
-          <span class="activity__arrow">→</span>
-        </div>
-      </a>
+      {activities.map((act) => (
+        <a href={act.href ?? '/experiences'} class="activity">
+          <div class="activity__img-wrap">
+            <div class="activity__img" style={`background-color: ${act.color};`}></div>
+          </div>
+          <div class="activity__label">
+            <p class="activity__name">{act.title}</p>
+            <p class="activity__desc">{act.description}</p>
+            <span class="activity__arrow">→</span>
+          </div>
+        </a>
+      ))}
     </div>
 
     <div class="activities__bottom" data-animate>
@@ -253,17 +314,25 @@ const [rooms, posts] = await Promise.all([
   padding: 0 40px;
   color: var(--white);
 }
+.hero__video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
 .hero::before {
   content: "";
   position: absolute; inset: 0;
   background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 60%);
   pointer-events: none;
+  z-index: 1;
 }
 .hero::after {
   content: "";
   position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(58,50,40,0.4) 0%, rgba(58,50,40,0) 30%, rgba(58,50,40,0) 70%, rgba(58,50,40,0.6) 100%);
   pointer-events: none;
+  z-index: 1;
 }
 .hero__inner {
   position: relative; z-index: 2;
