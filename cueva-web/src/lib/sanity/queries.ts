@@ -86,6 +86,10 @@ export const ROOM_SLUGS_QUERY = groq`
   *[_type == "room"] { "slug": slug.current, locale }
 `;
 
+export const ROOM_ICAL_QUERY = groq`
+  *[_type == "room" && slug.current == $slug][0] { icalUrl }
+`;
+
 // ── Experiences ───────────────────────────────────────────────────────────────
 
 export const ALL_EXPERIENCES_QUERY = groq`

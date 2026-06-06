@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { client } from '../../../lib/sanity';
+import { ROOM_ICAL_QUERY } from '@/lib/sanity/queries';
 import { fetchBookedRanges, isAvailable } from '../../../lib/ical';
 
 export const prerender = false;
@@ -17,7 +18,7 @@ export const GET: APIRoute = async ({ params, url }) => {
 
   // Fetch the room's private iCal URL from Sanity
   const room = await client.fetch<{ icalUrl?: string } | null>(
-    `*[_type == "room" && slug.current == $slug][0] { icalUrl }`,
+    ROOM_ICAL_QUERY,
     { slug }
   );
 
