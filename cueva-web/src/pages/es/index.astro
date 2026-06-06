@@ -13,6 +13,8 @@ const [homepage, rooms] = await Promise.all([
   client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
 ]);
 
+const swatches: Record<string, string> = { olivo:'#5C4838', lavanda:'#8FA59A', laurel:'#B8A48A', tomillo:'#7E6E58', almendro:'#6F8366', roble:'#9A8A74', hinojo:'#4A3F35' };
+
 const wireframeRooms: RoomListItem[] = [
   { _id: 'wf-1', slug: { current: 'olivo'    }, name: 'Olivo',    subtitle: 'Suite Olivo',    tagline: 'Excavado en la roca natural. 16°C constantes.', pricePerNight: 420, imageUrl: null, imageAlt: null },
   { _id: 'wf-2', slug: { current: 'lavanda'  }, name: 'Lavanda',  subtitle: 'Suite Lavanda',  tagline: 'Terraza privada con vistas al mar y bañera exterior.', pricePerNight: 380, imageUrl: null, imageAlt: null },
@@ -129,7 +131,6 @@ const wireframeRooms: RoomListItem[] = [
     </div>
     <div class="rooms__grid" data-stagger>
       {(rooms.length > 0 ? rooms.slice(0, 3) : wireframeRooms).map((r) => {
-        const swatches: Record<string,string> = { olivo:'#5C4838', lavanda:'#8FA59A', laurel:'#B8A48A', tomillo:'#7E6E58', almendro:'#6F8366', roble:'#9A8A74', hinojo:'#4A3F35' };
         const slug  = r.slug?.current ?? '';
         const color = swatches[slug] ?? '#9A8A74';
         return (
