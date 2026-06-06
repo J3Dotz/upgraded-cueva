@@ -76,8 +76,8 @@ export const ROOM_BY_SLUG_QUERY = groq`
     "imageUrl": coalesce(image.asset->url, images[0].asset->url),
     "imageAlt": coalesce(image.alt, images[0].alt),
     "gallery":  coalesce(
-      gallery[]{ "url": asset->url, alt },
-      images[1:]{ "url": asset->url, alt }
+      gallery[defined(asset)]{ "url": asset->url, alt },
+      images[1..-1]{ "url": asset->url, alt }
     )
   }
 `;

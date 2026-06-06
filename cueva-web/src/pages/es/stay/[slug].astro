@@ -5,7 +5,7 @@ import Base from '../../../layouts/Base.astro';
 import { client } from '../../../lib/sanity';
 import { ROOM_BY_SLUG_QUERY, ROOM_SLUGS_QUERY, ALL_ROOMS_QUERY } from '../../../lib/sanity/queries';
 import type { Room, RoomListItem, RoomSlug } from '../../../types/sanity';
-import { prefix } from '../../../i18n/utils';
+import { prefix, loc } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
   const sanityRooms = await client.fetch<RoomSlug[]>(ROOM_SLUGS_QUERY);
@@ -39,12 +39,8 @@ const roomType  = room?.subtitle   ?? wf.subtitle;
 const roomPrice = room?.pricePerNight ?? wf.price;
 const roomColor = wf.color;
 
-const heroImgSrc = room?.images?.[0]
-  ? urlFor(room.images[0]).width(1600).height(900).auto('format').url()
-  : null;
-const cardImgSrc = room?.images?.[1] ?? room?.images?.[0]
-  ? urlFor((room?.images?.[1] ?? room?.images?.[0])).width(640).height(860).auto('format').url()
-  : null;
+const heroImgSrc = room?.imageUrl ?? null;
+const cardImgSrc = room?.gallery?.[0]?.url ?? room?.imageUrl ?? null;
 
 const otherRooms = allRooms.length > 0
   ? allRooms.filter((r: any) => r.slug?.current !== slug).slice(0, 3)
@@ -151,17 +147,17 @@ const otherRooms = allRooms.length > 0
       {otherRooms.map((r: any) => {
         const rSlug  = r.slug?.current ?? '';
         const rWf    = wireframeData[rSlug] ?? wireframeData.olivo;
-        const rName  = (r.name ? loc(r.name, lang) : null) ?? rWf.name;
-        const rColor = r.swatchColor ?? rWf.color;
-        const rPrice = r.priceFrom ?? rWf.price;
-        const rImg   = r.images?.[0] ? urlFor(r.images[0]).width(480).height(640).auto('format').url() : null;
+        const rName  = r.name ?? rWf.name;
+        const rColor = rWf.color;
+        const rPrice = r.pricePerNight ?? rWf.price;
+        const rImg   = r.imageUrl ?? null;
         return (
           <a href={`${p}/stay/${rSlug}`} class="room-card">
             <div class="room-card__img-wrap">
               {rImg ? <img src={rImg} alt={rName} loading="lazy" /> : <div class="room-card__img" style={`background-color: ${rColor};`}></div>}
             </div>
             <div class="room-card__body">
-              <p class="room-card__type">{rWf.type}</p>
+              <p class="room-card__type">{rWf.subtitle}</p>
               <h3 class="room-card__name">{rName}</h3>
               <div class="room-card__divider"></div>
               <div class="room-card__row">
