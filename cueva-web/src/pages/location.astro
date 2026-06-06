@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import HeroSection from '../components/layout/HeroSection.astro';
 import { client } from '../lib/sanity';
 import { LOCATION_PAGE_QUERY } from '../lib/sanity/queries';
 import type { LocationPage, PortableTextBlock } from '../types/sanity';
@@ -19,8 +20,21 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 >
 
   <!-- ===== Hero ===== -->
-  <section class="hero">
-    <div class="hero__topo" aria-hidden="true">
+  <HeroSection
+    eyebrow={location?.subline ?? 'The Lodge · Cabanes · Castellón'}
+    eyebrowDecor="pip"
+    bgScheme="stone-dark"
+    overlayStyle="none"
+    size="interior"
+    textAlign="left"
+    contentPosition="center"
+    innerColumns={true}
+  >
+    <Fragment slot="headline">
+      {location?.headline ?? <>Find us.<br/><span class="italic">We'll wait.</span></>}
+    </Fragment>
+
+    <div slot="decorative" class="hero__topo" aria-hidden="true">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" fill="none" stroke="rgba(196,98,45,0.18)" stroke-width="1">
         <path d="M-40 600 Q 200 540 480 580 T 1000 540 T 1640 580"/>
         <path d="M-40 560 Q 220 500 500 540 T 1020 500 T 1640 540"/>
@@ -35,37 +49,24 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
       </svg>
     </div>
 
-    <div class="hero__inner">
-      <div data-animate>
-        <div class="label hero__label">
-          <span class="pip"></span>
-          <!-- TODO: wire to Sanity — field: locationPage.subline -->
-          <span>{location?.subline ?? 'The Lodge · Cabanes · Castellón'}</span>
-        </div>
-        <h1>
-          {location?.headline ?? <>Find us.<br/><span class="italic">We'll wait.</span></>}
-        </h1>
+    <div slot="extra-inner" class="hero__coords" data-animate>
+      <div class="label-row">
+        <span class="rule"></span>
+        <span>Coordinates</span>
       </div>
-
-      <div class="hero__coords" data-animate>
-        <div class="label-row">
-          <span class="rule"></span>
-          <span>Coordinates</span>
-        </div>
-        <div class="value">40°07'09.5"N &nbsp; 0°04'47.8"E</div>
-        <div class="label-row" style="margin-top: 18px;">
-          <span class="rule"></span>
-          <span>Elevation</span>
-        </div>
-        <div class="elev"><strong>412 m</strong> above the Mediterranean</div>
+      <div class="value">40°07'09.5"N &nbsp; 0°04'47.8"E</div>
+      <div class="label-row" style="margin-top: 18px;">
+        <span class="rule"></span>
+        <span>Elevation</span>
       </div>
+      <div class="elev"><strong>412 m</strong> above the Mediterranean</div>
     </div>
 
     <div class="hero__scroll" aria-hidden="true">
       <span>Scroll</span>
       <span class="line"></span>
     </div>
-  </section>
+  </HeroSection>
 
   <!-- ===== Address + Map ===== -->
   <section class="address">
@@ -399,46 +400,16 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 }
 .italic { font-style: italic; }
 
-/* ===== Hero ===== */
-.hero {
-  position: relative; min-height: 88vh;
-  background-color: var(--stone-dark);
-  background-image: var(--grain); background-blend-mode: multiply;
-  overflow: hidden; color: var(--white);
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 160px 40px 80px;
-}
-.hero::before {
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 70% 60% at 22% 50%, rgba(196,98,45,0.08) 0%, transparent 60%), radial-gradient(ellipse at center, rgba(255,255,255,0.025) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero__topo { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; }
+/* Hero structure live in HeroSection.astro — page-specific hero elements below */
+.hero__topo { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; z-index: 1; }
 .hero__topo svg { width: 100%; height: 100%; }
-.hero__inner {
-  position: relative; z-index: 2;
-  max-width: 1400px; width: 100%; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 80px;
-}
-.hero__label {
-  color: rgba(255,255,255,0.6); margin-bottom: 28px;
-  display: flex; align-items: center; gap: 16px;
-}
-.pip { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; display: inline-block; }
-.hero h1 {
-  font-family: var(--font-serif);
-  font-size: 132px; font-weight: 300;
-  letter-spacing: -0.03em; line-height: 0.95;
-  color: var(--white);
-}
-.hero h1 .italic { color: rgba(255,255,255,0.55); }
-.hero__coords { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-bottom: 14px; min-width: 360px; }
+.hero__coords { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-bottom: 14px; min-width: 280px; }
 .label-row { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; }
 .rule { width: 28px; height: 1px; background: rgba(255,255,255,0.35); display: inline-block; }
 .value { font-family: var(--font-sans); font-size: 18px; font-weight: 400; letter-spacing: 0.04em; color: var(--white); }
 .elev { font-family: var(--font-serif); font-style: italic; font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 4px; }
 .elev strong { font-family: var(--font-sans); font-style: normal; font-weight: 400; color: var(--white); }
-.hero__scroll { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 14px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; }
+.hero__scroll { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 14px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; }
 .line { width: 1px; height: 36px; background: rgba(255,255,255,0.25); position: relative; overflow: hidden; }
 .line::after { content: ""; position: absolute; top: -8px; left: 0; width: 100%; height: 8px; background: var(--white); animation: dropline 2.4s ease-in-out infinite; }
 @keyframes dropline { 0% { top: -8px; opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { top: 36px; opacity: 0; } }
