@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
+import HeroSection from '../../components/layout/HeroSection.astro';
 import { client } from '../../lib/sanity';
 import { ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
 import type { RoomListItem } from '../../types/sanity';
@@ -39,15 +40,17 @@ const displayRooms = rooms.length > 0 ? rooms : wireframe;
 >
 
   <!-- ===== Page Hero ===== -->
-  <section class="page-hero">
-    <div class="page-hero__inner" data-animate>
-      <!-- TODO: wire to Sanity — field: homepage.roomsTeaser.sectionLabel -->
-      <p class="label">Seven rooms · Cabanes, Castellón</p>
-      <h1>Where <span class="italic">you stay</span></h1>
-      <!-- TODO: wire to Sanity — field: homepage.roomsTeaser.subline -->
-      <p class="page-hero__body">Each room opens onto something — a terrace, the valley, a particular angle of the Mediterranean. Choose one, or take the lodge to yourselves.</p>
-    </div>
-  </section>
+  <HeroSection
+    eyebrow="Seven rooms · Cabanes, Castellón"
+    subline="Each room opens onto something — a terrace, the valley, a particular angle of the Mediterranean. Choose one, or take the lodge to yourselves."
+    bgScheme="forest"
+    overlayStyle="black"
+    size="interior"
+    textAlign="center"
+    contentPosition="center"
+  >
+    <Fragment slot="headline">Where <span class="italic">you stay</span></Fragment>
+  </HeroSection>
 
   <!-- ===== Room Grid ===== -->
   <section class="rooms">
@@ -112,45 +115,7 @@ const displayRooms = rooms.length > 0 ? rooms : wireframe;
   color: var(--stone-mid);
 }
 
-/* ===== Page hero ===== */
-.page-hero {
-  position: relative;
-  height: 50vh; min-height: 440px;
-  background-color: var(--forest);
-  background-image: var(--grain);
-  background-blend-mode: multiply;
-  overflow: hidden;
-  display: flex; flex-direction: column;
-  justify-content: center; align-items: center;
-  padding: 0 40px;
-  color: var(--white); text-align: center;
-}
-.page-hero::before {
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 65%);
-  pointer-events: none;
-}
-.page-hero::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.35) 100%);
-  pointer-events: none;
-}
-.page-hero__inner {
-  position: relative; z-index: 2;
-  max-width: 760px; margin-top: 40px;
-}
-.page-hero .label { color: rgba(255,255,255,0.65); margin-bottom: 22px; }
-.page-hero h1 {
-  font-family: var(--font-serif);
-  font-size: 84px; font-weight: 300;
-  letter-spacing: -0.02em; line-height: 1.05;
-  color: var(--white); margin-bottom: 22px;
-}
-.page-hero h1 .italic { font-style: italic; color: rgba(255,255,255,0.95); }
-.page-hero__body {
-  max-width: 540px; margin: 0 auto;
-  color: rgba(255,255,255,0.78); font-size: 15px; line-height: 1.75;
-}
+/* Hero styles live in HeroSection.astro */
 
 /* ===== Room grid ===== */
 .rooms { background: var(--cream); padding: 140px 40px 80px; }
@@ -279,7 +244,6 @@ const displayRooms = rooms.length > 0 ? rooms : wireframe;
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
-  .page-hero h1 { font-size: 60px; }
   .prompt h2 { font-size: 42px; }
   .rooms__header { flex-direction: column; align-items: flex-start; gap: 24px; }
   .rooms__header .meta { text-align: left; }
@@ -287,8 +251,6 @@ const displayRooms = rooms.length > 0 ? rooms : wireframe;
   .rooms__grid > .room-card:nth-child(7) { grid-column: auto; }
 }
 @media (max-width: 768px) {
-  .page-hero { padding: 0 24px; padding-top: 140px; padding-bottom: 80px; height: auto; min-height: 380px; }
-  .page-hero h1 { font-size: 44px; }
   .rooms { padding: 80px 24px; }
   .rooms__grid { grid-template-columns: 1fr; gap: 48px; max-width: 380px; margin: 0 auto; }
   .room-card__img,

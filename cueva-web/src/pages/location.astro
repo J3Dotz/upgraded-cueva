@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import HeroSection from '../components/layout/HeroSection.astro';
 import { client } from '../lib/sanity';
 import { LOCATION_PAGE_QUERY } from '../lib/sanity/queries';
 import type { LocationPage, PortableTextBlock } from '../types/sanity';
@@ -19,8 +20,21 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 >
 
   <!-- ===== Hero ===== -->
-  <section class="hero">
-    <div class="hero__topo" aria-hidden="true">
+  <HeroSection
+    eyebrow={location?.subline ?? 'The Lodge · Cabanes · Castellón'}
+    eyebrowDecor="pip"
+    bgScheme="stone-dark"
+    overlayStyle="none"
+    size="interior"
+    textAlign="left"
+    contentPosition="center"
+    innerColumns={true}
+  >
+    <Fragment slot="headline">
+      {location?.headline ?? <>Find us.<br/><span class="italic">We'll wait.</span></>}
+    </Fragment>
+
+    <div slot="decorative" class="hero__topo" aria-hidden="true">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" fill="none" stroke="rgba(196,98,45,0.18)" stroke-width="1">
         <path d="M-40 600 Q 200 540 480 580 T 1000 540 T 1640 580"/>
         <path d="M-40 560 Q 220 500 500 540 T 1020 500 T 1640 540"/>
@@ -35,37 +49,24 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
       </svg>
     </div>
 
-    <div class="hero__inner">
-      <div data-animate>
-        <div class="label hero__label">
-          <span class="pip"></span>
-          <!-- TODO: wire to Sanity — field: locationPage.subline -->
-          <span>{location?.subline ?? 'The Lodge · Cabanes · Castellón'}</span>
-        </div>
-        <h1>
-          {location?.headline ?? <>Find us.<br/><span class="italic">We'll wait.</span></>}
-        </h1>
+    <div slot="extra-inner" class="hero__coords" data-animate>
+      <div class="label-row">
+        <span class="rule"></span>
+        <span>Coordinates</span>
       </div>
-
-      <div class="hero__coords" data-animate>
-        <div class="label-row">
-          <span class="rule"></span>
-          <span>Coordinates</span>
-        </div>
-        <div class="value">40°07'09.5"N &nbsp; 0°04'47.8"E</div>
-        <div class="label-row" style="margin-top: 18px;">
-          <span class="rule"></span>
-          <span>Elevation</span>
-        </div>
-        <div class="elev"><strong>412 m</strong> above the Mediterranean</div>
+      <div class="value">40°07'09.5"N &nbsp; 0°04'47.8"E</div>
+      <div class="label-row" style="margin-top: 18px;">
+        <span class="rule"></span>
+        <span>Elevation</span>
       </div>
+      <div class="elev"><strong>412 m</strong> above the Mediterranean</div>
     </div>
 
     <div class="hero__scroll" aria-hidden="true">
       <span>Scroll</span>
       <span class="line"></span>
     </div>
-  </section>
+  </HeroSection>
 
   <!-- ===== Address + Map ===== -->
   <section class="address">
@@ -399,46 +400,16 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 }
 .italic { font-style: italic; }
 
-/* ===== Hero ===== */
-.hero {
-  position: relative; min-height: 88vh;
-  background-color: var(--stone-dark);
-  background-image: var(--grain); background-blend-mode: multiply;
-  overflow: hidden; color: var(--white);
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 160px 40px 80px;
-}
-.hero::before {
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 70% 60% at 22% 50%, rgba(196,98,45,0.08) 0%, transparent 60%), radial-gradient(ellipse at center, rgba(255,255,255,0.025) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero__topo { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; }
+/* Hero structure live in HeroSection.astro — page-specific hero elements below */
+.hero__topo { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; z-index: 1; }
 .hero__topo svg { width: 100%; height: 100%; }
-.hero__inner {
-  position: relative; z-index: 2;
-  max-width: 1400px; width: 100%; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 80px;
-}
-.hero__label {
-  color: rgba(255,255,255,0.6); margin-bottom: 28px;
-  display: flex; align-items: center; gap: 16px;
-}
-.pip { width: 6px; height: 6px; background: var(--terra); border-radius: 50%; display: inline-block; }
-.hero h1 {
-  font-family: var(--font-serif);
-  font-size: 132px; font-weight: 300;
-  letter-spacing: -0.03em; line-height: 0.95;
-  color: var(--white);
-}
-.hero h1 .italic { color: rgba(255,255,255,0.55); }
-.hero__coords { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-bottom: 14px; min-width: 360px; }
+.hero__coords { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-bottom: 14px; min-width: 280px; }
 .label-row { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; }
 .rule { width: 28px; height: 1px; background: rgba(255,255,255,0.35); display: inline-block; }
 .value { font-family: var(--font-sans); font-size: 18px; font-weight: 400; letter-spacing: 0.04em; color: var(--white); }
 .elev { font-family: var(--font-serif); font-style: italic; font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 4px; }
 .elev strong { font-family: var(--font-sans); font-style: normal; font-weight: 400; color: var(--white); }
-.hero__scroll { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 14px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; }
+.hero__scroll { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 14px; color: rgba(255,255,255,0.55); font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; }
 .line { width: 1px; height: 36px; background: rgba(255,255,255,0.25); position: relative; overflow: hidden; }
 .line::after { content: ""; position: absolute; top: -8px; left: 0; width: 100%; height: 8px; background: var(--white); animation: dropline 2.4s ease-in-out infinite; }
 @keyframes dropline { 0% { top: -8px; opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { top: 36px; opacity: 0; } }
@@ -519,11 +490,9 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 .nearby__header h2 .italic { color: var(--stone-mid); display: block; }
 .nearby__header .right { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-mid); max-width: 320px; line-height: 1.5; }
 .nearby__grid { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
-.place { display: flex; flex-direction: column; cursor: pointer; transition: transform 0.5s ease; }
-.place:hover { transform: translateY(-6px); }
-.place__img-wrap { overflow: hidden; border-radius: 200px 200px 0 0; position: relative; transition: box-shadow 0.5s ease; }
-.place:hover .place__img-wrap { box-shadow: 0 26px 50px -22px rgba(44,42,36,0.5); }
-.place__img { width: 100%; aspect-ratio: 3/4; background-image: var(--grain); background-blend-mode: multiply; background-size: cover; background-position: center; transition: transform 0.7s ease; position: relative; }
+.place { display: flex; flex-direction: column; cursor: pointer; }
+.place__img-wrap { overflow: hidden; border-radius: 200px 200px 0 0; position: relative; }
+.place__img { width: 100%; aspect-ratio: 3/4; background-image: var(--grain); background-blend-mode: multiply; background-size: cover; background-position: center; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; will-change: transform; }
 .place:hover .place__img { transform: scale(1.06); }
 .place__img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(0,0,0,0.25) 100%); }
 .place__chip { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: rgba(253,252,248,0.92); backdrop-filter: blur(8px); color: var(--stone-dark); font-family: var(--font-sans); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; padding: 6px 14px; border-radius: 100px; z-index: 2; white-space: nowrap; }
@@ -534,7 +503,7 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 .place__meta { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid var(--stone-light); }
 .place__distance { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
 .place__distance strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 16px; color: var(--stone-dark); letter-spacing: 0; text-transform: none; margin-right: 4px; }
-.place__arrow { color: var(--terra); font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; transition: transform 0.45s ease; }
+.place__arrow { color: var(--terra); font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; transition: transform 0.3s ease-out; }
 .place:hover .place__arrow { transform: translateX(4px); }
 
 /* ===== Ready strip ===== */
@@ -560,9 +529,6 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 
 /* ===== Responsive ===== */
 @media (max-width: 1100px) {
-  .hero h1 { font-size: 88px; }
-  .hero__inner { grid-template-columns: 1fr; gap: 56px; }
-  .hero__coords { min-width: 0; }
   .address__grid { grid-template-columns: 1fr; gap: 56px; }
   .map { aspect-ratio: 4/3; }
   .arrive__header { grid-template-columns: 1fr; gap: 32px; }
@@ -575,8 +541,6 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
   .ready__cta { align-items: flex-start; }
 }
 @media (max-width: 768px) {
-  .hero { padding: 130px 24px 64px; min-height: 76vh; }
-  .hero h1 { font-size: 64px; }
   .address { padding: 80px 24px; }
   .address__stats { grid-template-columns: 1fr; gap: 16px; }
   .arrive { padding: 80px 24px; }

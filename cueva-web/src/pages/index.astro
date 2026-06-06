@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import HeroSection from '../components/layout/HeroSection.astro';
 import RoomCard from '../components/RoomCard.astro';
 import { client } from '../lib/sanity';
 import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../lib/sanity/queries';
@@ -27,11 +28,6 @@ const heroVideoUrl  = hero?.heroVideoUrl     ?? null;
 const heroPosterUrl = hero?.heroVideoPoster?.url ?? heroImgUrl;
 const showVideo     = hero?.mediaType === 'video' && heroVideoUrl;
 const showImage     = hero?.mediaType === 'image' && heroImgUrl;
-
-// Hero inline style (background image only; video renders as element)
-const heroBgStyle = showImage
-  ? `background-color:#3A3228; background-image: linear-gradient(180deg,rgba(58,50,40,.4) 0%,rgba(58,50,40,0) 30%,rgba(58,50,40,0) 70%,rgba(58,50,40,.6) 100%), var(--grain), url('${heroImgUrl}'); background-size: cover; background-position: center;`
-  : undefined;
 
 // Wireframe fallback rooms (shown if Sanity returns no rooms yet)
 const wireframeRooms = [
@@ -88,29 +84,22 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 >
 
   <!-- ===== Hero ===== -->
-  <section class="hero" style={heroBgStyle}>
-    {showVideo && (
-      <video
-        class="hero__video"
-        autoplay muted loop playsinline
-        poster={heroPosterUrl ?? undefined}
-        aria-hidden="true"
-      >
-        <source src={heroVideoUrl} type="video/mp4" />
-      </video>
-    )}
-
-    <div class="hero__inner" data-animate>
-      <p class="label hero__label">
-        <!-- TODO: wire to Sanity — field: hero.eyebrow -->
-        {hero?.eyebrow ?? 'Cabanes · Castellón · Spain'}
-      </p>
-      <h1>
-        <!-- TODO: wire to Sanity — field: hero.headline / hero.subline -->
-        {hero?.headline ?? <>Sustainable luxury<span class="italic"> in the Valencian mountains.</span></>}
-      </h1>
-      <p class="hero__body">{hero?.subline ?? 'A 19th-century Masia. A natural cave. Seven rooms where the mountain meets the Mediterranean.'}</p>
-    </div>
+  <HeroSection
+    eyebrow={hero?.eyebrow ?? 'Cabanes · Castellón · Spain'}
+    subline={hero?.subline ?? 'A 19th-century Masia. A natural cave. Seven rooms where the mountain meets the Mediterranean.'}
+    bgScheme="stone"
+    bgImage={showImage ? heroImgUrl ?? undefined : undefined}
+    videoUrl={showVideo ? heroVideoUrl ?? undefined : undefined}
+    videoPoster={heroPosterUrl ?? undefined}
+    mediaType={hero?.mediaType ?? 'colour'}
+    overlayStyle="stone"
+    size="full"
+    textAlign="center"
+    contentPosition="center"
+  >
+    <Fragment slot="headline">
+      {hero?.headline ?? <>Sustainable luxury<span class="italic"> in the Valencian mountains.</span></>}
+    </Fragment>
 
     <form class="availability" data-animate action="/book" method="get">
       <div class="availability__field">
@@ -134,7 +123,7 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
     </form>
 
     <div class="scroll-indicator" aria-hidden="true"></div>
-  </section>
+  </HeroSection>
 
   <!-- ===== Intro ===== -->
   <section class="intro">
@@ -298,64 +287,7 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 }
 .body-sm { font-size: 14px; line-height: 1.65; color: var(--stone-mid); }
 
-/* ===== Hero ===== */
-.hero {
-  position: relative;
-  height: 100vh;
-  min-height: 720px;
-  background-color: #3A3228;
-  background-image: var(--grain);
-  background-blend-mode: multiply;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0 40px;
-  color: var(--white);
-}
-.hero__video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-.hero::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 1;
-}
-.hero::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(58,50,40,0.4) 0%, rgba(58,50,40,0) 30%, rgba(58,50,40,0) 70%, rgba(58,50,40,0.6) 100%);
-  pointer-events: none;
-  z-index: 1;
-}
-.hero__inner {
-  position: relative; z-index: 2;
-  text-align: center;
-  max-width: 900px;
-  margin-top: -40px;
-}
-.hero__label { color: rgba(255,255,255,0.7); margin-bottom: 28px; }
-.hero h1 {
-  font-family: var(--font-serif);
-  font-size: 72px; font-weight: 300;
-  letter-spacing: -0.02em; line-height: 1.05;
-  color: var(--white); margin-bottom: 32px;
-}
-.hero h1 .italic {
-  font-style: italic; display: block;
-  color: rgba(255,255,255,0.95);
-}
-.hero__body {
-  max-width: 520px; margin: 0 auto;
-  color: rgba(255,255,255,0.8);
-  font-size: 16px; line-height: 1.75;
-}
+/* Hero styles live in HeroSection.astro */
 
 /* Availability bar */
 .availability {
@@ -610,15 +542,12 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
-  .hero h1 { font-size: 56px; }
   .intro__grid { grid-template-columns: 1fr; gap: 40px; }
   .intro__img-left, .intro__img-right { max-width: 360px; margin: 0 auto; height: 360px; }
   .rooms__grid { grid-template-columns: repeat(2, 1fr); }
   .activities__grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
-  .hero { padding: 0 24px; min-height: 640px; }
-  .hero h1 { font-size: 44px; }
   .availability {
     flex-direction: column; border-radius: 28px;
     padding: 16px; width: 100%; max-width: 360px;
