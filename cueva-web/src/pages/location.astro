@@ -490,11 +490,9 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 .nearby__header h2 .italic { color: var(--stone-mid); display: block; }
 .nearby__header .right { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-mid); max-width: 320px; line-height: 1.5; }
 .nearby__grid { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
-.place { display: flex; flex-direction: column; cursor: pointer; transition: transform 0.5s ease; }
-.place:hover { transform: translateY(-6px); }
-.place__img-wrap { overflow: hidden; border-radius: 200px 200px 0 0; position: relative; transition: box-shadow 0.5s ease; }
-.place:hover .place__img-wrap { box-shadow: 0 26px 50px -22px rgba(44,42,36,0.5); }
-.place__img { width: 100%; aspect-ratio: 3/4; background-image: var(--grain); background-blend-mode: multiply; background-size: cover; background-position: center; transition: transform 0.7s ease; position: relative; }
+.place { display: flex; flex-direction: column; cursor: pointer; }
+.place__img-wrap { overflow: hidden; border-radius: 200px 200px 0 0; position: relative; }
+.place__img { width: 100%; aspect-ratio: 3/4; background-image: var(--grain); background-blend-mode: multiply; background-size: cover; background-position: center; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; will-change: transform; }
 .place:hover .place__img { transform: scale(1.06); }
 .place__img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(0,0,0,0.25) 100%); }
 .place__chip { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: rgba(253,252,248,0.92); backdrop-filter: blur(8px); color: var(--stone-dark); font-family: var(--font-sans); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; padding: 6px 14px; border-radius: 100px; z-index: 2; white-space: nowrap; }
@@ -505,7 +503,7 @@ const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
 .place__meta { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid var(--stone-light); }
 .place__distance { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--stone-mid); }
 .place__distance strong { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 16px; color: var(--stone-dark); letter-spacing: 0; text-transform: none; margin-right: 4px; }
-.place__arrow { color: var(--terra); font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; transition: transform 0.45s ease; }
+.place__arrow { color: var(--terra); font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; transition: transform 0.3s ease-out; }
 .place:hover .place__arrow { transform: translateX(4px); }
 
 /* ===== Ready strip ===== */
