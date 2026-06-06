@@ -2,8 +2,8 @@ import { createClient } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 
 export const client = createClient({
-  projectId: 'e4tsjl4a',
-  dataset: 'production',
+  projectId: import.meta.env.SANITY_PROJECT_ID,
+  dataset: import.meta.env.SANITY_DATASET,
   apiVersion: '2024-01-01',
   useCdn: true, // CDN for public read; set to false for mutations
   perspective: 'published',
