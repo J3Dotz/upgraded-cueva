@@ -4,10 +4,11 @@ import Base from '../layouts/Base.astro';
 import { client } from '../lib/sanity';
 import { BOOK_PAGE_QUERY } from '../lib/sanity/queries';
 import type { BookPage } from '../types/sanity';
-import { prefix } from '../i18n/utils';
+import { prefix, useTranslations } from '../i18n/utils';
 
 const lang     = 'en';
 const p        = prefix(lang);
+const t        = useTranslations(lang);
 const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
 ---
 
@@ -139,6 +140,7 @@ const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
             <p>{bookPage?.confirmationNote ?? 'A confirmation has been sent to your email. Look out for a reply from hola@lacuevademiravet.com.'}</p>
           </div>
         </div>
+        <p class="form-error" id="formError" hidden>{t('book.error')}</p>
       </form>
     </div>
   </section>
@@ -270,6 +272,7 @@ const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
 .form-success h3 { font-family: var(--font-serif); font-size: 32px; font-weight: 300; margin-bottom: 16px; line-height: 1.2; }
 .form-success p { color: var(--stone-mid); font-size: 15px; max-width: 440px; margin: 0 auto; }
 .form-success em { font-style: italic; color: var(--stone-dark); }
+.form-error { font-size: 13px; color: var(--terra); padding: 8px 0; }
 
 /* ===== What happens next ===== */
 .next { background: var(--cream-deep); padding: 120px 40px; }
@@ -382,9 +385,10 @@ updateRoom();
 // ===== Form submit =====
 document.getElementById('bookingForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const form   = e.target as HTMLFormElement;
-  const btn    = document.getElementById('submitBtn') as HTMLButtonElement;
+  const form    = e.target as HTMLFormElement;
+  const btn     = document.getElementById('submitBtn') as HTMLButtonElement;
   const success = document.getElementById('formSuccess') as HTMLElement;
+  const errorEl = document.getElementById('formError') as HTMLElement;
 
   btn.disabled = true;
   btn.textContent = '…';
@@ -400,7 +404,8 @@ document.getElementById('bookingForm')?.addEventListener('submit', async (e) => 
   } catch {
     btn.disabled = false;
     btn.textContent = 'Send Request';
-    alert('Something went wrong. Please email us at hola@lacuevademiravet.com');
+    errorEl.hidden = false;
+    errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 });
 </script>

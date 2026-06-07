@@ -15,7 +15,9 @@ export const ui = {
     'nav.book': 'Book Now',
     // Footer
     'footer.rights': 'All rights reserved',
+    // Intentionally kept — pending visual editor implementation
     'footer.tagline': 'Where the mountain meets the Mediterranean.',
+    // Stay, Room, Experiences and Location keys intentionally kept — pending visual editor implementation
     // Stay page
     'stay.from': 'From',
     'stay.night': '/ night',
@@ -45,16 +47,20 @@ export const ui = {
     'loc.cta': 'Now you know the way. Pick a room.',
     // Journal
     'journal.hero.title': 'The Journal',
+    // Intentionally kept — pending visual editor implementation
     'journal.hero.sub': 'Notes from the mountain.',
     'journal.read': 'Read article',
     'journal.min': 'min read',
+    // Intentionally kept — pending visual editor implementation
     'journal.all': 'All',
     // Book / Enquiry form
+    // Intentionally kept — pending visual editor implementation
     'book.hero.title': 'Request to book.',
     'book.hero.sub': "Direct booking · No third parties",
     'book.note': "Each request is handled personally by our Manager Javier, and answered the same day. Nothing is charged until we confirm.",
     'book.name': 'Full name',
     'book.email': 'Email address',
+    // Intentionally kept — pending visual editor implementation
     'book.phone': 'Phone (optional)',
     'book.checkin': 'Check-in',
     'book.checkout': 'Check-out',
@@ -65,6 +71,7 @@ export const ui = {
     'book.submit': 'Send request',
     'book.success': "Thank you — we will be in touch within a few hours.",
     'book.error': 'Something went wrong. Please email us directly at hola@lacuevademiravet.com',
+    // Intentionally kept — pending visual editor implementation
     'book.guarantee': 'Best rate, guaranteed.',
     'book.guarantee.body': "If you find our rooms cheaper anywhere else on the same dates, we'll match it and add a bottle of local wine to your room.",
   },
@@ -77,7 +84,9 @@ export const ui = {
     'nav.book': 'Reservar',
     // Footer
     'footer.rights': 'Todos los derechos reservados',
+    // Intentionally kept — pending visual editor implementation
     'footer.tagline': 'Donde la montaña se encuentra con el Mediterráneo.',
+    // Stay, Room, Experiences and Location keys intentionally kept — pending visual editor implementation
     // Stay page
     'stay.from': 'Desde',
     'stay.night': '/ noche',
@@ -107,16 +116,20 @@ export const ui = {
     'loc.cta': 'Ya conoces el camino. Elige una habitación.',
     // Journal
     'journal.hero.title': 'El Diario',
+    // Intentionally kept — pending visual editor implementation
     'journal.hero.sub': 'Notas desde la montaña.',
     'journal.read': 'Leer artículo',
     'journal.min': 'min de lectura',
+    // Intentionally kept — pending visual editor implementation
     'journal.all': 'Todos',
     // Book / Enquiry form
+    // Intentionally kept — pending visual editor implementation
     'book.hero.title': 'Solicita tu reserva.',
     'book.hero.sub': 'Reserva directa · Sin intermediarios',
     'book.note': 'Cada solicitud es gestionada personalmente por nuestro Manager Javier, y respondida el mismo día. No se cobra nada hasta que confirmamos.',
     'book.name': 'Nombre completo',
     'book.email': 'Correo electrónico',
+    // Intentionally kept — pending visual editor implementation
     'book.phone': 'Teléfono (opcional)',
     'book.checkin': 'Llegada',
     'book.checkout': 'Salida',
@@ -127,6 +140,7 @@ export const ui = {
     'book.submit': 'Enviar solicitud',
     'book.success': 'Gracias — nos pondremos en contacto en unas horas.',
     'book.error': 'Algo ha salido mal. Por favor escríbenos directamente a hola@lacuevademiravet.com',
+    // Intentionally kept — pending visual editor implementation
     'book.guarantee': 'Mejor precio, garantizado.',
     'book.guarantee.body': 'Si encuentras nuestras habitaciones más baratas en cualquier otro sitio para las mismas fechas, igualamos el precio y añadimos una botella de vino local a tu habitación.',
   },

@@ -4,10 +4,11 @@ import Base from '../../layouts/Base.astro';
 import { client } from '../../lib/sanity';
 import { BOOK_PAGE_QUERY } from '../../lib/sanity/queries';
 import type { BookPage } from '../../types/sanity';
-import { prefix } from '../../i18n/utils';
+import { prefix, useTranslations } from '../../i18n/utils';
 
 const lang     = 'es';
 const p        = prefix(lang);
+const t        = useTranslations(lang);
 // bookPage singleton has no locale variant — content is shared with EN
 const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
 ---
@@ -66,6 +67,7 @@ const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
             <p>Se ha enviado una confirmación a tu email. Busca una respuesta de <em>hola@lacuevademiravet.com</em>.</p>
           </div>
         </div>
+        <p class="form-error" id="formError" hidden>{t('book.error')}</p>
       </form>
     </div>
   </section>
@@ -149,6 +151,7 @@ const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
 .form-success h3 { font-family: var(--font-serif); font-size: 32px; font-weight: 300; margin-bottom: 16px; }
 .form-success p { color: var(--stone-mid); font-size: 15px; max-width: 440px; margin: 0 auto; }
 .form-success em { font-style: italic; color: var(--stone-dark); }
+.form-error { font-size: 13px; color: var(--terra); padding: 8px 0; }
 .next { background: var(--cream-deep); padding: 120px 40px; }
 .next__header { max-width: 1100px; margin: 0 auto 72px; text-align: center; }
 .next__header .label { margin-bottom: 18px; display: block; }
@@ -203,14 +206,15 @@ tiles.forEach(tile => {
 updateRoom();
 document.getElementById('bookingForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const form = e.target as HTMLFormElement;
-  const btn  = document.getElementById('submitBtn') as HTMLButtonElement;
-  const succ = document.getElementById('formSuccess') as HTMLElement;
+  const form    = e.target as HTMLFormElement;
+  const btn     = document.getElementById('submitBtn') as HTMLButtonElement;
+  const succ    = document.getElementById('formSuccess') as HTMLElement;
+  const errorEl = document.getElementById('formError') as HTMLElement;
   btn.disabled = true; btn.textContent = '…';
   try {
     const res = await fetch('/api/enquiry', { method: 'POST', body: new FormData(form) });
     if (res.ok) { form.style.opacity = '0.35'; form.style.pointerEvents = 'none'; succ.hidden = false; succ.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     else throw new Error();
-  } catch { btn.disabled = false; btn.textContent = 'Enviar solicitud'; alert('Algo ha salido mal. Por favor escríbenos a hola@lacuevademiravet.com'); }
+  } catch { btn.disabled = false; btn.textContent = 'Enviar solicitud'; errorEl.hidden = false; errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
 });
 </script>
