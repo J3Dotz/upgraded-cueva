@@ -2,17 +2,23 @@
 import Base from '../../layouts/Base.astro';
 import { loadQuery } from '../../lib/load-query';
 import { getDraftModeProps } from '../../lib/draft-mode';
-import { ALL_EXPERIENCES_QUERY } from '../../lib/sanity/queries';
-import type { ExperienceListItem } from '../../types/sanity';
+import { ALL_EXPERIENCES_QUERY, SITE_SETTINGS_QUERY } from '../../lib/sanity/queries';
+import type { ExperienceListItem, SiteSettings } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
 
 const lang        = 'es';
 const p           = prefix(lang);
-const { data: experiences } = await loadQuery<ExperienceListItem[]>({
-  query: ALL_EXPERIENCES_QUERY,
-  params: { locale: lang },
-  ...getDraftModeProps(Astro.cookies),
-});
+const [{ data: experiences }, { data: siteSettings }] = await Promise.all([
+  loadQuery<ExperienceListItem[]>({
+    query: ALL_EXPERIENCES_QUERY,
+    params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<SiteSettings>({
+    query: SITE_SETTINGS_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
+]);
 // Sanity data is available but page content remains as Spanish fallback until editors add ES documents
 ---
 <Base title="Experiencias — La Cueva de Miravet" description="Lo que haces aquí. Un pequeño conjunto de experiencias tranquilas en La Cueva de Miravet — cueva, valle, montaña y mesa." activePage="experiences" lang={lang}>
@@ -90,9 +96,9 @@ const { data: experiences } = await loadQuery<ExperienceListItem[]>({
       <p class="bespoke__quote"><span class="italic">"Si quieres algo que no hemos pensado,</span><span class="roman italic"> — dinos. Veremos qué puede hacer el valle."</span></p>
       <p class="bespoke__sub">Aniversarios, retiros tranquilos, aquella comida que recuerdas de otro lugar, una visita a un productor del valle. Escríbenos una semana antes de llegar.</p>
       <div class="bespoke__cta-row">
-        <a href="mailto:hola@lacuevademiravet.com" class="btn-terra">Dinos qué necesitas</a>
+        <a href={`mailto:${siteSettings?.email}`} class="btn-terra">Dinos qué necesitas</a>
         <span class="bespoke__or">o</span>
-        <a href="mailto:hola@lacuevademiravet.com" class="bespoke__email">hola@lacuevademiravet.com</a>
+        <a href={`mailto:${siteSettings?.email}`} class="bespoke__email">{siteSettings?.email}</a>
       </div>
     </div>
   </section>

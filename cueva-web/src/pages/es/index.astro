@@ -1,14 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
-import type { Homepage, RoomListItem } from '../../types/sanity';
+import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY, SITE_SETTINGS_QUERY } from '../../lib/sanity/queries';
+import type { Homepage, RoomListItem, SiteSettings } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
 import { loadQuery } from '../../lib/load-query';
 import { getDraftModeProps } from '../../lib/draft-mode';
 
 const lang = 'es';
 const p    = prefix(lang);
-const [{ data: homepage }, { data: rooms }] = await Promise.all([
+const [{ data: homepage }, { data: rooms }, { data: siteSettings }] = await Promise.all([
   loadQuery<Homepage>({
     query: HOMEPAGE_QUERY,
     ...getDraftModeProps(Astro.cookies),
@@ -16,6 +16,10 @@ const [{ data: homepage }, { data: rooms }] = await Promise.all([
   loadQuery<RoomListItem[]>({
     query: ALL_ROOMS_QUERY,
     params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<SiteSettings>({
+    query: SITE_SETTINGS_QUERY,
     ...getDraftModeProps(Astro.cookies),
   }),
 ]);
@@ -77,10 +81,10 @@ const wireframeRooms: RoomListItem[] = [
         <h2>Una masía que<br/>lo recuerda todo.</h2>
         <p>Construida en el siglo XIX, restaurada sin complejos. La Cueva de Miravet se asienta en la cima de una montaña en Cabanes — fuera de la red eléctrica, tranquila, y junto a una cueva natural que lleva aquí mucho más tiempo que nosotros.</p>
         <div class="review-badge">
-          <span class="stars">8.7</span>
+          <span class="stars">{siteSettings?.bookingScore}</span>
           <span class="dot"></span>
           <span>Booking.com</span>
-          <span class="exceptional">"Excepcional"</span>
+          <span class="exceptional">"{siteSettings?.bookingLabel}"</span>
         </div>
       </div>
       <div class="arch-img intro__img-right" role="img" aria-label="La cueva natural en los límites de la propiedad"></div>

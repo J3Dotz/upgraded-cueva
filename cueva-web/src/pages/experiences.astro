@@ -3,18 +3,24 @@ import Base from '../layouts/Base.astro';
 import HeroSection from '../components/layout/HeroSection.astro';
 import { loadQuery } from '../lib/load-query';
 import { getDraftModeProps } from '../lib/draft-mode';
-import { ALL_EXPERIENCES_QUERY } from '../lib/sanity/queries';
-import type { ExperienceListItem } from '../types/sanity';
+import { ALL_EXPERIENCES_QUERY, SITE_SETTINGS_QUERY } from '../lib/sanity/queries';
+import type { ExperienceListItem, SiteSettings } from '../types/sanity';
 import { prefix } from '../i18n/utils';
 
 const lang = 'en';
 const p    = prefix(lang);
 
-const { data: experiences } = await loadQuery<ExperienceListItem[]>({
-  query: ALL_EXPERIENCES_QUERY,
-  params: { locale: lang },
-  ...getDraftModeProps(Astro.cookies),
-});
+const [{ data: experiences }, { data: siteSettings }] = await Promise.all([
+  loadQuery<ExperienceListItem[]>({
+    query: ALL_EXPERIENCES_QUERY,
+    params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<SiteSettings>({
+    query: SITE_SETTINGS_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
+]);
 
 const featured = experiences.find(e => e.featured) ?? experiences[0] ?? null;
 const others   = experiences.filter(e => e !== featured);
@@ -148,10 +154,9 @@ const catColors: Record<string, string> = {
       </p>
       <p class="bespoke__sub">Anniversaries, quiet retreats, a particular meal you remember from somewhere else, an introduction to a maker in the valley. Write to us a week before you come.</p>
       <div class="bespoke__cta-row">
-        <!-- TODO: wire to Sanity — field: siteSettings.email -->
-        <a href="mailto:hola@lacuevademiravet.com" class="btn-terra">Tell us what you need</a>
+        <a href={`mailto:${siteSettings?.email}`} class="btn-terra">Tell us what you need</a>
         <span class="bespoke__or">or</span>
-        <a href="mailto:hola@lacuevademiravet.com" class="bespoke__email">hola@lacuevademiravet.com</a>
+        <a href={`mailto:${siteSettings?.email}`} class="bespoke__email">{siteSettings?.email}</a>
       </div>
     </div>
   </section>

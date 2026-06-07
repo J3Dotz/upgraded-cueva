@@ -2,17 +2,23 @@
 import Base from '../layouts/Base.astro';
 import { loadQuery } from '../lib/load-query';
 import { getDraftModeProps } from '../lib/draft-mode';
-import { BOOK_PAGE_QUERY } from '../lib/sanity/queries';
-import type { BookPage } from '../types/sanity';
+import { BOOK_PAGE_QUERY, SITE_SETTINGS_QUERY } from '../lib/sanity/queries';
+import type { BookPage, SiteSettings } from '../types/sanity';
 import { prefix, useTranslations } from '../i18n/utils';
 
 const lang     = 'en';
 const p        = prefix(lang);
 const t        = useTranslations(lang);
-const { data: bookPage } = await loadQuery<BookPage>({
-  query: BOOK_PAGE_QUERY,
-  ...getDraftModeProps(Astro.cookies),
-});
+const [{ data: bookPage }, { data: siteSettings }] = await Promise.all([
+  loadQuery<BookPage>({
+    query: BOOK_PAGE_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<SiteSettings>({
+    query: SITE_SETTINGS_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
+]);
 ---
 
 <Base
@@ -39,7 +45,7 @@ const { data: bookPage } = await loadQuery<BookPage>({
         <div class="form-aside__rule"></div>
         <div class="form-aside__contact">
           <div class="label">Or write to us</div>
-          <a href="mailto:hola@lacuevademiravet.com" class="form-aside__email">hola@lacuevademiravet.com</a>
+          <a href={`mailto:${siteSettings?.email}`} class="form-aside__email">{siteSettings?.email}</a>
           <p class="form-aside__phone">+34 641 33 09 42</p>
         </div>
       </div>

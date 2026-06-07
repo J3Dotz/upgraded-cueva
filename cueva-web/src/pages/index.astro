@@ -2,14 +2,14 @@
 import Base from '../layouts/Base.astro';
 import HeroSection from '../components/layout/HeroSection.astro';
 import RoomCard from '../components/RoomCard.astro';
-import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../lib/sanity/queries';
-import type { Homepage, RoomListItem } from '../types/sanity';
+import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY, SITE_SETTINGS_QUERY } from '../lib/sanity/queries';
+import type { Homepage, RoomListItem, SiteSettings } from '../types/sanity';
 import { loadQuery } from '../lib/load-query';
 import { getDraftModeProps } from '../lib/draft-mode';
 
 const lang = 'en';
 
-const [{ data: homepage }, { data: rooms }] = await Promise.all([
+const [{ data: homepage }, { data: rooms }, { data: siteSettings }] = await Promise.all([
   loadQuery<Homepage>({
     query: HOMEPAGE_QUERY,
     ...getDraftModeProps(Astro.cookies),
@@ -17,6 +17,10 @@ const [{ data: homepage }, { data: rooms }] = await Promise.all([
   loadQuery<RoomListItem[]>({
     query: ALL_ROOMS_QUERY,
     params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<SiteSettings>({
+    query: SITE_SETTINGS_QUERY,
     ...getDraftModeProps(Astro.cookies),
   }),
 ]);
@@ -140,12 +144,11 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
         <p class="label">{lodge?.sectionLabel ?? 'The Lodge'}</p>
         <h2>{lodge?.headline ?? 'A Masia that remembers everything.'}</h2>
         <p>{lodge?.body ?? 'Built in the 19th century, restored without apology. La Cueva de Miravet sits on a mountaintop in Cabanes — off-grid, unhurried, and beside a natural cave that has been here considerably longer than we have.'}</p>
-        <!-- TODO: wire to Sanity — fields: siteSettings.bookingScore, siteSettings.bookingLabel -->
         <div class="review-badge">
-          <span class="stars">8.7</span>
+          <span class="stars">{siteSettings?.bookingScore}</span>
           <span class="dot"></span>
           <span>Booking.com</span>
-          <span class="exceptional">"Exceptional"</span>
+          <span class="exceptional">"{siteSettings?.bookingLabel}"</span>
         </div>
       </div>
       <div class="arch-img intro__img-right" role="img" aria-label="The natural cave at the property edge"></div>

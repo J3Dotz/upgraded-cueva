@@ -2,18 +2,24 @@
 import Base from '../../layouts/Base.astro';
 import { loadQuery } from '../../lib/load-query';
 import { getDraftModeProps } from '../../lib/draft-mode';
-import { BOOK_PAGE_QUERY } from '../../lib/sanity/queries';
-import type { BookPage } from '../../types/sanity';
+import { BOOK_PAGE_QUERY, SITE_SETTINGS_QUERY } from '../../lib/sanity/queries';
+import type { BookPage, SiteSettings } from '../../types/sanity';
 import { prefix, useTranslations } from '../../i18n/utils';
 
 const lang     = 'es';
 const p        = prefix(lang);
 const t        = useTranslations(lang);
 // bookPage singleton has no locale variant — content is shared with EN
-const { data: bookPage } = await loadQuery<BookPage>({
-  query: BOOK_PAGE_QUERY,
-  ...getDraftModeProps(Astro.cookies),
-});
+const [{ data: bookPage }, { data: siteSettings }] = await Promise.all([
+  loadQuery<BookPage>({
+    query: BOOK_PAGE_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<SiteSettings>({
+    query: SITE_SETTINGS_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
+]);
 ---
 <Base title="Solicitar reserva — La Cueva de Miravet" description="Reserva directa — sin intermediarios. Confirmamos en pocas horas y enviamos un enlace de pago seguro." transparentNav={false} activePage="book" lang={lang}>
 
@@ -28,7 +34,7 @@ const { data: bookPage } = await loadQuery<BookPage>({
         <div class="form-aside__rule"></div>
         <div class="form-aside__contact">
           <div class="label">O escríbenos directamente</div>
-          <a href="mailto:hola@lacuevademiravet.com" class="form-aside__email">hola@lacuevademiravet.com</a>
+          <a href={`mailto:${siteSettings?.email}`} class="form-aside__email">{siteSettings?.email}</a>
           <p class="form-aside__phone">+34 641 33 09 42</p>
         </div>
       </div>
@@ -67,7 +73,7 @@ const { data: bookPage } = await loadQuery<BookPage>({
           <div class="form-success__inner">
             <div class="label">Recibido</div>
             <h3>Gracias. Nos pondremos en contacto en pocas horas.</h3>
-            <p>Se ha enviado una confirmación a tu email. Busca una respuesta de <em>hola@lacuevademiravet.com</em>.</p>
+            <p>Se ha enviado una confirmación a tu email. Busca una respuesta de <em>{siteSettings?.email}</em>.</p>
           </div>
         </div>
         <p class="form-error" id="formError" hidden>{t('book.error')}</p>
