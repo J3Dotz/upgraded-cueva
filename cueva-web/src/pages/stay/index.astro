@@ -1,16 +1,20 @@
 ---
-export const prerender = true;
 import Base from '../../layouts/Base.astro';
 import HeroSection from '../../components/layout/HeroSection.astro';
-import { client } from '../../lib/sanity';
 import { ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
 import type { RoomListItem } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
+import { loadQuery } from '../../lib/load-query';
+import { getDraftModeProps } from '../../lib/draft-mode';
 
 const lang = 'en';
 const p    = prefix(lang);
 
-const rooms = await client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang });
+const { data: rooms } = await loadQuery<RoomListItem[]>({
+  query: ALL_ROOMS_QUERY,
+  params: { locale: lang },
+  ...getDraftModeProps(Astro.cookies),
+});
 
 // Wireframe fallback — shown while Sanity content is being populated
 const wireframe: RoomListItem[] = [

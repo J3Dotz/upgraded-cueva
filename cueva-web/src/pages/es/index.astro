@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { client } from '../../lib/sanity';
 import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
 import type { Homepage, RoomListItem } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
@@ -9,12 +8,16 @@ import { getDraftModeProps } from '../../lib/draft-mode';
 
 const lang = 'es';
 const p    = prefix(lang);
-const [{ data: homepage }, rooms] = await Promise.all([
+const [{ data: homepage }, { data: rooms }] = await Promise.all([
   loadQuery<Homepage>({
     query: HOMEPAGE_QUERY,
     ...getDraftModeProps(Astro.cookies),
   }),
-  client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
+  loadQuery<RoomListItem[]>({
+    query: ALL_ROOMS_QUERY,
+    params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
 ]);
 
 const swatches: Record<string, string> = { olivo:'#5C4838', lavanda:'#8FA59A', laurel:'#B8A48A', tomillo:'#7E6E58', almendro:'#6F8366', roble:'#9A8A74', hinojo:'#4A3F35' };

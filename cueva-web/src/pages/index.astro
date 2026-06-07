@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import HeroSection from '../components/layout/HeroSection.astro';
 import RoomCard from '../components/RoomCard.astro';
-import { client } from '../lib/sanity';
 import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../lib/sanity/queries';
 import type { Homepage, RoomListItem } from '../types/sanity';
 import { loadQuery } from '../lib/load-query';
@@ -10,12 +9,16 @@ import { getDraftModeProps } from '../lib/draft-mode';
 
 const lang = 'en';
 
-const [{ data: homepage }, rooms] = await Promise.all([
+const [{ data: homepage }, { data: rooms }] = await Promise.all([
   loadQuery<Homepage>({
     query: HOMEPAGE_QUERY,
     ...getDraftModeProps(Astro.cookies),
   }),
-  client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
+  loadQuery<RoomListItem[]>({
+    query: ALL_ROOMS_QUERY,
+    params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
 ]);
 
 const hero               = homepage?.hero;

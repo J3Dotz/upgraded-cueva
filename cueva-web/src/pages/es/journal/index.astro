@@ -1,14 +1,19 @@
 ---
-export const prerender = true;
 import Base from '../../../layouts/Base.astro';
-import { client } from '../../../lib/sanity';
 import { JOURNAL_POSTS_QUERY } from '../../../lib/sanity/queries';
 import type { JournalPostListItem } from '../../../types/sanity';
 import { formatDate, prefix } from '../../../i18n/utils';
+import { loadQuery } from '../../../lib/load-query';
+import { getDraftModeProps } from '../../../lib/draft-mode';
 
-const lang  = 'es';
-const p     = prefix(lang);
-const posts = await client.fetch<JournalPostListItem[]>(JOURNAL_POSTS_QUERY, { locale: lang });
+const lang = 'es';
+const p    = prefix(lang);
+
+const { data: posts } = await loadQuery<JournalPostListItem[]>({
+  query: JOURNAL_POSTS_QUERY,
+  params: { locale: lang },
+  ...getDraftModeProps(Astro.cookies),
+});
 const featured = posts.find(post => post.featured) ?? posts[0] ?? null;
 const archive  = posts.filter(post => post !== featured);
 

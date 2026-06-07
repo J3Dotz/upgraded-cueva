@@ -1,14 +1,19 @@
 ---
-export const prerender = true;
 import Base from '../../../layouts/Base.astro';
-import { client } from '../../../lib/sanity';
 import { ALL_ROOMS_QUERY } from '../../../lib/sanity/queries';
 import type { RoomListItem } from '../../../types/sanity';
 import { prefix } from '../../../i18n/utils';
+import { loadQuery } from '../../../lib/load-query';
+import { getDraftModeProps } from '../../../lib/draft-mode';
 
-const lang  = 'es';
-const p     = prefix(lang);
-const rooms = await client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang });
+const lang = 'es';
+const p    = prefix(lang);
+
+const { data: rooms } = await loadQuery<RoomListItem[]>({
+  query: ALL_ROOMS_QUERY,
+  params: { locale: lang },
+  ...getDraftModeProps(Astro.cookies),
+});
 
 const wireframe: RoomListItem[] = [
   { _id:'wf-1', slug:{current:'olivo'   }, name:'Olivo',    subtitle:'Suite Olivo',    tagline:'Excavado en la roca natural. 16°C constantes.',                    pricePerNight:420, imageUrl:null, imageAlt:null },
