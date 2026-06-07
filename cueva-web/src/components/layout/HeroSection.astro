@@ -151,7 +151,12 @@ const sectionStyle = showBgImage
           'page-hero__body',
           sublineVariant === 'tagline' && 'page-hero__body--tagline',
         ]}>
-          {subline}
+          {subline.split('\n').map((line, i) => (
+            <>
+              {i > 0 && <br />}
+              {line}
+            </>
+          ))}
         </p>
       )}
     </div>
