@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>cueva-web — Codebase Graph</title>
+  <script src="https://unpkg.com/vis-network@9.1.9/dist/vis-network.min.js"></script>
+  <link  href="https://unpkg.com/vis-network@9.1.9/dist/vis-network.min.css" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0d0d0d;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 20px;
+      background: #161616;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    header h1 { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.02em; }
+    header p  { font-size: 12px; color: #666; }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #aaa;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .legend-item:hover { background: #2a2a2a; }
+    .legend-item.dim { opacity: 0.3; }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    #network {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+    }
+
+    #info-panel {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 14px 16px;
+      min-width: 260px;
+      max-width: 340px;
+      font-size: 12px;
+      display: none;
+      z-index: 10;
+    }
+    #info-panel h3 { font-size: 13px; color: #fff; margin-bottom: 8px; word-break: break-all; }
+    #info-panel .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #info-panel ul { list-style: none; color: #999; line-height: 1.8; }
+    #info-panel ul li::before { content: "→ "; color: #555; }
+    #info-tip {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>cueva-web — Codebase Graph</h1>
+    <p>Click a node to inspect connections &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Drag to pan</p>
+  </div>
+  <div class="legend" id="legend"></div>
+</header>
+
+<div id="network"></div>
+<div id="info-panel">
+  <h3 id="ip-name"></h3>
+  <span id="ip-badge" class="badge"></span>
+  <div id="ip-body"></div>
+</div>
+<div id="info-tip">click any node for details</div>
+
+<script>
+// ── Colour palette per group ──────────────────────────────────────────────────
+const GROUPS = {
+  page_en:   { label: "Page (EN)",      color: "#4ade80", text: "#0d0d0d" },
+  page_es:   { label: "Page (ES)",      color: "#22d3ee", text: "#0d0d0d" },
+  api:       { label: "API Route",      color: "#fb923c", text: "#0d0d0d" },
+  layout:    { label: "Layout",         color: "#a78bfa", text: "#0d0d0d" },
+  component: { label: "Component",      color: "#fbbf24", text: "#0d0d0d" },
+  lib:       { label: "Library / Util", color: "#34d399", text: "#0d0d0d" },
+  i18n:      { label: "i18n",           color: "#f472b6", text: "#0d0d0d" },
+  types:     { label: "Types",          color: "#94a3b8", text: "#0d0d0d" },
+  schema:    { label: "Sanity Schema",  color: "#d97706", text: "#0d0d0d" },
+  external:  { label: "External Pkg",   color: "#475569", text: "#e0e0e0" },
+  styles:    { label: "Styles",         color: "#ec4899", text: "#0d0d0d" },
+};
+
+function node(id, label, group, meta = {}) {
+  const g = GROUPS[group];
+  return {
+    id, label,
+    group,
+    color: { background: g.color, border: g.color, highlight: { background: "#fff", border: g.color } },
+    font:  { color: g.text, size: 12, face: "monospace" },
+    shape: "box",
+    borderWidth: 0,
+    borderWidthSelected: 2,
+    margin: { top: 6, bottom: 6, left: 8, right: 8 },
+    ...meta,
+  };
+}
+
+function edge(from, to, meta = {}) {
+  return { from, to, arrows: "to", color: { color: "#333", highlight: "#888", opacity: 0.7 }, width: 1, smooth: { type: "cubicBezier", roundness: 0.2 }, ...meta };
+}
+
+// ── Node definitions ──────────────────────────────────────────────────────────
+const nodes = new vis.DataSet([
+  // Layouts
+  node("Base",             "layouts/Base.astro",           "layout",    { mass: 3 }),
+
+  // Components
+  node("Nav",              "Nav.astro",                    "component"),
+  node("Footer",           "Footer.astro",                 "component"),
+  node("EnquiryForm",      "EnquiryForm.astro",            "component"),
+  node("RoomCard",         "RoomCard.astro",               "component"),
+  node("PortableTextImg",  "PortableTextImage.astro",      "component"),
+  node("HeroSection",      "layout/HeroSection.astro",     "component"),
+
+  // EN Pages
+  node("pg_index",         "pages/index.astro",            "page_en"),
+  node("pg_experiences",   "pages/experiences.astro",      "page_en"),
+  node("pg_location",      "pages/location.astro",         "page_en"),
+  node("pg_book",          "pages/book.astro",             "page_en"),
+  node("pg_stay_index",    "pages/stay/index.astro",       "page_en"),
+  node("pg_stay_slug",     "pages/stay/[slug].astro",      "page_en"),
+  node("pg_journal_index", "pages/journal/index.astro",    "page_en"),
+  node("pg_journal_slug",  "pages/journal/[slug].astro",   "page_en"),
+
+  // ES Pages
+  node("es_index",         "es/index.astro",               "page_es"),
+  node("es_experiences",   "es/experiences.astro",         "page_es"),
+  node("es_location",      "es/location.astro",            "page_es"),
+  node("es_book",          "es/book.astro",                "page_es"),
+  node("es_stay_index",    "es/stay/index.astro",          "page_es"),
+  node("es_stay_slug",     "es/stay/[slug].astro",         "page_es"),
+  node("es_journal_index", "es/journal/index.astro",       "page_es"),
+  node("es_journal_slug",  "es/journal/[slug].astro",      "page_es"),
+  // alias/redirect pages
+  node("es_experiencias",  "es/experiencias.astro",        "page_es"),
+  node("es_ubicacion",     "es/ubicacion.astro",           "page_es"),
+  node("es_reservar",      "es/reservar.astro",            "page_es"),
+
+  // API Routes
+  node("api_avail",        "api/availability/[slug].ts",   "api"),
+  node("api_enquiry",      "api/enquiry.ts",               "api"),
+  node("api_revalidate",   "api/revalidate.ts",            "api"),
+
+  // Lib
+  node("sanity_client",    "lib/sanity.ts",                "lib",       { mass: 2 }),
+  node("sanity_queries",   "lib/sanity/queries.ts",        "lib",       { mass: 2 }),
+  node("lib_ical",         "lib/ical.ts",                  "lib"),
+
+  // i18n
+  node("i18n_ui",          "i18n/ui.ts",                   "i18n"),
+  node("i18n_utils",       "i18n/utils.ts",                "i18n",      { mass: 2 }),
+
+  // Types
+  node("types_sanity",     "types/sanity.ts",              "types"),
+
+  // Styles
+  node("styles_global",    "styles/global.css",            "styles"),
+
+  // Sanity Schemas
+  node("schema_index",     "schemas/index.ts",             "schema"),
+  node("schema_room",      "schemas/room.ts",              "schema"),
+  node("schema_exp",       "schemas/experience.ts",        "schema"),
+  node("schema_journal",   "schemas/journalPost.ts",       "schema"),
+  node("schema_site",      "schemas/siteSettings.ts",      "schema"),
+  node("schema_home",      "schemas/homepage.ts",          "schema"),
+  node("schema_loc",       "schemas/locationPage.ts",      "schema"),
+  node("schema_book",      "schemas/bookPage.ts",          "schema"),
+  node("schema_locStr",    "schemas/objects/localeString.ts","schema"),
+  node("schema_locTxt",    "schemas/objects/localeText.ts","schema"),
+  node("schema_locBlk",    "schemas/objects/localeBlock.ts","schema"),
+
+  // External
+  node("ext_sanity_sdk",   "@sanity/client",               "external"),
+  node("ext_imgurl",       "@sanity/image-url",            "external"),
+  node("ext_groq",         "groq",                         "external"),
+  node("ext_ical",         "node-ical",                    "external"),
+  node("ext_resend",       "resend",                       "external"),
+  node("ext_portabletext", "astro-portabletext",           "external"),
+  node("ext_motion",       "motion",                       "external"),
+]);
+
+// ── Edge definitions ──────────────────────────────────────────────────────────
+const edges = new vis.DataSet([
+  // Layout → components + lib
+  edge("Base", "Nav"),
+  edge("Base", "Footer"),
+  edge("Base", "sanity_client"),
+  edge("Base", "sanity_queries"),
+  edge("Base", "types_sanity"),
+  edge("Base", "i18n_ui"),
+  edge("Base", "styles_global"),
+  edge("Base", "ext_motion"),
+
+  // Components internal
+  edge("Nav",            "i18n_utils"),
+  edge("Nav",            "i18n_ui"),
+  edge("Nav",            "types_sanity"),
+  edge("Footer",         "i18n_utils"),
+  edge("Footer",         "i18n_ui"),
+  edge("Footer",         "types_sanity"),
+  edge("EnquiryForm",    "i18n_utils"),
+  edge("EnquiryForm",    "i18n_ui"),
+  edge("RoomCard",       "i18n_utils"),
+  edge("RoomCard",       "i18n_ui"),
+  edge("RoomCard",       "types_sanity"),
+  edge("PortableTextImg","sanity_client"),
+
+  // i18n
+  edge("i18n_utils",     "i18n_ui"),
+
+  // EN pages → layout
+  ...[
+    "pg_index","pg_experiences","pg_location","pg_book",
+    "pg_stay_index","pg_stay_slug","pg_journal_index","pg_journal_slug"
+  ].map(p => edge(p, "Base")),
+
+  // ES pages → layout
+  ...[
+    "es_index","es_experiences","es_location","es_book",
+    "es_stay_index","es_stay_slug","es_journal_index","es_journal_slug"
+  ].map(p => edge(p, "Base")),
+
+  // EN pages → HeroSection
+  ...[
+    "pg_index","pg_experiences","pg_location",
+    "pg_stay_index","pg_journal_index"
+  ].map(p => edge(p, "HeroSection")),
+
+  // ES pages → HeroSection
+  ...[
+    "es_index","es_experiences","es_location",
+    "es_stay_index","es_journal_index"
+  ].map(p => edge(p, "HeroSection")),
+
+  // index → RoomCard
+  edge("pg_index", "RoomCard"),
+  edge("es_index", "RoomCard"),
+
+  // journal slug → PortableText
+  edge("pg_journal_slug", "PortableTextImg"),
+  edge("pg_journal_slug", "ext_portabletext"),
+  edge("es_journal_slug", "PortableTextImg"),
+  edge("es_journal_slug", "ext_portabletext"),
+
+  // EN pages → sanity
+  ...[
+    "pg_index","pg_experiences","pg_location","pg_book",
+    "pg_stay_index","pg_stay_slug","pg_journal_index","pg_journal_slug"
+  ].map(p => edge(p, "sanity_client")),
+  ...[
+    "pg_index","pg_experiences","pg_location","pg_book",
+    "pg_stay_index","pg_stay_slug","pg_journal_index","pg_journal_slug"
+  ].map(p => edge(p, "sanity_queries")),
+
+  // ES pages → sanity
+  ...[
+    "es_index","es_experiences","es_location","es_book",
+    "es_stay_index","es_stay_slug","es_journal_index","es_journal_slug"
+  ].map(p => edge(p, "sanity_client")),
+  ...[
+    "es_index","es_experiences","es_location","es_book",
+    "es_stay_index","es_stay_slug","es_journal_index","es_journal_slug"
+  ].map(p => edge(p, "sanity_queries")),
+
+  // EN pages → types + i18n
+  ...[
+    "pg_index","pg_experiences","pg_location","pg_book",
+    "pg_stay_index","pg_stay_slug","pg_journal_index","pg_journal_slug"
+  ].map(p => edge(p, "types_sanity")),
+  ...[
+    "pg_experiences","pg_location","pg_book",
+    "pg_stay_index","pg_stay_slug","pg_journal_index","pg_journal_slug"
+  ].map(p => edge(p, "i18n_utils")),
+
+  // ES pages → types + i18n
+  ...[
+    "es_index","es_experiences","es_location","es_book",
+    "es_stay_index","es_stay_slug","es_journal_index","es_journal_slug"
+  ].map(p => edge(p, "types_sanity")),
+  ...[
+    "es_experiences","es_location","es_book",
+    "es_stay_index","es_stay_slug","es_journal_index","es_journal_slug"
+  ].map(p => edge(p, "i18n_utils")),
+
+  // alias pages (minimal — just layout)
+  edge("es_experiencias",  "Base"),
+  edge("es_ubicacion",     "Base"),
+  edge("es_reservar",      "Base"),
+
+  // API routes
+  edge("api_avail",    "sanity_client"),
+  edge("api_avail",    "sanity_queries"),
+  edge("api_avail",    "lib_ical"),
+  edge("api_enquiry",  "ext_resend"),
+
+  // Lib → externals
+  edge("sanity_client",  "ext_sanity_sdk"),
+  edge("sanity_client",  "ext_imgurl"),
+  edge("sanity_queries", "ext_groq"),
+  edge("lib_ical",       "ext_ical"),
+
+  // Schemas
+  edge("schema_index", "schema_room"),
+  edge("schema_index", "schema_exp"),
+  edge("schema_index", "schema_journal"),
+  edge("schema_index", "schema_site"),
+  edge("schema_index", "schema_home"),
+  edge("schema_index", "schema_loc"),
+  edge("schema_index", "schema_book"),
+  edge("schema_index", "schema_locStr"),
+  edge("schema_index", "schema_locTxt"),
+  edge("schema_index", "schema_locBlk"),
+]);
+
+// ── Build node metadata for the info panel ────────────────────────────────────
+const nodeMeta = {};
+nodes.forEach(n => {
+  const outgoing = edges.get({ filter: e => e.from === n.id }).map(e => nodes.get(e.to)?.label).filter(Boolean);
+  const incoming = edges.get({ filter: e => e.to   === n.id }).map(e => nodes.get(e.from)?.label).filter(Boolean);
+  nodeMeta[n.id] = { outgoing, incoming };
+});
+
+// ── Render ────────────────────────────────────────────────────────────────────
+const container = document.getElementById("network");
+const network = new vis.Network(container, { nodes, edges }, {
+  physics: {
+    enabled: true,
+    solver: "forceAtlas2Based",
+    forceAtlas2Based: {
+      gravitationalConstant: -60,
+      centralGravity: 0.003,
+      springLength: 130,
+      springConstant: 0.08,
+      damping: 0.6,
+      avoidOverlap: 0.5,
+    },
+    stabilization: { iterations: 400, updateInterval: 30 },
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 0,
+    navigationButtons: false,
+    keyboard: true,
+  },
+  edges: {
+    smooth: { type: "cubicBezier", roundness: 0.2 },
+  },
+});
+
+// ── Legend ────────────────────────────────────────────────────────────────────
+const legend = document.getElementById("legend");
+let hiddenGroups = new Set();
+
+Object.entries(GROUPS).forEach(([key, g]) => {
+  const item = document.createElement("div");
+  item.className = "legend-item";
+  item.dataset.group = key;
+  item.innerHTML = `<div class="dot" style="background:${g.color}"></div>${g.label}`;
+  item.addEventListener("click", () => {
+    if (hiddenGroups.has(key)) {
+      hiddenGroups.delete(key);
+      item.classList.remove("dim");
+    } else {
+      hiddenGroups.add(key);
+      item.classList.add("dim");
+    }
+    // show/hide matching nodes
+    nodes.forEach(n => {
+      if (n.group === key) {
+        nodes.update({ id: n.id, hidden: hiddenGroups.has(key) });
+      }
+    });
+  });
+  legend.appendChild(item);
+});
+
+// ── Info panel ────────────────────────────────────────────────────────────────
+const panel  = document.getElementById("info-panel");
+const ipName = document.getElementById("ip-name");
+const ipBadge= document.getElementById("ip-badge");
+const ipBody = document.getElementById("ip-body");
+const tip    = document.getElementById("info-tip");
+
+network.on("click", params => {
+  if (params.nodes.length === 0) {
+    panel.style.display = "none";
+    tip.style.display   = "block";
+    // reset highlights
+    nodes.forEach(n => nodes.update({ id: n.id, opacity: 1 }));
+    return;
+  }
+
+  const id  = params.nodes[0];
+  const n   = nodes.get(id);
+  const g   = GROUPS[n.group];
+  const meta = nodeMeta[id];
+
+  // Dim unrelated nodes
+  const related = new Set([id]);
+  edges.forEach(e => {
+    if (e.from === id) related.add(e.to);
+    if (e.to   === id) related.add(e.from);
+  });
+  nodes.forEach(n2 => {
+    nodes.update({ id: n2.id, opacity: related.has(n2.id) ? 1 : 0.15 });
+  });
+
+  ipName.textContent = n.label;
+  ipBadge.textContent = g.label;
+  ipBadge.style.background = g.color;
+  ipBadge.style.color = g.text;
+
+  let html = "";
+  if (meta.incoming.length) {
+    html += `<p style="color:#666;margin-bottom:4px;font-size:11px">USED BY</p>
+             <ul>${meta.incoming.map(l => `<li>${l}</li>`).join("")}</ul>`;
+  }
+  if (meta.outgoing.length) {
+    html += `<p style="color:#666;margin-top:10px;margin-bottom:4px;font-size:11px">IMPORTS</p>
+             <ul style="color:#aaa">${meta.outgoing.map(l => `<li>${l}</li>`).join("")}</ul>`;
+  }
+  if (!html) html = `<p style="color:#555;font-style:italic">No connections recorded.</p>`;
+
+  ipBody.innerHTML  = html;
+  panel.style.display = "block";
+  tip.style.display   = "none";
+});
+
+network.on("stabilizationIterationsDone", () => {
+  network.setOptions({ physics: { enabled: false } });
+});
+</script>
+</body>
+</html>
