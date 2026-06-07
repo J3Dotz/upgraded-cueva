@@ -283,6 +283,15 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
     </div>
   </section>
 
+  <!-- ===== Closing Quote ===== -->
+  {closingQuote && (
+    <section class="closing-quote">
+      <blockquote class="closing-quote__text" data-animate>
+        {closingQuote}
+      </blockquote>
+    </section>
+  )}
+
 </Base>
 
 <style>
@@ -550,6 +559,24 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 }
 .activities__bottom a:hover { text-decoration: underline; }
 
+/* ===== Closing Quote ===== */
+.closing-quote {
+  background: var(--cream-deep);
+  padding: 120px 40px;
+  text-align: center;
+  border-top: 1px solid var(--stone-light);
+}
+.closing-quote__text {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--stone-dark);
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
   .intro__grid { grid-template-columns: 1fr; gap: 40px; }
@@ -558,6 +585,8 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
   .activities__grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
+  .closing-quote { padding: 80px 24px; }
+  .closing-quote__text { font-size: 24px; }
   .availability {
     flex-direction: column; border-radius: 28px;
     padding: 16px; width: 100%; max-width: 360px;

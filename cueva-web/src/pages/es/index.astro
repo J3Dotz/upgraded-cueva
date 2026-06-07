@@ -24,6 +24,8 @@ const [{ data: homepage }, { data: rooms }, { data: siteSettings }] = await Prom
   }),
 ]);
 
+const closingQuote = homepage?.closingQuote;
+
 const swatches: Record<string, string> = { olivo:'#5C4838', lavanda:'#8FA59A', laurel:'#B8A48A', tomillo:'#7E6E58', almendro:'#6F8366', roble:'#9A8A74', hinojo:'#4A3F35' };
 
 const wireframeRooms: RoomListItem[] = [
@@ -188,6 +190,15 @@ const wireframeRooms: RoomListItem[] = [
     </div>
   </section>
 
+  <!-- ===== Closing Quote ===== -->
+  {closingQuote && (
+    <section class="closing-quote">
+      <blockquote class="closing-quote__text" data-animate>
+        {closingQuote}
+      </blockquote>
+    </section>
+  )}
+
 </Base>
 
 <style>
@@ -293,6 +304,24 @@ const wireframeRooms: RoomListItem[] = [
 .activities__bottom { text-align: center; margin-top: 48px; }
 .activities__bottom a { font-size: 13px; font-weight: 500; color: var(--terra); text-transform: uppercase; letter-spacing: 0.08em; }
 
+/* ===== Closing Quote ===== */
+.closing-quote {
+  background: var(--cream-deep);
+  padding: 120px 40px;
+  text-align: center;
+  border-top: 1px solid var(--stone-light);
+}
+.closing-quote__text {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--stone-dark);
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
 @media (max-width: 1024px) {
   .hero h1 { font-size: 56px; }
   .intro__grid { grid-template-columns: 1fr; gap: 40px; }
@@ -301,6 +330,8 @@ const wireframeRooms: RoomListItem[] = [
   .activities__grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
+  .closing-quote { padding: 80px 24px; }
+  .closing-quote__text { font-size: 24px; }
   .hero { padding: 0 24px; min-height: 640px; }
   .hero h1 { font-size: 44px; }
   .availability { flex-direction: column; border-radius: 28px; padding: 16px; width: 100%; max-width: 360px; align-items: stretch; gap: 8px; margin-top: 40px; }
