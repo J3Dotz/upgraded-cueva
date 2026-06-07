@@ -1,7 +1,7 @@
 ---
-export const prerender = true;
 import Base from '../../layouts/Base.astro';
-import { client } from '../../lib/sanity';
+import { loadQuery } from '../../lib/load-query';
+import { getDraftModeProps } from '../../lib/draft-mode';
 import { LOCATION_PAGE_QUERY } from '../../lib/sanity/queries';
 import type { LocationPage } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
@@ -9,7 +9,10 @@ import { prefix } from '../../i18n/utils';
 const lang     = 'es';
 const p        = prefix(lang);
 // locationPage singleton has no locale variant — content is shared with EN
-const location = await client.fetch<LocationPage>(LOCATION_PAGE_QUERY);
+const { data: location } = await loadQuery<LocationPage>({
+  query: LOCATION_PAGE_QUERY,
+  ...getDraftModeProps(Astro.cookies),
+});
 ---
 <Base title="Ubicación — La Cueva de Miravet" description="Cómo llegar a La Cueva de Miravet — una masía del siglo XIX en la cima de una montaña en Cabanes, Castellón. En coche, tren o avión." activePage="location" lang={lang}>
 

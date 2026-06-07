@@ -1,7 +1,7 @@
 ---
-export const prerender = true;
 import Base from '../../layouts/Base.astro';
-import { client } from '../../lib/sanity';
+import { loadQuery } from '../../lib/load-query';
+import { getDraftModeProps } from '../../lib/draft-mode';
 import { BOOK_PAGE_QUERY } from '../../lib/sanity/queries';
 import type { BookPage } from '../../types/sanity';
 import { prefix, useTranslations } from '../../i18n/utils';
@@ -10,7 +10,10 @@ const lang     = 'es';
 const p        = prefix(lang);
 const t        = useTranslations(lang);
 // bookPage singleton has no locale variant — content is shared with EN
-const bookPage = await client.fetch<BookPage>(BOOK_PAGE_QUERY);
+const { data: bookPage } = await loadQuery<BookPage>({
+  query: BOOK_PAGE_QUERY,
+  ...getDraftModeProps(Astro.cookies),
+});
 ---
 <Base title="Solicitar reserva — La Cueva de Miravet" description="Reserva directa — sin intermediarios. Confirmamos en pocas horas y enviamos un enlace de pago seguro." transparentNav={false} activePage="book" lang={lang}>
 
