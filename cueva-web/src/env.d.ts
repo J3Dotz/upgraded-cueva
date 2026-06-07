@@ -8,7 +8,6 @@ interface ImportMetaEnv {
   readonly SANITY_WEBHOOK_SECRET: string;
   readonly VERCEL_DEPLOY_HOOK_URL: string;
   readonly RESEND_API_KEY: string;
-  readonly SITE_URL: string;
 }
 
 interface ImportMeta {

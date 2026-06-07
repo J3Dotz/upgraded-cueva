@@ -3,8 +3,10 @@ export const prerender = true;
 import Base from '../../layouts/Base.astro';
 import { client } from '../../lib/sanity';
 import { JOURNAL_POST_BY_SLUG_QUERY, JOURNAL_SLUGS_QUERY } from '../../lib/sanity/queries';
-import type { JournalPost, JournalSlug, PortableTextBlock } from '../../types/sanity';
+import type { JournalPost, JournalSlug } from '../../types/sanity';
 import { formatDate, useTranslations } from '../../i18n/utils';
+import { PortableText } from 'astro-portabletext';
+import PortableTextImage from '../../components/PortableTextImage.astro';
 
 export async function getStaticPaths() {
   const slugs = await client.fetch<JournalSlug[]>(JOURNAL_SLUGS_QUERY);
@@ -20,6 +22,10 @@ if (!post) return Astro.redirect('/journal');
 
 const title   = post.title   ?? '';
 const excerpt = post.excerpt ?? '';
+
+const components = {
+  type: { image: PortableTextImage },
+};
 ---
 
 <Base
@@ -57,28 +63,9 @@ const excerpt = post.excerpt ?? '';
     </div>
   </section>
 
-  <!-- Article body — minimal Portable Text renderer -->
-  <!-- TODO: replace with @portabletext/astro for full mark/list/heading support -->
-  <!-- DEPENDENCY: requires @portabletext/astro — npm i @portabletext/astro -->
   <section class="art-body">
     <div class="art-body__inner">
-      {post.body?.map((block: PortableTextBlock) => {
-        const b = block as any;
-        if (b._type === 'block') {
-          const text = (b.children ?? []).map((c: any) => c.text ?? '').join('');
-          if (b.style === 'h2') return <h2>{text}</h2>;
-          if (b.style === 'h3') return <h3>{text}</h3>;
-          if (b.style === 'blockquote') return <blockquote>{text}</blockquote>;
-          return text ? <p>{text}</p> : null;
-        }
-        if (b._type === 'image' && b.asset) {
-          const imgUrl = b.asset?.url ?? null;
-          return imgUrl
-            ? <figure><img src={imgUrl} alt={b.alt ?? ''} loading="lazy" />{b.caption && <figcaption>{b.caption}</figcaption>}</figure>
-            : null;
-        }
-        return null;
-      })}
+      <PortableText value={post.body} components={components} />
     </div>
   </section>
 

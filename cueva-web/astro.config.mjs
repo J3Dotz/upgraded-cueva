@@ -3,6 +3,7 @@ import vercel from '@astrojs/vercel';
 import sanity from '@sanity/astro';
 
 export default defineConfig({
+  // Site URL is hardcoded — update here when the domain changes.
   site: 'https://lacuevademiravet.com',
 
   // Server mode: all routes are SSR by default.

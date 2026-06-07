@@ -3,8 +3,10 @@ export const prerender = true;
 import Base from '../../../layouts/Base.astro';
 import { client } from '../../../lib/sanity';
 import { JOURNAL_POST_BY_SLUG_QUERY, JOURNAL_SLUGS_QUERY } from '../../../lib/sanity/queries';
-import type { JournalPost, JournalSlug, PortableTextBlock } from '../../../types/sanity';
+import type { JournalPost, JournalSlug } from '../../../types/sanity';
 import { formatDate, useTranslations } from '../../../i18n/utils';
+import { PortableText } from 'astro-portabletext';
+import PortableTextImage from '../../../components/PortableTextImage.astro';
 
 export async function getStaticPaths() {
   const slugs = await client.fetch<JournalSlug[]>(JOURNAL_SLUGS_QUERY);
@@ -20,6 +22,10 @@ if (!post) return Astro.redirect('/es/journal');
 
 const title   = post.title   ?? '';
 const excerpt = post.excerpt ?? '';
+
+const components = {
+  type: { image: PortableTextImage },
+};
 ---
 
 <Base title={title} onCream={true} activePage="journal" lang={lang}>
@@ -43,20 +49,9 @@ const excerpt = post.excerpt ?? '';
     </div>
   </section>
 
-  <!-- TODO: replace with @portabletext/astro for full mark/list/heading support -->
   <section class="art-body">
     <div class="art-body__inner">
-      {post.body?.map((block: PortableTextBlock) => {
-        const b = block as any;
-        if (b._type === 'block') {
-          const text = (b.children ?? []).map((c: any) => c.text ?? '').join('');
-          return text ? <p>{text}</p> : null;
-        }
-        if (b._type === 'image' && b.asset?.url) {
-          return <figure><img src={b.asset.url} alt={b.alt ?? ''} loading="lazy" /></figure>;
-        }
-        return null;
-      })}
+      <PortableText value={post.body} components={components} />
     </div>
   </section>
 </Base>
