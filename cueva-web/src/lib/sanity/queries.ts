@@ -4,7 +4,7 @@ import groq from 'groq';
 
 export const SITE_SETTINGS_QUERY = groq`
   *[_type == "siteSettings"][0] {
-    siteName, tagline, email, address, bookingScore, bookingLabel,
+    siteName, tagline, email, phone, address, bookingScore, bookingLabel,
     bookDirectNote, copyright, social, nav
   }
 `;

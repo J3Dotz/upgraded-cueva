@@ -35,7 +35,7 @@ const [{ data: bookPage }, { data: siteSettings }] = await Promise.all([
         <div class="form-aside__contact">
           <div class="label">O escríbenos directamente</div>
           <a href={`mailto:${siteSettings?.email}`} class="form-aside__email">{siteSettings?.email}</a>
-          <p class="form-aside__phone">+34 641 33 09 42</p>
+          <p class="form-aside__phone">{siteSettings?.phone}</p>
         </div>
       </div>
 

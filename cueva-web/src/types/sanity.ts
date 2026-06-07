@@ -26,6 +26,7 @@ export interface SiteSettings {
   siteName: string | null;
   tagline: string | null;
   email: string | null;
+  phone: string | null;
   address: string | null;
   bookingScore: string | null;
   bookingLabel: string | null;
