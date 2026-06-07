@@ -7,5 +7,5 @@
       "@schemas/*": ["schemas/*"]
     }
   },
-  "include": ["src", "schemas", ".astro"]
+  "include": ["src", "schemas", "lib", ".astro"]
 }
