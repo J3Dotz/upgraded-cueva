@@ -4,6 +4,7 @@ import { loadQuery } from '../../lib/load-query';
 import { getDraftModeProps } from '../../lib/draft-mode';
 import { LOCATION_PAGE_QUERY } from '../../lib/sanity/queries';
 import type { LocationPage } from '../../types/sanity';
+import { PortableText } from 'astro-portabletext';
 import { prefix } from '../../i18n/utils';
 
 const lang     = 'es';
@@ -58,6 +59,11 @@ const { data: location } = await loadQuery<LocationPage>({
           </div>
           <p>Google Maps no ofrece la ruta correcta a nuestra ubicación. Por favor utiliza una de las rutas de confianza que aparecen más abajo.</p>
         </div>
+        {location?.body && location.body.length > 0 && (
+          <div class="location-body">
+            <PortableText value={location.body} />
+          </div>
+        )}
         <div class="routes">
           <a class="route" href="https://goo.gl/maps/xEuPsaEcBqyGasYk7" target="_blank" rel="noopener">
             <div class="route__left"><span class="route__from">Desde</span><span class="route__name">AP-7 <em>Autopista del Mediterráneo</em></span></div>
@@ -247,5 +253,8 @@ const { data: location } = await loadQuery<LocationPage>({
 .btn:hover { background: #b1561f; transform: translateY(-1px); }
 .ready__cta .note { font-family: var(--font-serif); font-style: italic; font-size: 14px; color: rgba(255,255,255,0.55); }
 @media (max-width: 1100px) { .hero h1 { font-size: 88px; } .hero__inner { grid-template-columns: 1fr; gap: 56px; } .address__grid { grid-template-columns: 1fr; gap: 56px; } .arrive__header { grid-template-columns: 1fr; gap: 32px; } .arrive__grid { grid-template-columns: 1fr; } .mode { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15); padding: 48px 32px; } .mode:last-child { border-bottom: none; } .nearby__grid { grid-template-columns: 1fr 1fr; gap: 32px; } .nearby__header { flex-direction: column; align-items: flex-start; } .ready__inner { flex-direction: column; align-items: flex-start; padding: 56px 36px; } .ready__cta { align-items: flex-start; } }
+/* Location body (Portable Text) */
+.location-body { margin-bottom: 32px; }
+.location-body p { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--stone-dark); line-height: 1.55; font-weight: 300; margin-bottom: 12px; }
 @media (max-width: 768px) { .hero { padding: 130px 24px 64px; min-height: 76vh; } .hero h1 { font-size: 64px; } .address { padding: 80px 24px; } .address__stats { grid-template-columns: 1fr; } .arrive { padding: 80px 24px; } .nearby { padding: 80px 24px; } .nearby__grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; } .ready { padding: 0 24px 80px; } .ready__inner { padding: 48px 28px; } }
 </style>
