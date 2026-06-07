@@ -1,26 +1,26 @@
 ---
-export const prerender = true;
 import Base from '../../layouts/Base.astro';
-import { client } from '../../lib/sanity';
-import { ROOM_BY_SLUG_QUERY, ROOM_SLUGS_QUERY, ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
-import type { Room, RoomListItem, RoomSlug } from '../../types/sanity';
+import { ROOM_BY_SLUG_QUERY, ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
+import type { Room, RoomListItem } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
-
-export async function getStaticPaths() {
-  const sanityRooms = await client.fetch<RoomSlug[]>(ROOM_SLUGS_QUERY);
-  // Always include wireframe slugs so pages exist before Sanity content is added
-  const wireframeSlugs = ['olivo', 'lavanda', 'laurel', 'tomillo', 'almendro', 'roble', 'hinojo'];
-  const allSlugs = new Set([...sanityRooms.map((r) => r.slug), ...wireframeSlugs]);
-  return Array.from(allSlugs).map(slug => ({ params: { slug } }));
-}
+import { loadQuery } from '@/lib/load-query';
+import { getDraftModeProps } from '@/lib/draft-mode';
 
 const { slug } = Astro.params;
 const lang = 'en';
 const p    = prefix(lang);
 
-const [room, adjacentRooms] = await Promise.all([
-  client.fetch<Room | null>(ROOM_BY_SLUG_QUERY, { slug, locale: lang }),
-  client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
+const [{ data: room }, { data: adjacentRooms }] = await Promise.all([
+  loadQuery<Room | null>({
+    query: ROOM_BY_SLUG_QUERY,
+    params: { slug, locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<RoomListItem[]>({
+    query: ALL_ROOMS_QUERY,
+    params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
 ]);
 
 // Per-room wireframe fallbacks

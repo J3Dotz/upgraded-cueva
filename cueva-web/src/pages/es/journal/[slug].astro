@@ -1,22 +1,21 @@
 ---
-export const prerender = true;
 import Base from '../../../layouts/Base.astro';
-import { client } from '../../../lib/sanity';
-import { JOURNAL_POST_BY_SLUG_QUERY, JOURNAL_SLUGS_QUERY } from '../../../lib/sanity/queries';
-import type { JournalPost, JournalSlug } from '../../../types/sanity';
+import { JOURNAL_POST_BY_SLUG_QUERY } from '../../../lib/sanity/queries';
+import type { JournalPost } from '../../../types/sanity';
 import { formatDate, useTranslations } from '../../../i18n/utils';
 import { PortableText } from 'astro-portabletext';
 import PortableTextImage from '../../../components/PortableTextImage.astro';
-
-export async function getStaticPaths() {
-  const slugs = await client.fetch<JournalSlug[]>(JOURNAL_SLUGS_QUERY);
-  return slugs.map(({ slug }) => ({ params: { slug } }));
-}
+import { loadQuery } from '@/lib/load-query';
+import { getDraftModeProps } from '@/lib/draft-mode';
 
 const { slug } = Astro.params;
 const lang     = 'es';
 const t        = useTranslations(lang);
-const post     = await client.fetch<JournalPost | null>(JOURNAL_POST_BY_SLUG_QUERY, { slug, locale: lang });
+const { data: post } = await loadQuery<JournalPost | null>({
+  query: JOURNAL_POST_BY_SLUG_QUERY,
+  params: { slug, locale: lang },
+  ...getDraftModeProps(Astro.cookies),
+});
 
 if (!post) return Astro.redirect('/es/journal');
 
