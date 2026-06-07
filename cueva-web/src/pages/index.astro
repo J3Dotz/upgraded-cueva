@@ -1,16 +1,16 @@
 ---
-export const prerender = true;
 import Base from '../layouts/Base.astro';
 import HeroSection from '../components/layout/HeroSection.astro';
 import RoomCard from '../components/RoomCard.astro';
-import { client } from '../lib/sanity';
+import { client, getClient } from '../lib/sanity';
 import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../lib/sanity/queries';
 import type { Homepage, RoomListItem } from '../types/sanity';
 
 const lang = 'en';
 
+const isPreview = Astro.cookies.has('__prerender_bypass');
 const [homepage, rooms] = await Promise.all([
-  client.fetch<Homepage>(HOMEPAGE_QUERY),
+  getClient(isPreview).fetch<Homepage>(HOMEPAGE_QUERY),
   client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
 ]);
 

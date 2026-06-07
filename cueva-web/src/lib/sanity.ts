@@ -10,6 +10,19 @@ export const client = createClient({
   perspective: 'published',
 });
 
+export const previewClient = createClient({
+  projectId: import.meta.env.SANITY_API_PROJECT_ID,
+  dataset:   import.meta.env.SANITY_API_DATASET,
+  apiVersion: '2025-03-01',
+  useCdn:    false,
+  perspective: 'previewDrafts',
+  token:     import.meta.env.SANITY_API_READ_TOKEN,
+});
+
+export function getClient(preview: boolean) {
+  return preview ? previewClient : client;
+}
+
 const builder = createImageUrlBuilder(client);
 
 /** Returns a Sanity image URL builder for a given image source. */
