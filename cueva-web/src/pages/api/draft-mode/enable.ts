@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
     return new Response('Invalid secret', { status: 401 });
   }
 
-  cookies.set('__prerender_bypass', 'samesitenone', {
+  cookies.set('__prerender_bypass', 'true', {
     httpOnly: true,
     sameSite: 'none',
     secure: true,
