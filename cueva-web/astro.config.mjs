@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import vercel from '@astrojs/vercel';
 import sanity from '@sanity/astro';
+import react from '@astrojs/react';
 
 export default defineConfig({
   // Site URL is hardcoded — update here when the domain changes.
@@ -18,7 +19,11 @@ export default defineConfig({
       dataset: 'production',
       useCdn: true,
       studioBasePath: '/studio', // Sanity Studio at lacuevademiravet.com/studio
+      stega: {
+        studioUrl: 'https://la-cueva-de-miravet.sanity.studio',
+      },
     }),
+    react(),
   ],
 
   i18n: {

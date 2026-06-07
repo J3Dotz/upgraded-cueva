@@ -1,15 +1,19 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { client, getClient } from '../../lib/sanity';
+import { client } from '../../lib/sanity';
 import { HOMEPAGE_QUERY, ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
 import type { Homepage, RoomListItem } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
+import { loadQuery } from '../../lib/load-query';
+import { getDraftModeProps } from '../../lib/draft-mode';
 
 const lang = 'es';
 const p    = prefix(lang);
-const isPreview = Astro.cookies.has('__prerender_bypass');
-const [homepage, rooms] = await Promise.all([
-  getClient(isPreview).fetch<Homepage>(HOMEPAGE_QUERY),
+const [{ data: homepage }, rooms] = await Promise.all([
+  loadQuery<Homepage>({
+    query: HOMEPAGE_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
   client.fetch<RoomListItem[]>(ALL_ROOMS_QUERY, { locale: lang }),
 ]);
 

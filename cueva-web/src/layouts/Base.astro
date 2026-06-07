@@ -1,11 +1,14 @@
 ---
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import SanityVisualEditing from '../components/SanityVisualEditing.tsx';
+import DisableDraftMode from '../components/DisableDraftMode.tsx';
 import '../styles/global.css';
 import { type Lang } from '../i18n/ui';
 import { client } from '../lib/sanity';
 import { SITE_SETTINGS_QUERY } from '../lib/sanity/queries';
 import type { SiteSettings } from '../types/sanity';
+import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
 
 interface Props {
   title: string;
@@ -30,6 +33,7 @@ const {
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const siteSettings = await client.fetch<SiteSettings>(SITE_SETTINGS_QUERY);
+const draftMode = Astro.cookies.has(perspectiveCookieName);
 ---
 
 <!doctype html>
@@ -49,6 +53,13 @@ const siteSettings = await client.fetch<SiteSettings>(SITE_SETTINGS_QUERY);
   <Nav transparent={transparentNav} onCream={onCream} lang={lang} activePage={activePage} siteSettings={siteSettings} />
   <slot />
   <Footer lang={lang} activePage={activePage} siteSettings={siteSettings} />
+
+  {draftMode && (
+    <>
+      <SanityVisualEditing client:only="react" />
+      <DisableDraftMode client:only="react" />
+    </>
+  )}
 
   <!-- Motion animations -->
   <script>
