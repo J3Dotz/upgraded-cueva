@@ -9,6 +9,18 @@ import { prefix, useTranslations } from '../../i18n/utils';
 const lang     = 'es';
 const p        = prefix(lang);
 const t        = useTranslations(lang);
+
+function renderHeadline(blocks: any[] | undefined, fallback: any) {
+  if (!blocks || blocks.length === 0) return null
+  return blocks.flatMap(block =>
+    block.children?.map((span: any) =>
+      span.marks?.includes('em')
+        ? { text: span.text, italic: true }
+        : { text: span.text, italic: false }
+    ) ?? []
+  )
+}
+
 // bookPage singleton has no locale variant — content is shared with EN
 const [{ data: bookPage }, { data: siteSettings }] = await Promise.all([
   loadQuery<BookPage>({
@@ -28,7 +40,13 @@ const [{ data: bookPage }, { data: siteSettings }] = await Promise.all([
     <div class="form-wrap" data-animate>
       <div class="form-aside">
         <div class="label">Reserva directa · Sin intermediarios</div>
-        <h1>Solicitar<span class="italic"> reserva.</span></h1>
+        <h1>
+          {(() => {
+            const segments = renderHeadline(bookPage?.headline, null)
+            if (!segments) return <>Solicitar<span class="italic"> reserva.</span></>
+            return segments.map((s: any) => s.italic ? <span class="italic">{s.text}</span> : s.text)
+          })()}
+        </h1>
         <p class="form-aside__sub">Confirmamos disponibilidad en pocas horas.</p>
         <p class="form-aside__note">Cada solicitud es gestionada personalmente por nuestro Manager Javier, y respondida el mismo día. No se cobra nada hasta que confirmamos.</p>
         <div class="form-aside__rule"></div>

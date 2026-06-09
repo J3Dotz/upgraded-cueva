@@ -10,6 +10,18 @@ import { prefix } from '../i18n/utils';
 
 const lang     = 'en';
 const p        = prefix(lang);
+
+function renderHeadline(blocks: any[] | undefined, fallback: any) {
+  if (!blocks || blocks.length === 0) return null
+  return blocks.flatMap(block =>
+    block.children?.map((span: any) =>
+      span.marks?.includes('em')
+        ? { text: span.text, italic: true }
+        : { text: span.text, italic: false }
+    ) ?? []
+  )
+}
+
 const { data: location } = await loadQuery<LocationPage>({
   query: LOCATION_PAGE_QUERY,
   ...getDraftModeProps(Astro.cookies),
@@ -35,7 +47,11 @@ const { data: location } = await loadQuery<LocationPage>({
     innerColumns={true}
   >
     <Fragment slot="headline">
-      {location?.headline ?? <>Find us.<br/><span class="italic">We'll wait.</span></>}
+      {(() => {
+        const segments = renderHeadline(location?.headline, null)
+        if (!segments) return <>Find us.<br/><span class="italic">We'll wait.</span></>
+        return segments.map((s: any) => s.italic ? <span class="italic">{s.text}</span> : s.text)
+      })()}
     </Fragment>
 
     <div slot="decorative" class="hero__topo" aria-hidden="true">

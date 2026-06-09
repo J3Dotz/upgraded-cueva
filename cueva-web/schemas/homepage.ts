@@ -23,7 +23,16 @@ export const homepage = defineType({
         defineField({
           name: 'headline',
           title: 'Headline',
-          type: 'string',
+          type: 'array',
+          of: [{
+            type: 'block',
+            styles: [],
+            lists: [],
+            marks: {
+              decorators: [{ title: 'Italic', value: 'em' }],
+              annotations: [],
+            },
+          }],
         }),
         defineField({
           name: 'subline',

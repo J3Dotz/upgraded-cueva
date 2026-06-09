@@ -25,6 +25,18 @@ const [{ data: homepage }, { data: rooms }, { data: siteSettings }] = await Prom
 ]);
 
 const closingQuote = homepage?.closingQuote;
+const hero = homepage?.hero;
+
+function renderHeadline(blocks: any[] | undefined, fallback: any) {
+  if (!blocks || blocks.length === 0) return null
+  return blocks.flatMap(block =>
+    block.children?.map((span: any) =>
+      span.marks?.includes('em')
+        ? { text: span.text, italic: true }
+        : { text: span.text, italic: false }
+    ) ?? []
+  )
+}
 
 const swatches: Record<string, string> = { olivo:'#5C4838', lavanda:'#8FA59A', laurel:'#B8A48A', tomillo:'#7E6E58', almendro:'#6F8366', roble:'#9A8A74', hinojo:'#4A3F35' };
 
@@ -46,8 +58,11 @@ const wireframeRooms: RoomListItem[] = [
     <div class="hero__inner" data-animate>
       <p class="label hero__label">Cabanes · Castellón · España</p>
       <h1>
-        Lujo sostenible
-        <span class="italic">en las montañas valencianas.</span>
+        {(() => {
+          const segments = renderHeadline(hero?.headline, null)
+          if (!segments) return <>Lujo sostenible<span class="italic"> en las montañas valencianas.</span></>
+          return segments.map((s: any) => s.italic ? <span class="italic">{s.text}</span> : s.text)
+        })()}
       </h1>
       <p class="hero__body">Una masía del siglo XIX. Una cueva natural. Siete habitaciones donde la montaña se encuentra con el Mediterráneo.</p>
     </div>

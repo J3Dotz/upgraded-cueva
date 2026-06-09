@@ -9,6 +9,17 @@ import { prefix, useTranslations } from '../i18n/utils';
 const lang     = 'en';
 const p        = prefix(lang);
 const t        = useTranslations(lang);
+function renderHeadline(blocks: any[] | undefined, fallback: any) {
+  if (!blocks || blocks.length === 0) return null
+  return blocks.flatMap(block =>
+    block.children?.map((span: any) =>
+      span.marks?.includes('em')
+        ? { text: span.text, italic: true }
+        : { text: span.text, italic: false }
+    ) ?? []
+  )
+}
+
 const [{ data: bookPage }, { data: siteSettings }] = await Promise.all([
   loadQuery<BookPage>({
     query: BOOK_PAGE_QUERY,
@@ -38,7 +49,11 @@ const [{ data: bookPage }, { data: siteSettings }] = await Promise.all([
       <div class="form-aside">
         <div class="label">Direct booking · No third parties</div>
         <h1>
-          {bookPage?.headline ?? <>Request<span class="italic"> to book.</span></>}
+          {(() => {
+            const segments = renderHeadline(bookPage?.headline, null)
+            if (!segments) return <>Request<span class="italic"> to book.</span></>
+            return segments.map((s: any) => s.italic ? <span class="italic">{s.text}</span> : s.text)
+          })()}
         </h1>
         <p class="form-aside__sub">{bookPage?.subline ?? 'We\'ll confirm availability within a few hours.'}</p>
         <p class="form-aside__note">Each request is handled personally by our Manager Javier, and answered the same day. Nothing is charged until we confirm.</p>

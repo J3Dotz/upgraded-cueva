@@ -9,6 +9,18 @@ import { prefix } from '../../i18n/utils';
 
 const lang     = 'es';
 const p        = prefix(lang);
+
+function renderHeadline(blocks: any[] | undefined, fallback: any) {
+  if (!blocks || blocks.length === 0) return null
+  return blocks.flatMap(block =>
+    block.children?.map((span: any) =>
+      span.marks?.includes('em')
+        ? { text: span.text, italic: true }
+        : { text: span.text, italic: false }
+    ) ?? []
+  )
+}
+
 // locationPage singleton has no locale variant — content is shared with EN
 const { data: location } = await loadQuery<LocationPage>({
   query: LOCATION_PAGE_QUERY,
@@ -28,7 +40,13 @@ const { data: location } = await loadQuery<LocationPage>({
     <div class="hero__inner">
       <div data-animate>
         <div class="label hero__label"><span class="pip"></span><span>La Propiedad · Cabanes · Castellón</span></div>
-        <h1>Encuéntranos.<br/><span class="italic">Te esperamos.</span></h1>
+        <h1>
+          {(() => {
+            const segments = renderHeadline(location?.headline, null)
+            if (!segments) return <>Encuéntranos.<br/><span class="italic">Te esperamos.</span></>
+            return segments.map((s: any) => s.italic ? <span class="italic">{s.text}</span> : s.text)
+          })()}
+        </h1>
       </div>
       <div class="hero__coords" data-animate>
         <div class="label-row"><span class="rule"></span><span>Coordenadas</span></div>

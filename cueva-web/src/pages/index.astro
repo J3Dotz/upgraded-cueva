@@ -33,6 +33,17 @@ const roomsTeaser        = homepage?.roomsTeaser;
 const experiencesTeaser  = homepage?.experiencesTeaser;
 const closingQuote       = homepage?.closingQuote;
 
+function renderHeadline(blocks: any[] | undefined, fallback: any) {
+  if (!blocks || blocks.length === 0) return null
+  return blocks.flatMap(block =>
+    block.children?.map((span: any) =>
+      span.marks?.includes('em')
+        ? { text: span.text, italic: true }
+        : { text: span.text, italic: false }
+    ) ?? []
+  )
+}
+
 // Hero media
 const heroImgUrl    = hero?.heroImage?.url   ?? null;
 const heroVideoUrl  = hero?.heroVideoUrl     ?? null;
@@ -109,7 +120,11 @@ const reviews = testimonials.length > 0 ? testimonials : fallbackTestimonials;
     contentPosition="center"
   >
     <Fragment slot="headline">
-      {hero?.headline ?? <>Sustainable luxury<span class="italic"> in the Valencian mountains.</span></>}
+      {(() => {
+        const segments = renderHeadline(hero?.headline, null)
+        if (!segments) return <>Sustainable luxury<span class="italic"> in the Valencian mountains.</span></>
+        return segments.map((s: any) => s.italic ? <span class="italic">{s.text}</span> : s.text)
+      })()}
     </Fragment>
 
     <form class="availability" data-animate action="/book" method="get">

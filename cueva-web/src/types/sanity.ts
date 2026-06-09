@@ -4,6 +4,14 @@
 /** Serialised Portable Text block (opaque to callers; consumed by the PT renderer). */
 export type PortableTextBlock = Record<string, unknown> & { _type: string };
 
+/** Inline headline block — restricted PT with em decoration only, no styles/lists/annotations. */
+export type InlineHeadlineBlock = {
+  _type: 'block';
+  children: Array<{ _type: 'span'; text: string; marks: string[] }>;
+  markDefs: unknown[];
+  style: string;
+};
+
 // ── siteSettings ─────────────────────────────────────────────────────────────
 
 export interface NavLink {
@@ -45,7 +53,7 @@ export interface HomepageHeroImage {
 
 export interface HomepageHero {
   eyebrow: string | null;
-  headline: string | null;
+  headline: InlineHeadlineBlock[] | null;
   subline: string | null;
   mediaType: 'image' | 'video' | null;
   heroImage: HomepageHeroImage | null;
@@ -107,7 +115,7 @@ export interface Homepage {
 // ── locationPage ─────────────────────────────────────────────────────────────
 
 export interface LocationPage {
-  headline: string | null;
+  headline: InlineHeadlineBlock[] | null;
   subline: string | null;
   body: PortableTextBlock[] | null;
   mapEmbedUrl: string | null;
@@ -116,7 +124,7 @@ export interface LocationPage {
 // ── bookPage ─────────────────────────────────────────────────────────────────
 
 export interface BookPage {
-  headline: string | null;
+  headline: InlineHeadlineBlock[] | null;
   subline: string | null;
   confirmationNote: string | null;
 }
