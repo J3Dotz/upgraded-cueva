@@ -11,7 +11,7 @@ const lang     = 'es';
 const p        = prefix(lang);
 
 function renderHeadline(blocks: any[] | undefined, fallback: any) {
-  if (!blocks || blocks.length === 0) return null
+  if (!blocks || !Array.isArray(blocks) || blocks.length === 0) return null
   return blocks.flatMap(block =>
     block.children?.map((span: any) =>
       span.marks?.includes('em')
