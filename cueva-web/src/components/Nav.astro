@@ -28,7 +28,6 @@ const ctaHref   = siteSettings?.nav?.ctaHref   ?? `${p}/book`;
 
   <div class="nav__center">
     <a href={`${p}/stay`}        class:list={['nav__link', { active: activePage === 'stay'        }]}>{t('nav.stay')}</a>
-    <a href={`${p}/experiences`} class:list={['nav__link', { active: activePage === 'experiences' }]}>{t('nav.experiences')}</a>
     <a href={`${p}/location`}    class:list={['nav__link', { active: activePage === 'location'    }]}>{t('nav.location')}</a>
     <a href={`${p}/journal`}     class:list={['nav__link', { active: activePage === 'journal'     }]}>{t('nav.journal')}</a>
   </div>
@@ -48,7 +47,6 @@ const ctaHref   = siteSettings?.nav?.ctaHref   ?? `${p}/book`;
 
 <div class="mobile-menu" id="mobileMenu">
   <a href={`${p}/stay`}>{t('nav.stay')}</a>
-  <a href={`${p}/experiences`}>{t('nav.experiences')}</a>
   <a href={`${p}/location`}>{t('nav.location')}</a>
   <a href={`${p}/journal`}>{t('nav.journal')}</a>
   <a href={ctaHref} class="nav__book" style="background: var(--terra); padding: 12px 28px;">
