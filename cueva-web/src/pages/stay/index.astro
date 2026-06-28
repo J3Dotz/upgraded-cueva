@@ -1,8 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import HeroSection from '../../components/layout/HeroSection.astro';
-import { ALL_ROOMS_QUERY } from '../../lib/sanity/queries';
-import type { RoomListItem } from '../../types/sanity';
+import { ALL_ROOMS_QUERY, STAY_PAGE_QUERY } from '../../lib/sanity/queries';
+import type { RoomListItem, StayPage } from '../../types/sanity';
 import { prefix } from '../../i18n/utils';
 import { loadQuery } from '../../lib/load-query';
 import { getDraftModeProps } from '../../lib/draft-mode';
@@ -10,256 +10,338 @@ import { getDraftModeProps } from '../../lib/draft-mode';
 const lang = 'en';
 const p    = prefix(lang);
 
-const { data: rooms } = await loadQuery<RoomListItem[]>({
-  query: ALL_ROOMS_QUERY,
-  params: { locale: lang },
-  ...getDraftModeProps(Astro.cookies),
-});
+const [{ data: stayPage }, { data: rooms }] = await Promise.all([
+  loadQuery<StayPage>({
+    query: STAY_PAGE_QUERY,
+    ...getDraftModeProps(Astro.cookies),
+  }),
+  loadQuery<RoomListItem[]>({
+    query: ALL_ROOMS_QUERY,
+    params: { locale: lang },
+    ...getDraftModeProps(Astro.cookies),
+  }),
+]);
 
-// Wireframe fallback — shown while Sanity content is being populated
-const wireframe: RoomListItem[] = [
-  { _id: 'wf-1', slug: { current: 'olivo'    }, name: 'Olivo',    subtitle: 'Olive Suite',      tagline: 'Carved into the natural rock face. Constant 16°C, lit by candle and skylight.',       pricePerNight: 420, imageUrl: null, imageAlt: null },
-  { _id: 'wf-2', slug: { current: 'lavanda'  }, name: 'Lavanda',  subtitle: 'Lavender Suite',   tagline: 'Private sea-view terrace with day bed and outdoor bath.',                               pricePerNight: 380, imageUrl: null, imageAlt: null },
-  { _id: 'wf-3', slug: { current: 'laurel'   }, name: 'Laurel',   subtitle: 'Bay Laurel Suite',  tagline: 'Floor-to-ceiling windows facing south.',                                               pricePerNight: 340, imageUrl: null, imageAlt: null },
-  { _id: 'wf-4', slug: { current: 'tomillo'  }, name: 'Tomillo',  subtitle: 'Thyme Suite',      tagline: 'Original 19th-century beams. A double bed beneath the old hayloft window.',             pricePerNight: 310, imageUrl: null, imageAlt: null },
-  { _id: 'wf-5', slug: { current: 'almendro' }, name: 'Almendro', subtitle: 'Almond Suite',     tagline: 'Opens directly onto the walled herb garden.',                                           pricePerNight: 290, imageUrl: null, imageAlt: null },
-  { _id: 'wf-6', slug: { current: 'roble'    }, name: 'Roble',    subtitle: 'Oak Suite',        tagline: 'Hand-cut limestone walls and a slim arched window onto the valley.',                    pricePerNight: 260, imageUrl: null, imageAlt: null },
-  { _id: 'wf-7', slug: { current: 'hinojo'   }, name: 'Hinojo',   subtitle: 'Fennel Suite',     tagline: 'Vaulted brick ceilings, a single deep window. Cool and quiet, year round.',             pricePerNight: 240, imageUrl: null, imageAlt: null },
+function renderHeadline(blocks: any[] | undefined) {
+  if (!blocks || !Array.isArray(blocks) || blocks.length === 0) return null;
+  return blocks.flatMap(block =>
+    block.children?.map((span: any) =>
+      span.marks?.includes('em')
+        ? { text: span.text, italic: true }
+        : { text: span.text, italic: false }
+    ) ?? []
+  );
+}
+
+const ROOM_FALLBACK = [
+  { slug: 'olivo',     name: 'El Olivo',     translation: 'Olive Tree'  },
+  { slug: 'naranjo',   name: 'El Naranjo',   translation: 'Orange Tree' },
+  { slug: 'roble',     name: 'El Roble',     translation: 'Oak Tree'    },
+  { slug: 'pino',      name: 'El Pino',      translation: 'Pine Tree'   },
+  { slug: 'almendro',  name: 'El Almendro',  translation: 'Almond Tree' },
+  { slug: 'higuera',   name: 'La Higuera',   translation: 'Fig Tree'    },
+  { slug: 'algarrobo', name: 'El Algarrobo', translation: 'Carob Tree'  },
 ];
 
-// Swatch colours for image-less placeholders — keyed to room slug
-const swatchColors: Record<string, string> = {
-  olivo: '#5C4838', lavanda: '#8FA59A', laurel: '#B8A48A',
-  tomillo: '#7E6E58', almendro: '#6F8366', roble: '#9A8A74', hinojo: '#4A3F35',
-};
+const liveRoomSlugs = new Set(rooms.map(r => r.slug?.current ?? ''));
 
-const displayRooms = rooms.length > 0 ? rooms : wireframe;
+const displayRooms = ROOM_FALLBACK.map(fb => {
+  const live = rooms.find(r => r.slug?.current === fb.slug);
+  return {
+    slug: fb.slug,
+    name: live?.name ?? fb.name,
+    translation: fb.translation,
+    imageUrl: live?.imageUrl ?? null,
+    isLive: liveRoomSlugs.has(fb.slug),
+  };
+});
+
+const useCases = [
+  { label: 'Families',            body: 'Three generations, seven bedrooms, and a pool to lose the afternoon in. One table to gather everyone at dusk.',                             cta: 'Plan a family stay'   },
+  { label: 'Groups of friends',   body: 'Fourteen beds, no front desk, no fixed checkout. The setting a long-promised reunion finally deserves.',                                    cta: 'Take it for a week'   },
+  { label: 'Retreats & offsites', body: 'A whole estate to think in — the cave for the long session, the terrace for the rest, the gate closed to everyone else.',                 cta: 'Host your team'       },
+  { label: 'Weddings & events',   body: 'Up to fourteen sleeping in, the grounds for the day, and a backdrop that asks very little of you.',                                         cta: 'Enquire for a date'   },
+];
+
+const estateStats = [
+  { value: '7',   label: 'Bedrooms',      sub: 'Each different, sleeping 14'            },
+  { value: '385', label: 'm² of house',   sub: 'Restored Masia, over three floors'      },
+  { value: '14',  label: 'At the table',  sub: 'Full kitchen, cook on request'          },
+  { value: '∞',   label: 'Sea-view pool', sub: 'Cut into the terrace'                   },
+  { value: '±2°', label: 'Even indoors',  sub: 'Thick stone walls hold the temperature' },
+  { value: '0',   label: 'Neighbours',    sub: 'The mountain to yourselves'             },
+];
 ---
 
 <Base
   title="Stay — La Cueva de Miravet"
-  description="Seven rooms at La Cueva de Miravet. A restored 19th-century Masia and natural cave on a mountaintop in Cabanes, Castellón."
+  description="Rent the entire La Cueva de Miravet — a restored Masia and natural cave near Cabanes, Castellón. Sleeps 14 across 7 bedrooms. Exclusive use. Enquire for dates."
   activePage="stay"
   lang={lang}
 >
 
-  <!-- ===== Page Hero ===== -->
+  <!-- ===== Hero ===== -->
   <HeroSection
-    eyebrow="Seven rooms · Cabanes, Castellón"
-    subline="Each room opens onto something — a terrace, the valley, a particular angle of the Mediterranean. Choose one, or take the lodge to yourselves."
+    eyebrow={stayPage?.eyebrow ?? 'Exclusive use · Cabanes, Castellón'}
+    subline={stayPage?.subline ?? 'A restored 19th-century Masia on a mountaintop with no neighbours — yours in full. Seven bedrooms, room for fourteen, the pool, the grounds and the mountain.'}
     bgScheme="forest"
     overlayStyle="black"
     size="interior"
     textAlign="center"
     contentPosition="center"
   >
-    <Fragment slot="headline">Where <span class="italic">you stay</span></Fragment>
+    <Fragment slot="headline">
+      {(() => {
+        const segments = renderHeadline(stayPage?.headline);
+        if (!segments) return <>Take the whole <span class="italic">of La Cueva.</span></>;
+        return segments.map((s: any) => s.italic ? <span class="italic">{s.text}</span> : s.text);
+      })()}
+    </Fragment>
   </HeroSection>
 
-  <!-- ===== Room Grid ===== -->
-  <section class="rooms">
-    <div class="rooms__header" data-animate>
-      <div class="left">
-        <p class="label">The Rooms</p>
-        <h2>Seven worlds under one roof.</h2>
+  <!-- ===== Stat strip ===== -->
+  <section class="stat-strip">
+    <div class="stat-strip__inner">
+      <div class="stat-item">
+        <span class="stat-item__value">14</span>
+        <span class="stat-item__label">{stayPage?.statGuests ?? 'guests'}</span>
       </div>
-      <p class="meta">Rates are per room, per night.<br/>Breakfast and the mountain are included.</p>
-    </div>
-
-    <div class="rooms__grid" data-stagger>
-      {displayRooms.map((room) => {
-        const slug  = room.slug?.current ?? '';
-        const color = swatchColors[slug] ?? '#9A8A74';
-        return (
-          <article class="room-card">
-            <a href={`${p}/stay/${slug}`} class="room-card__img-wrap">
-              {room.imageUrl
-                ? <img src={room.imageUrl} alt={room.imageAlt ?? room.name ?? slug} loading="lazy" class="room-card__img-photo" />
-                : <div class="room-card__img" style={`background-color: ${color};`}></div>
-              }
-            </a>
-            <div class="room-card__body">
-              <p class="room-card__type">{room.subtitle ?? ''}</p>
-              <h3 class="room-card__name">{room.name ?? slug}</h3>
-              <p class="room-card__feature">{room.tagline ?? ''}</p>
-              <div class="room-card__divider"></div>
-              <div class="room-card__row">
-                <p class="room-card__price">
-                  <strong>€{room.pricePerNight ?? '—'}</strong>
-                  <span class="per">/ night</span>
-                </p>
-                <a href={`${p}/stay/${slug}`} class="room-card__cta">View room</a>
-              </div>
-            </div>
-          </article>
-        );
-      })}
+      <span class="stat-strip__dot" aria-hidden="true">·</span>
+      <div class="stat-item">
+        <span class="stat-item__value">7</span>
+        <span class="stat-item__label">{stayPage?.statBedrooms ?? 'bedrooms'}</span>
+      </div>
+      <span class="stat-strip__dot" aria-hidden="true">·</span>
+      <div class="stat-item">
+        <span class="stat-item__label">{stayPage?.statFeature ?? 'The cave'}</span>
+      </div>
+      <span class="stat-strip__dot" aria-hidden="true">·</span>
+      <div class="stat-item">
+        <span class="stat-item__label">{stayPage?.statBooking ?? 'Booked as one home'}</span>
+      </div>
     </div>
   </section>
 
-  <!-- ===== Prompt Strip ===== -->
-  <section class="prompt">
-    <div class="prompt__inner" data-animate>
-      <p class="label">A small lodge, attentively staffed</p>
-      <h2>Not sure <span class="italic">which room?</span></h2>
-      <p>Tell us a little about your trip — who's coming, what you're after — and we'll write back with the room we'd choose for you. No bots, no forms-in-disguise. Usually within a day.</p>
-      <a href={`${p}/book`} class="prompt__cta">Request a recommendation</a>
-      <p class="prompt__alt">or simply <a href={`${p}/book`}>book direct</a> and we'll work it out on arrival.</p>
+  <!-- ===== Use cases ===== -->
+  <section class="use-cases">
+    <div class="use-cases__header" data-animate>
+      <p class="label">{stayPage?.useCasesLabel ?? 'However you gather'}</p>
+      <h2>{stayPage?.useCasesHeadline ?? 'One house, four kinds of week.'}</h2>
+    </div>
+    <div class="use-cases__grid" data-stagger>
+      {useCases.map((uc) => (
+        <div class="use-case">
+          <h3 class="use-case__title">{uc.label}</h3>
+          <p class="use-case__body">{uc.body}</p>
+          <a href={`${p}/book`} class="use-case__link">{uc.cta} →</a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== Estate stats ===== -->
+  <section class="estate-stats">
+    <div class="estate-stats__header" data-animate>
+      <p class="label">Everything, included</p>
+      <h2>The whole estate, <span class="italic">one price.</span></h2>
+      <p class="estate-stats__sub">No per-room maths, no add-ons at the desk. When you take La Cueva, you take all of it.</p>
+    </div>
+    <div class="estate-stats__grid" data-stagger>
+      {estateStats.map((s) => (
+        <div class="estate-stat">
+          <span class="estate-stat__value">{s.value}</span>
+          <span class="estate-stat__label">{s.label}</span>
+          <span class="estate-stat__sub">{s.sub}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== Room strip ===== -->
+  <section class="room-strip">
+    <div class="room-strip__header" data-animate>
+      <p class="label">{stayPage?.roomsSectionLabel ?? 'Inside the house'}</p>
+      <h2>{stayPage?.roomsSectionHeadline ?? 'Seven rooms, yours to assign.'}</h2>
+    </div>
+    <div class="room-strip__grid" data-stagger>
+      {displayRooms.map((room) => (
+        <a href={`${p}/stay/${room.slug}`} class="room-chip">
+          {room.imageUrl
+            ? <img src={room.imageUrl} alt={room.name} class="room-chip__img" loading="lazy" />
+            : <div class="room-chip__placeholder" aria-hidden="true"></div>
+          }
+          <div class="room-chip__body">
+            <span class="room-chip__name">{room.name}</span>
+            <span class="room-chip__translation">{room.translation}</span>
+          </div>
+          <span class="room-chip__arrow">→</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="single-room-note" data-animate>
+      <p class="label">Or just one room</p>
+      <h3>Stay in a <span class="italic">single room</span></h3>
+      <p>{stayPage?.singleRoomNote ?? 'Rates are for the entire ecolodge. Consult us for high-season individual room dates with breakfast included.'}</p>
+      <a href={`${p}/book`} class="terra-link">Enquire →</a>
+    </div>
+  </section>
+
+  <!-- ===== Booking steps ===== -->
+  <section class="booking-steps">
+    <div class="booking-steps__header" data-animate>
+      <p class="label">How booking works</p>
+      <h2>Three steps, <span class="italic">one reply.</span></h2>
+    </div>
+    <div class="booking-steps__grid" data-stagger>
+      <div class="step">
+        <span class="step__num">01</span>
+        <h3 class="step__title">Enquire</h3>
+        <p class="step__body">Send your dates, your numbers and the occasion. No deposit, no obligation — just tell us what you're planning.</p>
+      </div>
+      <div class="step">
+        <span class="step__num">02</span>
+        <h3 class="step__title">We confirm &amp; hold</h3>
+        <p class="step__body">A real person replies — usually within a day — with availability, a price for the whole house, and a gentle hold on your dates.</p>
+      </div>
+      <div class="step">
+        <span class="step__num">03</span>
+        <h3 class="step__title">Or book instantly</h3>
+        <p class="step__body">If your dates are already open on the calendar, skip the wait and confirm exclusive use on the spot.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Closing CTA ===== -->
+  <section class="closing">
+    <div class="closing__inner" data-animate>
+      <p class="label">A small estate, attentively hosted</p>
+      <h2>{stayPage?.closingHeadline ?? 'Have the place to yourselves.'}</h2>
+      <p class="closing__body">{stayPage?.closingBody ?? "Tell us who's coming and your rough dates. We'll come back with everything you need to decide — usually within a day."}</p>
+      <div class="closing__ctas">
+        <a href={`${p}/book`} class="btn-primary">Enquire about exclusive use</a>
+        <a href={`${p}/book`} class="btn-ghost">Check live availability</a>
+      </div>
     </div>
   </section>
 
 </Base>
 
 <style>
-/* ===== Label ===== */
 .label {
   font-family: var(--font-sans);
   font-size: 11px; font-weight: 500;
   text-transform: uppercase; letter-spacing: 0.12em;
   color: var(--stone-mid);
 }
+.italic { font-style: italic; }
 
-/* Hero styles live in HeroSection.astro */
+/* ===== Stat strip ===== */
+.stat-strip { background: var(--stone-dark); padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.stat-strip__inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.stat-item { display: flex; align-items: baseline; gap: 8px; font-family: var(--font-sans); font-size: 12px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.1em; }
+.stat-item__value { font-family: var(--font-serif); font-style: italic; font-size: 22px; font-weight: 300; color: var(--white); letter-spacing: 0; text-transform: none; }
+.stat-strip__dot { color: var(--terra); font-size: 20px; line-height: 1; }
 
-/* ===== Room grid ===== */
-.rooms { background: var(--cream); padding: 140px 40px 80px; }
-.rooms__header {
-  max-width: 1100px; margin: 0 auto 64px;
-  display: flex; align-items: flex-end; justify-content: space-between; gap: 48px;
-}
-.rooms__header .left .label { margin-bottom: 18px; }
-.rooms__header .left h2 {
-  font-family: var(--font-serif);
-  font-size: 44px; font-weight: 300; letter-spacing: -0.01em;
-}
-.rooms__header .meta {
-  font-family: var(--font-serif); font-style: italic;
-  font-size: 17px; color: var(--stone-mid);
-  max-width: 280px; line-height: 1.5; text-align: right;
-}
-.rooms__grid {
-  max-width: 1100px; margin: 0 auto;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px 32px;
-}
-.rooms__grid > .room-card:nth-child(7) { grid-column: 2 / 3; }
+/* ===== Use cases ===== */
+.use-cases { background: var(--cream); padding: 140px 40px 100px; }
+.use-cases__header { max-width: 1100px; margin: 0 auto 64px; }
+.use-cases__header .label { margin-bottom: 18px; }
+.use-cases__header h2 { font-family: var(--font-serif); font-size: 48px; font-weight: 300; letter-spacing: -0.01em; }
+.use-cases__grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: var(--stone-light); }
+.use-case { background: var(--cream); padding: 40px 32px 36px; display: flex; flex-direction: column; gap: 14px; transition: background 0.2s ease; }
+.use-case:hover { background: var(--cream-deep); }
+.use-case__title { font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--stone-dark); line-height: 1.2; }
+.use-case__body { font-size: 14px; line-height: 1.75; color: var(--stone-mid); flex: 1; text-wrap: pretty; }
+.use-case__link { font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--terra); display: inline-block; margin-top: 4px; transition: letter-spacing 0.2s ease; }
+.use-case:hover .use-case__link { letter-spacing: 0.14em; }
 
-.room-card { display: flex; flex-direction: column; }
-.room-card__img-wrap {
-  display: block; overflow: hidden;
-  border-radius: 160px 160px 0 0;
-}
-.room-card__img-photo {
-  width: 100%; height: 360px; object-fit: cover;
-  transition: transform 0.7s ease;
-}
-.room-card__img {
-  width: 100%; height: 360px;
-  background-image: var(--grain);
-  background-blend-mode: multiply;
-  transition: transform 0.7s ease;
-  position: relative;
-}
-.room-card__img::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.18) 100%);
-}
-.room-card:hover .room-card__img,
-.room-card:hover .room-card__img-photo { transform: scale(1.04); }
+/* ===== Estate stats ===== */
+.estate-stats { background: var(--cream-deep); padding: 120px 40px; }
+.estate-stats__header { max-width: 1100px; margin: 0 auto 64px; }
+.estate-stats__header .label { margin-bottom: 18px; }
+.estate-stats__header h2 { font-family: var(--font-serif); font-size: 48px; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 20px; }
+.estate-stats__sub { font-size: 15px; color: var(--stone-mid); max-width: 420px; line-height: 1.7; }
+.estate-stats__grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--stone-light); }
+.estate-stat { background: var(--cream-deep); padding: 40px 32px; display: flex; flex-direction: column; gap: 6px; }
+.estate-stat__value { font-family: var(--font-serif); font-style: italic; font-size: 52px; font-weight: 300; color: var(--terra); line-height: 1; }
+.estate-stat__label { font-family: var(--font-sans); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--stone-dark); }
+.estate-stat__sub { font-size: 13px; color: var(--stone-mid); line-height: 1.5; text-wrap: pretty; }
 
-.room-card__body { padding: 24px 4px 0; }
-.room-card__type {
-  font-family: var(--font-sans); font-size: 11px; font-weight: 500;
-  text-transform: uppercase; letter-spacing: 0.12em;
-  color: var(--terra); margin-bottom: 10px;
-}
-.room-card__name {
-  font-family: var(--font-serif); font-size: 30px; font-weight: 300;
-  color: var(--stone-dark); letter-spacing: -0.005em; line-height: 1.1;
-}
-.room-card__feature {
-  font-family: var(--font-sans); font-size: 13px;
-  color: var(--stone-mid); margin-top: 12px; line-height: 1.55; max-width: 280px;
-}
-.room-card__divider {
-  height: 1px; background: var(--stone-light); margin: 20px 0 16px;
-}
-.room-card__row {
-  display: flex; align-items: baseline;
-  justify-content: space-between; gap: 16px;
-}
-.room-card__price { font-family: var(--font-sans); font-size: 13px; color: var(--stone-dark); }
-.room-card__price strong {
-  font-family: var(--font-serif); font-style: italic;
-  font-weight: 400; font-size: 22px; color: var(--stone-dark); margin-right: 4px;
-}
-.room-card__price .per { color: var(--stone-mid); font-size: 12px; }
-.room-card__cta {
-  font-family: var(--font-sans); font-size: 11px; font-weight: 500;
-  color: var(--terra); text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap;
-}
-.room-card__cta::after { content: " →"; display: inline-block; transition: transform 0.25s ease; }
-.room-card:hover .room-card__cta::after { transform: translateX(4px); }
+/* ===== Room strip ===== */
+.room-strip { background: var(--cream); padding: 120px 40px 80px; }
+.room-strip__header { max-width: 1100px; margin: 0 auto 48px; }
+.room-strip__header .label { margin-bottom: 18px; }
+.room-strip__header h2 { font-family: var(--font-serif); font-size: 48px; font-weight: 300; letter-spacing: -0.01em; }
+.room-strip__grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background: var(--stone-light); }
+.room-chip { background: var(--cream); padding: 28px 16px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; text-decoration: none; transition: background 0.2s ease; }
+.room-chip:hover { background: var(--stone-dark); }
+.room-chip__img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 100px 100px 0 0; margin-bottom: 4px; }
+.room-chip__placeholder { width: 100%; aspect-ratio: 3/4; background: var(--stone-light); border-radius: 100px 100px 0 0; margin-bottom: 4px; }
+.room-chip__body { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.room-chip__name { font-family: var(--font-serif); font-size: 16px; font-weight: 400; color: var(--stone-dark); transition: color 0.2s ease; }
+.room-chip:hover .room-chip__name { color: var(--white); }
+.room-chip__translation { font-family: var(--font-sans); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--stone-mid); transition: color 0.2s ease; }
+.room-chip:hover .room-chip__translation { color: rgba(255,255,255,0.5); }
+.room-chip__arrow { font-size: 14px; color: var(--terra); transition: transform 0.2s ease; }
+.room-chip:hover .room-chip__arrow { transform: translateX(3px); }
 
-/* ===== Prompt strip ===== */
-.prompt {
-  background: var(--forest);
-  background-image: var(--grain);
-  background-blend-mode: multiply;
-  padding: 96px 40px 104px;
-  color: var(--white);
-  position: relative; text-align: center; overflow: hidden;
-}
-.prompt::before {
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.035) 0%, transparent 70%);
-  pointer-events: none;
-}
-.prompt__inner { position: relative; z-index: 2; max-width: 620px; margin: 0 auto; }
-.prompt .label { color: rgba(255,255,255,0.55); margin-bottom: 18px; }
-.prompt h2 {
-  font-family: var(--font-serif);
-  font-size: 52px; font-weight: 300;
-  color: var(--white); margin-bottom: 18px;
-}
-.prompt h2 .italic { font-style: italic; }
-.prompt p {
-  color: rgba(255,255,255,0.72); font-size: 15px; line-height: 1.75;
-  max-width: 480px; margin: 0 auto 36px;
-}
-.prompt__cta {
-  background: var(--terra); color: var(--white);
-  border-radius: 100px; padding: 16px 36px;
-  font-family: var(--font-sans); font-size: 12px; font-weight: 500;
-  text-transform: uppercase; letter-spacing: 0.12em;
-  transition: background 0.25s ease, transform 0.25s ease;
-  display: inline-block;
-}
-.prompt__cta:hover { background: #b1561f; transform: translateY(-1px); }
-.prompt__alt {
-  margin-top: 22px;
-  font-family: var(--font-serif); font-style: italic;
-  font-size: 14px; color: rgba(255,255,255,0.5);
-}
-.prompt__alt a {
-  color: rgba(255,255,255,0.78);
-  border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 1px;
-}
-.prompt__alt a:hover { color: var(--white); border-bottom-color: rgba(255,255,255,0.6); }
+.single-room-note { max-width: 1100px; margin: 56px auto 0; padding: 40px; border: 1px solid var(--stone-light); display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px 32px; background: var(--cream-deep); }
+.single-room-note .label { grid-column: 1; grid-row: 1; }
+.single-room-note h3 { grid-column: 1; grid-row: 2; font-family: var(--font-serif); font-size: 28px; font-weight: 300; color: var(--stone-dark); }
+.single-room-note p { grid-column: 2; grid-row: 1 / 3; font-size: 14px; line-height: 1.75; color: var(--stone-mid); text-wrap: pretty; }
+.single-room-note .terra-link { grid-column: 3; grid-row: 1 / 3; font-family: var(--font-sans); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--terra); white-space: nowrap; }
+.terra-link { transition: letter-spacing 0.2s ease; }
+.terra-link:hover { letter-spacing: 0.14em; }
+
+/* ===== Booking steps ===== */
+.booking-steps { background: var(--stone-dark); padding: 120px 40px; }
+.booking-steps__header { max-width: 1100px; margin: 0 auto 64px; }
+.booking-steps__header .label { color: rgba(255,255,255,0.45); margin-bottom: 18px; }
+.booking-steps__header h2 { font-family: var(--font-serif); font-size: 48px; font-weight: 300; color: var(--white); letter-spacing: -0.01em; }
+.booking-steps__grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: rgba(255,255,255,0.06); }
+.step { padding: 48px 40px; background: var(--stone-dark); display: flex; flex-direction: column; gap: 16px; }
+.step__num { font-family: var(--font-serif); font-style: italic; font-size: 48px; font-weight: 300; color: var(--terra); line-height: 1; }
+.step__title { font-family: var(--font-serif); font-size: 22px; font-weight: 400; color: var(--white); line-height: 1.2; }
+.step__body { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,0.6); text-wrap: pretty; }
+
+/* ===== Closing CTA ===== */
+.closing { background: var(--cream); padding: 140px 40px; border-top: 1px solid var(--stone-light); }
+.closing__inner { max-width: 680px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.closing__inner .label { margin-bottom: 4px; }
+.closing__inner h2 { font-family: var(--font-serif); font-size: 48px; font-weight: 300; letter-spacing: -0.01em; color: var(--stone-dark); line-height: 1.1; }
+.closing__body { font-size: 15px; line-height: 1.75; color: var(--stone-mid); text-wrap: pretty; max-width: 480px; }
+.closing__ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+.btn-primary { background: var(--terra); color: var(--white); border-radius: 100px; padding: 16px 36px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; transition: background 0.2s ease, transform 0.2s ease; display: inline-block; }
+.btn-primary:hover { background: #b1561f; transform: translateY(-1px); }
+.btn-ghost { border: 1px solid var(--stone-light); color: var(--stone-dark); border-radius: 100px; padding: 15px 36px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; transition: border-color 0.2s ease; display: inline-block; }
+.btn-ghost:hover { border-color: var(--stone-dark); }
 
 /* ===== Responsive ===== */
-@media (max-width: 1024px) {
-  .prompt h2 { font-size: 42px; }
-  .rooms__header { flex-direction: column; align-items: flex-start; gap: 24px; }
-  .rooms__header .meta { text-align: left; }
-  .rooms__grid { grid-template-columns: repeat(2, 1fr); }
-  .rooms__grid > .room-card:nth-child(7) { grid-column: auto; }
+@media (max-width: 1100px) {
+  .room-strip__grid { grid-template-columns: repeat(4, 1fr); }
+  .use-cases__grid  { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .rooms { padding: 80px 24px; }
-  .rooms__grid { grid-template-columns: 1fr; gap: 48px; max-width: 380px; margin: 0 auto; }
-  .room-card__img,
-  .room-card__img-photo { height: 320px; }
-  .prompt { padding: 72px 24px 80px; }
-  .prompt h2 { font-size: 32px; }
+  .stat-strip { padding: 16px 24px; }
+  .stat-strip__inner { gap: 16px; }
+  .stat-strip__dot { display: none; }
+  .use-cases { padding: 80px 24px 64px; }
+  .use-cases__header h2 { font-size: 34px; }
+  .use-cases__grid { grid-template-columns: 1fr; }
+  .estate-stats { padding: 80px 24px; }
+  .estate-stats__header h2 { font-size: 34px; }
+  .estate-stats__grid { grid-template-columns: repeat(2, 1fr); }
+  .estate-stat__value { font-size: 40px; }
+  .room-strip { padding: 80px 24px 64px; }
+  .room-strip__header h2 { font-size: 34px; }
+  .room-strip__grid { grid-template-columns: repeat(2, 1fr); }
+  .single-room-note { grid-template-columns: 1fr; gap: 12px; padding: 28px 24px; }
+  .single-room-note p, .single-room-note .terra-link { grid-column: 1; grid-row: auto; }
+  .booking-steps { padding: 80px 24px; }
+  .booking-steps__header h2 { font-size: 34px; }
+  .booking-steps__grid { grid-template-columns: 1fr; }
+  .closing { padding: 80px 24px; }
+  .closing__inner h2 { font-size: 34px; }
 }
 </style>
