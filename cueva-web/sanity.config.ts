@@ -35,6 +35,14 @@ export default defineConfig({
                   .documentId('homepage')
               ),
             S.listItem()
+              .title('Stay Page')
+              .id('stayPage')
+              .child(
+                S.document()
+                  .schemaType('stayPage')
+                  .documentId('stayPage')
+              ),
+            S.listItem()
               .title('Location Page')
               .id('locationPage')
               .child(

@@ -129,6 +129,25 @@ export interface BookPage {
   confirmationNote: string | null;
 }
 
+// ── stayPage ─────────────────────────────────────────────────────────────────
+
+export interface StayPage {
+  eyebrow: string | null;
+  headline: InlineHeadlineBlock[] | null;
+  subline: string | null;
+  statGuests: string | null;
+  statBedrooms: string | null;
+  statFeature: string | null;
+  statBooking: string | null;
+  useCasesLabel: string | null;
+  useCasesHeadline: string | null;
+  roomsSectionLabel: string | null;
+  roomsSectionHeadline: string | null;
+  singleRoomNote: string | null;
+  closingHeadline: string | null;
+  closingBody: string | null;
+}
+
 // ── room ─────────────────────────────────────────────────────────────────────
 
 export interface SanitySlug {

@@ -8,6 +8,7 @@ import { siteSettings } from './siteSettings';
 import { homepage } from './homepage';
 import { locationPage } from './locationPage';
 import { bookPage } from './bookPage';
+import { stayPage } from './stayPage';
 
 export const schemaTypes = [
   // Primitive locale objects (used as field types)
@@ -20,6 +21,7 @@ export const schemaTypes = [
   journalPost,
   // Page singletons
   homepage,
+  stayPage,
   locationPage,
   bookPage,
   // Global settings

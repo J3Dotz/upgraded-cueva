@@ -38,6 +38,17 @@ export const BOOK_PAGE_QUERY = groq`
   }
 `;
 
+export const STAY_PAGE_QUERY = groq`
+  *[_type == "stayPage"][0] {
+    eyebrow, headline, subline,
+    statGuests, statBedrooms, statFeature, statBooking,
+    useCasesLabel, useCasesHeadline,
+    roomsSectionLabel, roomsSectionHeadline,
+    singleRoomNote,
+    closingHeadline, closingBody
+  }
+`;
+
 // ── Rooms ─────────────────────────────────────────────────────────────────────
 // coalesce() picks new field first, falls back to the pre-Phase-2 legacy field.
 // This ensures documents created under either schema version render correctly.
