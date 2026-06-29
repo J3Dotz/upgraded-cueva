@@ -48,7 +48,6 @@ const facebookHref   = siteSettings?.social?.facebook  ?? '#';
       <span class="footer__col-label">Explore</span>
       <nav class="footer__links" aria-label="Footer navigation">
         <a href={`${p}/stay`}        class:list={{ active: activePage === 'stay'        }}>{t('nav.stay')}</a>
-        <a href={`${p}/experiences`} class:list={{ active: activePage === 'experiences' }}>{t('nav.experiences')}</a>
         <a href={`${p}/location`}    class:list={{ active: activePage === 'location'    }}>{t('nav.location')}</a>
         <a href={`${p}/journal`}     class:list={{ active: activePage === 'journal'     }}>{t('nav.journal')}</a>
         <a href={`${p}/book`}        class:list={{ active: activePage === 'book'        }}>{t('nav.book')}</a>
